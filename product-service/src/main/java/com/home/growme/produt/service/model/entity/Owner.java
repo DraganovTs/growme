@@ -1,4 +1,4 @@
-package com.home.growme.produt.service.model;
+package com.home.growme.produt.service.model.entity;
 
 
 import com.home.growme.common.module.valuobjects.OwnedId;
