@@ -17,7 +17,6 @@ import java.math.BigDecimal;
 public class Product {
 
     @EmbeddedId
-    @Column(name = "product_id")
     private ProductId id;
     @Column(nullable = false)
     private String name;

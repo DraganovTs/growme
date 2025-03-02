@@ -1,11 +1,18 @@
 package com.home.growme.common.module.valuobjects;
 
+import jakarta.persistence.MappedSuperclass;
+
+import java.io.Serializable;
 import java.util.Objects;
 
-public abstract class BaseId<T> {
+@MappedSuperclass
+public abstract class BaseId<T> implements Serializable {
 
     private final T value;
 
+    protected BaseId() {
+        this.value = null;
+    }
     protected BaseId(T value) {
         this.value = value;
     }

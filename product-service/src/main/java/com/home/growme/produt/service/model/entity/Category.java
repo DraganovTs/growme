@@ -17,7 +17,6 @@ import java.util.List;
 public class Category {
 
     @EmbeddedId
-    @Column(name = "category_id")
     private CategoryId id;
     @Column(name = "category_name", nullable = false,unique = true)
     private String categoryName;

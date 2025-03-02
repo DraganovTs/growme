@@ -17,7 +17,6 @@ import java.util.List;
 public class Owner {
 
     @EmbeddedId
-    @Column(name = "owner_id")
     private OwnedId ownedId;
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Product> products;
