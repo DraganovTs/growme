@@ -6,10 +6,12 @@ import com.home.growme.produt.service.model.dto.ProductResponseDTO;
 import com.home.growme.produt.service.model.entity.Product;
 import com.home.growme.produt.service.repository.ProductRepository;
 import com.home.growme.produt.service.service.ProductService;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
 
+@Service
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
