@@ -1,11 +1,11 @@
 package com.home.growme.produt.service.model.entity;
 
 
-import com.home.growme.common.module.valuobjects.OwnedId;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "owners")
@@ -16,8 +16,12 @@ import java.util.List;
 @Builder
 public class Owner {
 
-    @EmbeddedId
-    private OwnedId ownedId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "owner_id")
+    private UUID ownerId;
+    @Column(name = "owner_name")
+    private String ownerName;
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Product> products;
 

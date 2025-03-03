@@ -1,11 +1,11 @@
 package com.home.growme.produt.service.model.entity;
 
-import com.home.growme.common.module.valuobjects.CategoryId;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "categories")
@@ -16,8 +16,10 @@ import java.util.List;
 @Builder
 public class Category {
 
-    @EmbeddedId
-    private CategoryId id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "category_id")
+    private UUID categoryId;
     @Column(name = "category_name", nullable = false,unique = true)
     private String categoryName;
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)

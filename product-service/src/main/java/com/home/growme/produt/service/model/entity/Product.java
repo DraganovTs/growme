@@ -1,11 +1,14 @@
 package com.home.growme.produt.service.model.entity;
 
 
-import com.home.growme.common.module.valuobjects.ProductId;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
+import java.util.Date;
+import java.util.UUID;
 
 @Entity
 @Table(name = "products")
@@ -16,16 +19,26 @@ import java.math.BigDecimal;
 @Builder
 public class Product {
 
-    @EmbeddedId
-    private ProductId id;
-    @Column(nullable = false)
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "product_id")
+    private UUID productId;
+    @Column(name = "name", nullable = false)
     private String name;
-    @Column(nullable = false)
+    @Column(name = "description", nullable = false)
     private String description;
-    @Column(nullable = false)
+    @Column(name = "price", nullable = false)
     private BigDecimal price;
-    @Column(nullable = false)
-    private Integer quantityAvailable;
+    @Column(name = "units_in_stock")
+    private int unitsInStock;
+    @Column(name = "image_url")
+    private String imageUrl;
+    @Column(name = "date_created")
+    @CreationTimestamp
+    private Date dateCreated;
+    @Column(name = "last_updated")
+    @UpdateTimestamp
+    private Date lastUpdated;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
