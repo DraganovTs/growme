@@ -1,0 +1,49 @@
+/* Hover Underline Effect for Links */
+.hover-underline {
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+.hover-underline::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    background: #007bff; /* Primary color */
+    bottom: 0;
+    left: 0;
+    transition: width 0.3s ease;
+}
+
+.hover-underline:hover::after {
+    width: 100%;
+}
+
+.hover-underline:hover {
+    color: #007bff; /* Primary color */
+}
+
+/* Cart Badge Styling */
+.cart-badge {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
+}
+
+/* Hover Scale Effect for Buttons and Icons */
+.hover-scale {
+    transition: transform 0.3s ease;
+}
+
+.hover-scale:hover {
+    transform: scale(1.1);
+}
+
+/* Active Link Styling */
+.active {
+    color: #007bff !important; /* Primary color */
+    font-weight: bold;
+}
