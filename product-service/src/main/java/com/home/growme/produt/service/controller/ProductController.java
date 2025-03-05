@@ -1,7 +1,9 @@
 package com.home.growme.produt.service.controller;
 
 import com.home.growme.produt.service.model.dto.ProductResponseDTO;
+import com.home.growme.produt.service.model.dto.ProductResponseListDTO;
 import com.home.growme.produt.service.service.ProductService;
+import com.home.growme.produt.service.specification.ProductSpecParams;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,8 +27,8 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ProductResponseDTO>> getProducts() {
-        List<ProductResponseDTO> productResponseDTOList = productService.getAllProducts();
+    public ResponseEntity<ProductResponseListDTO> getProducts(ProductSpecParams request) {
+        ProductResponseListDTO productResponseDTOList = productService.getAllProducts(request);
         return ResponseEntity.ok(productResponseDTOList);
     }
 

@@ -16,3 +16,9 @@ spring:
   sql:
     init:
       mode: never
+
+
+pagination:
+  page:
+    size:
+      default: 12

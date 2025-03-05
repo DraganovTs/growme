@@ -23,5 +23,10 @@ public class Category {
     @Column(name = "category_name", nullable = false,unique = true)
     private String categoryName;
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Product> products = new ArrayList<>();
+    private List<Product> products;
+
+    public Category(String categoryId){
+        super();
+        this.categoryId = UUID.fromString(categoryId);
+    }
 }

@@ -13,6 +13,7 @@ import java.util.UUID;
 public class ProductResponseDTO {
     private UUID productId;
     private String name;
+    private String brand;
     private String description;
     private BigDecimal price;
     private int unitsInStock;

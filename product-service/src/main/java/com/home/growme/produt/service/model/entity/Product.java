@@ -25,6 +25,8 @@ public class Product {
     private UUID productId;
     @Column(name = "name", nullable = false)
     private String name;
+    @Column(name = "brand")
+    private String brand;
     @Column(name = "description", nullable = false)
     private String description;
     @Column(name = "price", nullable = false)
