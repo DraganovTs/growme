@@ -18,7 +18,7 @@ public class Owner {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "owner_id")
+    @Column(name = "owner_id",columnDefinition = "CHAR(36)")
     private UUID ownerId;
     @Column(name = "owner_name")
     private String ownerName;

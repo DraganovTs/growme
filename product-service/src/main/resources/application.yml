@@ -9,13 +9,13 @@ spring:
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: create
+      ddl-auto: validate
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
   sql:
     init:
-      mode: never
+      mode: always
 
 
 pagination:
