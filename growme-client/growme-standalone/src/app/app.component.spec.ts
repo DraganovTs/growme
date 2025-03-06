@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
+import { title } from 'process';
 
 describe('AppComponent', () => {
   beforeEach(async () => {
@@ -17,7 +18,7 @@ describe('AppComponent', () => {
   it(`should have the 'growme-standalone' title`, () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    expect(app.title).toEqual('growme-standalone');
+    expect(title).toEqual('growme-standalone');
   });
 
   it('should render title', () => {
