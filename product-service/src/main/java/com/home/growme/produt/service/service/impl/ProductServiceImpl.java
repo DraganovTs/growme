@@ -56,6 +56,8 @@ public class ProductServiceImpl implements ProductService {
         Pageable paging = PageRequest.of(pageIndex - 1, pageSize);
         Page<Product> productPage = productRepository.findAll(productSpecification.getProducts(specParams), paging);
 
+
+
         return buildProductResponseListDTO(productPage, pageIndex, pageSize);
     }
 

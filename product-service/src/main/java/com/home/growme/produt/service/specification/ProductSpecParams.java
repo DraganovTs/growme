@@ -9,7 +9,7 @@ public class ProductSpecParams {
     private String search;
     private String sort;
     private String owner;
-    private int categoryId;
+    private String categoryId;
     private String title;
     private final int MaxPageSize=20;
     private int pageIndex=1;

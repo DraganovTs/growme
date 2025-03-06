@@ -8,6 +8,16 @@ import org.springframework.stereotype.Component;
 public class ProductMapper {
 
     public ProductResponseDTO mapProductToProductResponseDTO(Product product) {
+
+
+            if (product.getCategory() == null) {
+                System.out.println("Product ID: " + product.getProductId() + " has a NULL category!");
+            } else {
+                System.out.println("Product ID: " + product.getProductId() + " Category: " + product.getCategory().getCategoryName());
+            }
+
+
+
         return ProductResponseDTO.builder()
                 .productId(product.getProductId())
                 .name(product.getName())

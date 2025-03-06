@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Component
 public class ProductSpecificationTitleOwnerCategory {
@@ -22,14 +23,14 @@ public class ProductSpecificationTitleOwnerCategory {
                         "%" + specParams.getTitle().toLowerCase() + "%"));
             }
             if (specParams.getOwner() != null && !specParams.getOwner().isEmpty()) {
-                predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("owner")),
-                        "%" + specParams.getOwner().toLowerCase() + "%"));
+                predicates.add(criteriaBuilder.equal(root.get("owner").get("ownerId"),
+                        UUID.fromString(specParams.getOwner())));
             }
-            if (specParams.getCategoryId() != 0) {
-                predicates.add(criteriaBuilder.equal(root.get("category"),
-                        new Category(String.valueOf(specParams.getCategoryId())))
-                );
+            if (specParams.getCategoryId() != null && !specParams.getCategoryId().isEmpty()) {
+                predicates.add(criteriaBuilder.equal(root.get("category").get("categoryId"),
+                        UUID.fromString(specParams.getCategoryId())));
             }
+
             if (specParams.getSort() != null && !specParams.getSort().isEmpty()) {
                 switch (specParams.getSort()) {
                     case "priceAsc":

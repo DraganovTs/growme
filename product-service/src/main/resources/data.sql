@@ -1,46 +1,49 @@
-INSERT INTO categories (category_id, category_name)
-VALUES (UUID(), 'Vegetables'),
-       (UUID(), 'Fruits'),
-       (UUID(), 'rakia');
 
+INSERT INTO categories (category_id, category_name)
+VALUES
+    ('550e8400-e29b-41d4-a716-446655440000', 'Vegetables'),
+    ('550e8400-e29b-41d4-a716-446655440001', 'Fruits'),
+    ('550e8400-e29b-41d4-a716-446655440002', 'Rakia');
 
 INSERT INTO owners (owner_id, owner_name)
-VALUES (UUID(), "TestUser1"),
-       (UUID(),"TestUser2"),
-       (UUID() , "TestUser3");
+VALUES
+    ('550e8400-e29b-41d4-a716-446655440003', 'TestUser1'),
+    ('550e8400-e29b-41d4-a716-446655440004', 'TestUser2'),
+    ('550e8400-e29b-41d4-a716-446655440005', 'TestUser3');
 
 
 INSERT INTO products (product_id, name, brand, description, price, units_in_stock, image_url, category_id, owner_id)
-VALUES (
-           UUID(),
-           'Tomatoes',
-           'Pink',
-           'Very delicious vegetables',
-           699.99,
-           100,
-           'tomato.jpg',
-           (SELECT category_id FROM categories WHERE category_name = 'Vegetables'),
-           (SELECT owner_id FROM owners WHERE owner_name = 'TestUser1')
-       ),
+VALUES
     (
-        UUID(),
+        '550e8400-e29b-41d4-a716-446655440006',
+        'Tomatoes',
+        'Pink',
+        'Very delicious vegetables',
+        699.99,
+        100,
+        'tomato.jpg',
+        '550e8400-e29b-41d4-a716-446655440000',
+        '550e8400-e29b-41d4-a716-446655440003'
+    ),
+    (
+        '550e8400-e29b-41d4-a716-446655440007',
         'Onion',
         'Purple',
         'Very delicious vegetables',
         299.99,
         120,
         'onion.jpg',
-        (SELECT category_id FROM categories WHERE category_name = 'Vegetables'),
-        (SELECT owner_id FROM owners WHERE owner_name = 'TestUser2')
+        '550e8400-e29b-41d4-a716-446655440000',
+        '550e8400-e29b-41d4-a716-446655440004'
     ),
     (
-           UUID(),
-           'Apple',
-           'Green',
-           'Very delicious fruit',
-           699.99,
-           100,
-           'apple.jpg',
-           (SELECT category_id FROM categories WHERE category_name = 'Fruits'),
-           (SELECT owner_id FROM owners WHERE owner_name = 'TestUser3')
-       );
+        '550e8400-e29b-41d4-a716-446655440008',
+        'Apple',
+        'Green',
+        'Very delicious fruit',
+        699.99,
+        100,
+        'apple.jpg',
+        '550e8400-e29b-41d4-a716-446655440001',
+        '550e8400-e29b-41d4-a716-446655440005'
+    );
