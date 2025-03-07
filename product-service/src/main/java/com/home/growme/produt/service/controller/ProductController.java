@@ -32,6 +32,12 @@ public class ProductController {
         return ResponseEntity.ok(productResponseDTOList);
     }
 
+    @PostMapping
+    public ResponseEntity<ProductResponseDTO>createProduct(@RequestBody ProductResponseDTO productResponseDTO){
+       ProductResponseDTO responseDTO = productService.createProduct(productResponseDTO);
+       return ResponseEntity.ok(responseDTO);
+    }
+
 
 
     //TODO

@@ -4,7 +4,11 @@ import com.home.growme.produt.service.exception.ProductNotFoundException;
 import com.home.growme.produt.service.mapper.ProductMapper;
 import com.home.growme.produt.service.model.dto.ProductResponseDTO;
 import com.home.growme.produt.service.model.dto.ProductResponseListDTO;
+import com.home.growme.produt.service.model.entity.Category;
+import com.home.growme.produt.service.model.entity.Owner;
 import com.home.growme.produt.service.model.entity.Product;
+import com.home.growme.produt.service.repository.CategoryRepository;
+import com.home.growme.produt.service.repository.OwnerRepository;
 import com.home.growme.produt.service.repository.ProductRepository;
 import com.home.growme.produt.service.service.ProductService;
 import com.home.growme.produt.service.specification.ProductSpecParams;
@@ -14,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,12 +33,17 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
     private final ProductSpecificationTitleOwnerCategory productSpecification;
+    private final CategoryRepository categoryRepository;
+    private final OwnerRepository ownerRepository;
 
-
-    public ProductServiceImpl(ProductRepository productRepository, ProductMapper productMapper, ProductSpecificationTitleOwnerCategory productSpecification) {
+    public ProductServiceImpl(ProductRepository productRepository, ProductMapper productMapper,
+                              ProductSpecificationTitleOwnerCategory productSpecification,
+                              CategoryRepository categoryRepository, OwnerRepository ownerRepository) {
         this.productRepository = productRepository;
         this.productMapper = productMapper;
         this.productSpecification = productSpecification;
+        this.categoryRepository = categoryRepository;
+        this.ownerRepository = ownerRepository;
     }
 
 
@@ -63,8 +73,11 @@ public class ProductServiceImpl implements ProductService {
 
 
     @Override
-    public Product createProduct(ProductResponseDTO productResponseDto) {
-        return null;
+    public ProductResponseDTO createProduct(ProductResponseDTO productResponseDto) {
+        Optional<Owner> owner = ownerRepository.findById(UUID.fromString(productResponseDto.getOwnerId().toString()));
+        Optional<Category> category = categoryRepository.findById(productResponseDto.getProductCategoryId());
+        Product product = productMapper.mapProductResponseDTOToProduct(productResponseDto , category.get(), owner.get());
+        return productMapper.mapProductToProductResponseDTO(productRepository.save(product));
     }
 
     @Override

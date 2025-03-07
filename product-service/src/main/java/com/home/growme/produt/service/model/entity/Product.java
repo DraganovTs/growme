@@ -4,8 +4,6 @@ package com.home.growme.produt.service.model.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.NotFound;
-import org.hibernate.annotations.NotFoundAction;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
@@ -22,8 +20,7 @@ import java.util.UUID;
 public class Product {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "product_id",columnDefinition = "CHAR(36)")
+    @Column(name = "product_id")
     private UUID productId;
     @Column(name = "name", nullable = false)
     private String name;
@@ -49,5 +46,13 @@ public class Product {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "owner_id")
     private Owner owner;
+
+
+    @PrePersist
+    public void generateId() {
+        if (productId == null) {
+            productId = UUID.randomUUID();
+        }
+    }
 
 }

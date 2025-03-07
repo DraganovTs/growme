@@ -13,7 +13,7 @@ public interface ProductService {
     ProductResponseListDTO getAllProducts(ProductSpecParams specParams);
 
     //TODO implement
-    Product createProduct(ProductResponseDTO productResponseDto);
+    ProductResponseDTO createProduct(ProductResponseDTO productResponseDto);
     Product updateProduct(UUID productId, ProductResponseDTO productResponseDto);
     void deleteProduct(UUID productId);
     List<ProductResponseDTO> getProductsByCategory(UUID categoryId);

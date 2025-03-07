@@ -17,12 +17,17 @@ import java.util.UUID;
 public class Owner {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "owner_id",columnDefinition = "CHAR(36)")
+    @Column(name = "owner_id")
     private UUID ownerId;
     @Column(name = "owner_name")
     private String ownerName;
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Product> products;
 
+    @PrePersist
+    public void generateId() {
+        if (ownerId == null) {
+            ownerId = UUID.randomUUID(); // Manually generate UUID
+        }
+    }
 }

@@ -17,13 +17,18 @@ import java.util.UUID;
 public class Category {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "category_id",columnDefinition = "CHAR(36)")
+    @Column(name = "category_id")
     private UUID categoryId;
     @Column(name = "category_name", nullable = false,unique = true)
     private String categoryName;
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Product> products;
 
+    @PrePersist
+    public void generateId() {
+        if (categoryId == null) {
+            categoryId = UUID.randomUUID();
+        }
+    }
 
 }

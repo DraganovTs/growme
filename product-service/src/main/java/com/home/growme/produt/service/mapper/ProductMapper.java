@@ -1,11 +1,18 @@
 package com.home.growme.produt.service.mapper;
 
 import com.home.growme.produt.service.model.dto.ProductResponseDTO;
+import com.home.growme.produt.service.model.entity.Category;
+import com.home.growme.produt.service.model.entity.Owner;
 import com.home.growme.produt.service.model.entity.Product;
 import org.springframework.stereotype.Component;
 
+
+
 @Component
 public class ProductMapper {
+
+
+
 
     public ProductResponseDTO mapProductToProductResponseDTO(Product product) {
 
@@ -32,4 +39,19 @@ public class ProductMapper {
                 .productCategoryId(product.getCategory().getCategoryId())
                 .build();
     }
+
+    public Product mapProductResponseDTOToProduct(ProductResponseDTO productResponseDto , Category category , Owner owner) {
+        return Product.builder()
+                .name(productResponseDto.getName())
+                .brand(productResponseDto.getBrand())
+                .description(productResponseDto.getDescription())
+                .price(productResponseDto.getPrice())
+                .unitsInStock(productResponseDto.getUnitsInStock())
+                .imageUrl(productResponseDto.getImageUrl())
+                .category(category)
+                .owner(owner)
+                .build();
+    }
+
+
 }
