@@ -1,5 +1,88 @@
-<ul>
-    <li class="list-unstyled" *ngFor="let product of products">
-        {{product.name}}
-    </li>
-</ul>
+<div class="container">
+    <div class="row">
+        <section class="col-3">
+            Filters area
+            <h5 class="text-warning ms-3">Sort</h5>
+            <select class="form-select mb-4" (change)="onSortSelected($event)">
+                <option *ngFor="let sort of sortOptions"
+                [selected]="shopParams.sort === sort.value"
+                [value]="sort.value"
+                >
+                   {{sort.name}}
+                </option>
+            </select>
+
+
+            <h5 class="text-warning ms-3">Brands</h5>
+            <ul class="list-group my-3">
+                <li class="list-group-item" *ngFor="let owner of owners"
+                    [class.active]="owner.ownerId===shopParams.ownerId"
+                    [value]="owner.ownerId"
+                    (click)="onBrandSelected(1)">
+                    {{owner.ownerName}}
+                </li>
+            </ul>
+            <h5 class="text-warning ms-3">Categories</h5>
+            <ul class="list-group my-3">
+                <li class="list-group-item" *ngFor="let category of categories" 
+                    [class.active]="category.categoryId===shopParams.categoryId"
+                    [value]="category.categoryId"
+                    (click)="onCategorySelected(1)">
+                    {{category.categoryName}}
+                </li>
+            </ul>
+
+        </section>
+        <section class="col-9" >
+           
+            <div class="d-flex justify-content-between align-items-center pb-2" >
+                <div *ngIf="!totalCount">
+                <header>
+                    <span >
+                        <strong style="color: brown;font-size: large;align-content: center;">No items to display</strong>
+                    </span>
+                </header> 
+              </div>
+                <header>
+                   
+                    <span *ngIf="totalCount && totalCount > 0">Showing <strong>
+                        
+                       {{(shopParams.pageIndex-1)*shopParams.pageSize+ 1}}-
+                       
+                       {{shopParams.pageIndex * shopParams.pageSize > totalCount 
+                       ? totalCount : shopParams.pageSize*shopParams.pageIndex}}
+                    </strong> 
+                        
+                        of <strong>{{totalCount}}</strong> items </span>
+                </header>
+
+                <div class="d-flex mt-2">
+                    <input type="text" placeholder="Search" class="form-control me-2" #search>
+                    <button  (click)="onSearch()"  class="btn btn-outline-primary mx-2">Search</button>
+                    <button  (click)="onReset()"  class="btn btn-outline-success">Reset</button>
+                </div>
+            </div>
+
+            <div class="row row-cols-3 g-3 mb-4">
+                <div class="col" *ngFor="let product of products">
+                    <app-product-item [product]="product"></app-product-item>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-center"  *ngIf="totalCount && totalCount > 0">
+                <pagination 
+                    [boundaryLinks]="true"
+                    [totalItems]="totalCount"
+                    [itemsPerPage]="shopParams.pageSize"
+                    [maxSize]="5"
+                    (pageChanged)="onPageChanged($event)"
+                    previousText="&lsaquo;" 
+                    nextText="&rsaquo;"
+                    firstText="&laquo;" 
+                    lastText="&raquo;">
+
+                </pagination>
+            </div>
+        </section>
+    </div>
+</div>

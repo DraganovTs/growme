@@ -3,11 +3,12 @@ import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { NavBarComponent } from './core/nav-bar/nav-bar.component';
 import { ShopComponent } from './shop/shop.component';
+import { ProductItemComponent } from './shop/product-item/product-item.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet , NavBarComponent , CommonModule , ShopComponent],
+  imports: [RouterOutlet , NavBarComponent , CommonModule , ShopComponent , ProductItemComponent ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
