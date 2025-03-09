@@ -20,7 +20,7 @@ pagination?: IPagination<IProduct[]>;
     let params = new HttpParams();
     console.log("page size:");
     console.log(this.shopParams.pageSize);
-    if(this.shopParams.ownerId != '') params = params.append('brandId', this.shopParams.ownerId);
+    if(this.shopParams.ownerId != '') params = params.append('ownerId', this.shopParams.ownerId);
     if(this.shopParams.categoryId != '') params = params.append('categoryId', this.shopParams.categoryId);
     params = params.append('sort', this.shopParams.sort);
     
@@ -41,7 +41,7 @@ pagination?: IPagination<IProduct[]>;
     );
   }
   getCategories() {
-    // return this.http.get<ICategory[]>(environment.apiUrl +'categories');
+    return this.http.get<ICategory[]>(environment.apiUrl +'categories');
   }
   getOwners() {
     // return this.http.get<IOwner[]>(environment.apiUrl +'brands');

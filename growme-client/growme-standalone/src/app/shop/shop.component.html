@@ -13,7 +13,7 @@
             </select>
 
 
-            <h5 class="text-warning ms-3">Brands</h5>
+            <h5 class="text-warning ms-3">Owners</h5>
             <ul class="list-group my-3">
                 <li class="list-group-item" *ngFor="let owner of owners"
                     [class.active]="owner.ownerId===shopParams.ownerId"
@@ -27,7 +27,7 @@
                 <li class="list-group-item" *ngFor="let category of categories" 
                     [class.active]="category.categoryId===shopParams.categoryId"
                     [value]="category.categoryId"
-                    (click)="onCategorySelected(1)">
+                    (click)="onCategorySelected(category.categoryId)">
                     {{category.categoryName}}
                 </li>
             </ul>

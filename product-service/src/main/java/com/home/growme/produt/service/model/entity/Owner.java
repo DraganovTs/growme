@@ -1,6 +1,7 @@
 package com.home.growme.produt.service.model.entity;
 
 
+import com.home.growme.produt.service.model.dto.OwnerDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -29,5 +30,12 @@ public class Owner {
         if (ownerId == null) {
             ownerId = UUID.randomUUID(); // Manually generate UUID
         }
+    }
+
+    public OwnerDTO mapOwnerToOwnerDTO(Owner owner) {
+        return OwnerDTO.builder()
+                .ownerId(owner.getOwnerId())
+                .ownerName(owner.getOwnerName())
+                .build();
     }
 }
