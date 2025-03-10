@@ -25,7 +25,7 @@ pagination?: IPagination<IProduct[]>;
     params = params.append('sort', this.shopParams.sort);
     
     params = params.append('pageIndex', this.shopParams.pageIndex);
-   // if(this.shopParams?.pageSize === 'undefined')  this.shopParams.pageSize=environment.pageSize;
+   if(this.shopParams?.pageSize === 0)  this.shopParams.pageSize=environment.pageSize;
     params = params.append('pageSize', environment.pageSize);
     if(this.shopParams.search) params = params.append('search',this.shopParams.search.trim());
 
