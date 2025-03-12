@@ -17,6 +17,7 @@
     <modules>
         <module>product-service</module>
         <module>common-module</module>
+        <module>order-service</module>
     </modules>
 
     <properties>
