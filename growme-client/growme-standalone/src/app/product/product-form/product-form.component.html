@@ -1,0 +1,58 @@
+<div class="container">
+    <h2>{{ isEditMode ? 'Update Product' : 'Add Product' }}</h2>
+  
+    <form [formGroup]="productForm" (ngSubmit)="onSubmit()">
+      <div class="mb-3">
+        <label class="form-label">Name</label>
+        <input type="text" class="form-control" formControlName="name" required>
+      </div>
+  
+      <div class="mb-3">
+        <label class="form-label">Brand</label>
+        <input type="text" class="form-control" formControlName="brand">
+      </div>
+  
+      <div class="mb-3">
+        <label class="form-label">Description</label>
+        <textarea class="form-control" formControlName="description" required></textarea>
+      </div>
+  
+      <div class="mb-3">
+        <label class="form-label">Price</label>
+        <input type="number" class="form-control" formControlName="price" required>
+      </div>
+  
+      <div class="mb-3">
+        <label class="form-label">Units in Stock</label>
+        <input type="number" class="form-control" formControlName="unitsInStock" required>
+      </div>
+  
+      <div class="mb-3">
+        <label class="form-label">Image URL</label>
+        <input type="text" class="form-control" formControlName="imageUrl">
+      </div>
+  
+      <div class="mb-3">
+        <label class="form-label">Category</label>
+        <input type="text" class="form-control" formControlName="categoryName" required>
+      </div>
+  
+      <div class="mb-3">
+        <label class="form-label">Owner</label>
+        <input type="text" class="form-control" formControlName="ownerName" required>
+      </div>
+  
+      <div class="mb-3">
+        <label class="form-label">Owner ID</label>
+        <input type="text" class="form-control" formControlName="ownerId" required>
+      </div>
+  
+      <div class="mb-3">
+        <label class="form-label">Category ID</label>
+        <input type="text" class="form-control" formControlName="productCategoryId" required>
+      </div>
+  
+      <button type="submit" class="btn btn-primary">{{ isEditMode ? 'Update' : 'Add' }} Product</button>
+    </form>
+  </div>
+  

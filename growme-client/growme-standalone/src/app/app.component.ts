@@ -4,11 +4,14 @@ import { RouterOutlet } from '@angular/router';
 import { NavBarComponent } from './core/nav-bar/nav-bar.component';
 import { ShopComponent } from './shop/shop.component';
 import { ProductItemComponent } from './shop/product-item/product-item.component';
+import { ProductFormComponent } from './product/product-form/product-form.component';
+import { ProductListComponent } from './product/product-list/product-list.component';
+import { HomeComponent } from './home/home.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet , NavBarComponent , CommonModule , ShopComponent , ProductItemComponent ],
+  imports: [RouterOutlet , NavBarComponent , CommonModule , ShopComponent , ProductItemComponent , ProductFormComponent, ProductListComponent , HomeComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
