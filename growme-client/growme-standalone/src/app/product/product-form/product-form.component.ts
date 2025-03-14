@@ -3,75 +3,81 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
 import { IProduct } from '../../shared/model/product';
-import { ProductService } from '../product-service'
+import { ProductService } from '../../services/product-service'
 import { CommonModule } from '@angular/common';
+import { CategoryService } from '../../services/category-service';
 
 @Component({
-  selector: 'app-product-form',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule],
+  imports: [CommonModule, ReactiveFormsModule],
+  selector: 'app-product-form',
   templateUrl: './product-form.component.html',
-  styleUrl: './product-form.component.scss'
+  styleUrls: ['./product-form.component.css'],
 })
 export class ProductFormComponent implements OnInit {
-  productForm: FormGroup;
+  productForm!: FormGroup;
   isEditMode = false;
-  productId: string | null = null;
+  categories: any[] = []; 
+  ownerId = 1; 
 
   constructor(
     private fb: FormBuilder,
     private productService: ProductService,
+    private categoryService: CategoryService,
     private route: ActivatedRoute,
     private router: Router
-  ) {
+  ) {}
+
+  ngOnInit(): void {
+    this.initializeForm();
+    this.loadCategories();
+
+    const productId = this.route.snapshot.paramMap.get('id');
+    if (productId) {
+      this.isEditMode = true;
+      this.loadProduct(productId);
+    }
+  }
+
+  initializeForm(): void {
     this.productForm = this.fb.group({
       name: ['', Validators.required],
       brand: [''],
       description: ['', Validators.required],
-      price: [0, [Validators.required, Validators.min(0)]],
-      unitsInStock: [0, [Validators.required, Validators.min(0)]],
+      price: [0, Validators.required],
+      unitsInStock: [0, Validators.required],
       imageUrl: [''],
-      categoryName: ['', Validators.required],
-      ownerName: ['', Validators.required],
-      ownerId: ['', Validators.required],
-      productCategoryId: ['', Validators.required]
+      categoryId: ['', Validators.required], 
+      ownerName: ['John Doe', Validators.required], 
     });
   }
 
-  ngOnInit(): void {
-    this.route.paramMap.subscribe(params => {
-      this.productId = params.get('id');
-      if (this.productId) {
-        this.isEditMode = true;
-        this.loadProduct();
+  loadCategories(): void {
+    this.categoryService.getCategories().subscribe((data) => {
+      this.categories = data;
+    });
+  }
+
+  loadProduct(productId: string): void {
+    this.productService.getProductById(productId).subscribe((product) => {
+      this.productForm.patchValue(product);
+    });
+  }
+
+  onSubmit(): void {
+    if (this.productForm.valid) {
+      const productData = this.productForm.value;
+  
+      if (this.isEditMode) {
+        this.productService.updateProduct(productData.id, productData).subscribe(() => {
+          this.router.navigate(['/products']);
+        });
+      } else {
+        this.productService.addProduct(productData).subscribe(() => {
+          this.router.navigate(['/products']);
+        });
       }
-    });
-  }
-
-  loadProduct() {
-    if (!this.productId) return;
-
-    this.productService.getProductById(this.productId).subscribe({
-      next: product => this.productForm.patchValue(product),
-      error: err => console.error('Error fetching product', err)
-    });
-  }
-
-  onSubmit() {
-    if (this.productForm.invalid) return;
-
-    const product: IProduct = this.productForm.value;
-
-    if (this.isEditMode && this.productId) {
-      this.productService.updateProduct(this.productId, product).subscribe({
-        next: () => this.router.navigate(['/products']),
-        error: err => console.error('Error updating product', err)
-      });
-    } else {
-      this.productService.addProduct(product).subscribe({
-        next: () => this.router.navigate(['/products']),
-        error: err => console.error('Error adding product', err)
-      });
     }
   }
+  
 }

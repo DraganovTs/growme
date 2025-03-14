@@ -1,8 +1,10 @@
 package com.home.growme.produt.service.service.impl;
 
+import com.home.growme.produt.service.mapper.CategoryMapper;
 import com.home.growme.produt.service.model.dto.CategoryDTO;
 import com.home.growme.produt.service.model.dto.CategoryWhitProductsDTO;
 import com.home.growme.produt.service.model.entity.Category;
+import com.home.growme.produt.service.repository.CategoryRepository;
 import com.home.growme.produt.service.service.CategoryService;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +13,15 @@ import java.util.UUID;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
+
+    private final CategoryRepository categoryRepository;
+    private final CategoryMapper categoryMapper;
+
+    public CategoryServiceImpl(CategoryRepository categoryRepository, CategoryMapper categoryMapper) {
+        this.categoryRepository = categoryRepository;
+        this.categoryMapper = categoryMapper;
+    }
+
     @Override
     public CategoryDTO createCategory(CategoryDTO categoryDto) {
         return null;
@@ -28,7 +39,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public List<CategoryDTO> getAllCategories() {
-        return List.of();
+        return categoryRepository.findAll().stream().map(categoryMapper::mapCategoryToCategoryDTO).toList();
     }
 
     @Override

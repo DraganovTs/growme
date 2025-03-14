@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { ShopService } from './shop.service';
+import { ShopService } from '../services/shop.service';
 import { ICategory, IOwner, IProduct } from '../shared/model/product';
 import { CommonModule } from '@angular/common';
 import { PaginationModule } from 'ngx-bootstrap/pagination';

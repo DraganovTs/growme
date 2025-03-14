@@ -32,27 +32,25 @@
         <input type="text" class="form-control" formControlName="imageUrl">
       </div>
   
+      <!-- Category Dropdown -->
       <div class="mb-3">
         <label class="form-label">Category</label>
-        <input type="text" class="form-control" formControlName="categoryName" required>
+        <select class="form-control" formControlName="categoryId">
+          <option *ngFor="let category of categories" [value]="category.id">
+            {{ category.name }}
+          </option>
+        </select>
       </div>
   
+      <!-- Owner (Read-Only for Now) -->
       <div class="mb-3">
         <label class="form-label">Owner</label>
-        <input type="text" class="form-control" formControlName="ownerName" required>
+        <input type="text" class="form-control" formControlName="ownerName" required readonly>
       </div>
   
-      <div class="mb-3">
-        <label class="form-label">Owner ID</label>
-        <input type="text" class="form-control" formControlName="ownerId" required>
-      </div>
-  
-      <div class="mb-3">
-        <label class="form-label">Category ID</label>
-        <input type="text" class="form-control" formControlName="productCategoryId" required>
-      </div>
-  
-      <button type="submit" class="btn btn-primary">{{ isEditMode ? 'Update' : 'Add' }} Product</button>
+      <button type="submit" class="btn btn-primary">
+        {{ isEditMode ? 'Update' : 'Add' }} Product
+      </button>
     </form>
   </div>
   
