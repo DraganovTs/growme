@@ -17,6 +17,8 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
+@Builder
+@AllArgsConstructor
 public class User {
 
     @Id
@@ -27,24 +29,26 @@ public class User {
     @Size(min = 4, max = 20, message = "Username must be between 4 and 20 characters")
     private String username;
 
-
-    @Column(nullable = false)
-    @NotBlank(message = "First name is required")
-    @Size(max = 50, message = "First name cannot exceed 50 characters")
-    private String firstName;
-
-    @Column(nullable = false)
-    @NotBlank(message = "Last name is required")
-    @Size(max = 50, message = "Last name cannot exceed 50 characters")
-    private String lastName;
-
     @Column(nullable = false, unique = true)
     @NotBlank(message = "Email is required")
     @Email(message = "Invalid email format")
     private String email;
 
-    @Column(nullable = false, unique = true)
-    @NotBlank(message = "Phone number is required")
+    @Column(nullable = false)
+    @NotBlank(message = "Role is required")
+    @Pattern(regexp = "^(BUYER|SELLER|ADMIN)$", message = "Invalid role. Allowed values: BUYER, SELLER, ADMIN")
+    private String role;
+
+
+    @Column(nullable = true)
+    @Size(max = 50, message = "First name cannot exceed 50 characters")
+    private String firstName;
+
+    @Column(nullable = true)
+    @Size(max = 50, message = "Last name cannot exceed 50 characters")
+    private String lastName;
+
+    @Column(nullable = true, unique = true)
     @Pattern(regexp = "^\\+?[0-9]{10,15}$", message = "Invalid phone number format")
     private String phone;
 
@@ -53,22 +57,16 @@ public class User {
     private Address address;
 
     @Column(nullable = false)
-    @NotBlank(message = "Role is required")
-    @Pattern(regexp = "^(BUYER|SELLER|ADMIN)$", message = "Invalid role. Allowed values: BUYER, SELLER, ADMIN")
-    private String role;
-
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private AccountStatus accountStatus;
+    private AccountStatus accountStatus = AccountStatus.PENDING;
 
     @Column(nullable = false, updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt;
+    private Date createdAt = new Date();
 
     @Column(nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
-    private Date updatedAt;
-
+    private Date updatedAt = new Date();
 
     @ElementCollection
     @CollectionTable(name = "user_owned_products", joinColumns = @JoinColumn(name = "user_id"))
