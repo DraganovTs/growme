@@ -30,31 +30,31 @@
 
     <!-- Cart and User Actions -->
     <div class="d-flex align-items-center">
-        <!-- Cart Icon with Badge -->
+        <!-- Cart Icon -->
         <a routerLink="/" class="position-relative me-4 text-decoration-none">
             <i class="fa fa-shopping-cart fa-2x text-dark hover-scale"></i>
-            <!-- <div *ngIf="(this.cart$ | async) as cart" 
-                 class="cart-badge bg-primary text-white rounded-circle d-flex align-items-center justify-content-center">
-                {{cart.items.length}}
-            </div> -->
         </a>
-
-        <!-- Login/Logout and User Welcome -->
-        <!-- <ng-container *ngIf="!loggedIn">
-            <button (click)="login()" class="btn btn-outline-primary me-3 hover-scale">
-                Login
+    
+        <!-- Login & Register -->
+        <ng-container *ngIf="!isAuthenticated">
+            <button (click)="login()" class="btn btn-outline-primary me-3">Login</button>
+            <button (click)="showRegisterOptions()" class="btn btn-primary">Register</button>
+        </ng-container>
+    
+        <!-- User Info & Logout -->
+        <ng-container *ngIf="isAuthenticated">
+            <span class="me-3">Welcome, <strong>{{ username }}</strong></span>
+            <button (click)="logout()" class="btn btn-outline-danger">
+                <i class="fa fa-sign-out"></i> Logout
             </button>
-        </ng-container> -->
-     
-        <!-- <ng-container *ngIf="loggedIn">
-            <div class="me-4">
-                <strong class="text-dark">
-                    Welcome, <span class="text-primary">{{username}}</span>
-                </strong>
-            </div>
-            <button (click)="logout()" class="btn btn-outline-danger hover-scale">
-                <i class="fa fa-sign-out me-2"></i> Logout
-            </button>
-        </ng-container> -->
+        </ng-container>
     </div>
 </header>
+
+<div class="modal-backdrop" *ngIf="showRegisterModal"></div>
+<div class="modal" *ngIf="showRegisterModal">
+    <h3>Select your account type</h3>
+    <button (click)="register('BUYER')" class="btn btn-success">Register as Buyer</button>
+    <button (click)="register('SELLER')" class="btn btn-primary">Register as Seller</button>
+    <button (click)="showRegisterModal = false" class="btn btn-secondary">Cancel</button>
+</div>
