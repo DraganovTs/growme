@@ -7,17 +7,24 @@ spring:
   cloud:
     gateway:
       default-filters:
-        - TokenRelay
+        - name: TokenRelay
         - name: AddRequestHeader
           args:
-            X-User-ID: "{jwt:sub}"
-            X-User-Email: "{jwt:email}"
-            X-User-Role: "{jwt:realm_access.roles[0]}"
+            name: X-User-ID
+            value: "{jwt:sub}"
+        - name: AddRequestHeader
+          args:
+            name: X-User-Email
+            value: "{jwt:email}"
+        - name: AddRequestHeader
+          args:
+            name: X-User-Role
+            value: "{jwt:realm_access.roles[0]}"
       routes:
         - id: user-service
           uri: http://localhost:8081
           predicates:
-           - Path=/users/**
+            - Path=/users/**
         - id: product-service
           uri: http://localhost:8079
           predicates:

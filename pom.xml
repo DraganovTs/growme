@@ -27,26 +27,13 @@
         <mysql.connector.java.version>8.0.32</mysql.connector.java.version>
         <project.lombok.version>1.18.34</project.lombok.version>
         <jakarta.validation.api.version>3.1.1</jakarta.validation.api.version>
-        <spring-cloud-starter-gateway.verseion>4.2.0</spring-cloud-starter-gateway.verseion>
+        <spring-cloud-starter-gateway.version>4.2.0</spring-cloud-starter-gateway.version>
+        <spring.cloud.dependencies.version>2024.0.0</spring.cloud.dependencies.version>
+        <spring-security-oauth2-client.version>6.4.3</spring-security-oauth2-client.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-dependencies</artifactId>
-                <version>${spring.boot.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-dependencies</artifactId>
-                <version>2023.0.5</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
 
             <dependency>
                 <groupId>org.springframework.boot</groupId>
@@ -91,7 +78,7 @@
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-starter-gateway</artifactId>
-                <version>${spring-cloud-starter-gateway.verseion}</version>
+                <version>${spring-cloud-starter-gateway.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
@@ -99,9 +86,22 @@
                 <version>${spring.boot.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-oauth2-client</artifactId>
+                <version>${spring-security-oauth2-client.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-actuator</artifactId>
+                <artifactId>spring-boot-starter-actuator</artifactId>
                 <version>${spring.boot.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring.cloud.dependencies.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
 
 
