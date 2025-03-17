@@ -51,10 +51,12 @@
     </div>
 </header>
 
-<div class="modal-backdrop" *ngIf="showRegisterModal"></div>
-<div class="modal" *ngIf="showRegisterModal">
-    <h3>Select your account type</h3>
-    <button (click)="register('BUYER')" class="btn btn-success">Register as Buyer</button>
-    <button (click)="register('SELLER')" class="btn btn-primary">Register as Seller</button>
-    <button (click)="showRegisterModal = false" class="btn btn-secondary">Cancel</button>
+<div *ngIf="showRegisterModal" class="modal-backdrop d-flex justify-content-center align-items-center">
+    <div class="modal-content p-4 bg-white rounded shadow">
+        <h2>Select Account Type</h2>
+        <button (click)="register('BUYER')" class="btn btn-primary my-2">Register as Buyer</button>
+        <button (click)="register('SELLER')" class="btn btn-secondary my-2">Register as Seller</button>
+        <button (click)="closeModal()" class="btn btn-danger">Close</button>
+    </div>
 </div>
+
