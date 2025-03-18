@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping(value = "/api/users", produces = MediaType.APPLICATION_JSON_VALUE)
 public class UserController {
@@ -30,4 +31,6 @@ public class UserController {
         UserDTO updatedUser = userService.updateUser(id, userUpdate);
         return ResponseEntity.ok(updatedUser);
     }
+
+
 }
