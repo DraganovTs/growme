@@ -1,112 +1,122 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
+import { BehaviorSubject } from 'rxjs';
+import { environment } from '../environment/environments';
 import Keycloak from 'keycloak-js';
+import { isPlatformBrowser } from '@angular/common';
 
-@Injectable({
-    providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class KeycloakService {
-    private keycloak = new Keycloak({
-        url: 'http://localhost:7080',  
-        realm: 'grow-me',            
-        clientId: 'grow-me-client'
-          
-    });
+  private keycloak: Keycloak | null = null;
+  private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
+  public isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
+  private isBrowser: boolean; 
 
-    constructor() {}
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    @Inject(PLATFORM_ID) private platformId: object 
+  ) {
+    this.isBrowser = isPlatformBrowser(this.platformId);
 
-    async init(): Promise<void> {
-        try {
-            await this.keycloak.init({
-                onLoad: 'check-sso',
-                silentCheckSsoRedirectUri: window.location.origin + '/assets/silent-check-sso.html',
-                checkLoginIframe: false, 
-                pkceMethod: 'S256' ,
-                redirectUri: 'http://localhost:4200/'    
-            });
-            console.log('Keycloak Initialized:', this.keycloak.authenticated);
-        } catch (error) {
-            console.error('Keycloak init failed', error);
-        }
+    if (this.isBrowser) {
+      const storedAuth = localStorage.getItem('isAuthenticated');
+      if (storedAuth) {
+        this.isAuthenticatedSubject.next(JSON.parse(storedAuth));
+      }
     }
+  }
 
-    login() {
-        this.keycloak.login();
-    }
-
-    logout() {
-        this.keycloak.logout();
-    }
-
-    getToken() {
-        return this.keycloak.token;
-    }
-
-    isAuthenticated() {
-        return this.keycloak.authenticated;
-    }
-
-    getUsername() {
-        return this.keycloak.tokenParsed?.['preferred_username'];
-    }
-
-    async register(role: 'BUYER' | 'SELLER') {
-        localStorage.setItem('selectedRole', role);
-    
-        const redirectUri = encodeURIComponent('http://localhost:4200/auth/callback'); 
-        const codeVerifier = this.generateCodeVerifier();
-        const codeChallenge = await this.generateCodeChallenge(codeVerifier);
-    
-       
-        localStorage.setItem('pkce_code_verifier', codeVerifier);
-    
-        const registrationUrl = `${this.keycloak.authServerUrl}/realms/${this.keycloak.realm}/protocol/openid-connect/registrations` +
-            `?client_id=${this.keycloak.clientId}` +
-            `&response_type=code` +
-            `&scope=openid` +
-            `&redirect_uri=${redirectUri}` +
-            `&code_challenge=${codeChallenge}` +
-            `&code_challenge_method=S256`;
-    
-        window.location.href = registrationUrl;
-    }
-    
-   
-    generateCodeVerifier(): string {
-        const array = new Uint8Array(32);
-        crypto.getRandomValues(array);
-        return btoa(String.fromCharCode.apply(null, [...array]))
-            .replace(/\+/g, '-')
-            .replace(/\//g, '_')
-            .replace(/=+$/, '');
-    }
-    
+  async init(): Promise<void> {
+    if (!this.isBrowser) return; 
   
-    async generateCodeChallenge(codeVerifier: string): Promise<string> {
-        const encoder = new TextEncoder();
-        const data = encoder.encode(codeVerifier);
-        const digest = await crypto.subtle.digest('SHA-256', data);
-        return btoa(String.fromCharCode(...new Uint8Array(digest)))
-            .replace(/\+/g, '-')
-            .replace(/\//g, '_')
-            .replace(/=+$/, '');
+    this.keycloak = new Keycloak({
+      url: environment.keycloakUrl,
+      realm: environment.keycloakRealm,
+      clientId: environment.keycloakClientId,
+    });
+  
+    try {
+      const authenticated = await this.keycloak.init({ onLoad: 'check-sso', checkLoginIframe: false }); 
+      this.isAuthenticatedSubject.next(authenticated);
+      
+      if (this.isBrowser) {
+        localStorage.setItem('isAuthenticated', JSON.stringify(authenticated));
+      }
+  
+      if (authenticated) {
+        console.log('User is logged in');
+        this.startTokenRefresh();
+      } else {
+        console.log('User is NOT logged in');
+      }
+    } catch (error) {
+      console.error('Keycloak initialization failed:', error);
+      this.isAuthenticatedSubject.next(false);
+      if (this.isBrowser) {
+        localStorage.removeItem('isAuthenticated');
+      }
     }
-    
+  }
+  
 
-    private async handleRoleAssignment() {
-        const selectedRole = localStorage.getItem('selectedRole');
+  getToken(): string | null {
+    return this.keycloak?.token || null;
+  }
 
-        if (selectedRole) {
-            console.log(`Assigning role: ${selectedRole}`);
-            localStorage.removeItem('selectedRole'); 
+  getUserRoles(): string[] {
+    return this.keycloak?.tokenParsed?.realm_access?.roles || [];
+  }
 
-            await fetch('http://localhost:8081/users/assign-role', { 
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${this.getToken()}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ role: selectedRole })
-            }).catch(err => console.error('Role assignment failed', err));
+  async logout(): Promise<void> {
+    if (this.keycloak) {
+      try {
+        await this.keycloak.logout();
+        this.isAuthenticatedSubject.next(false);
+        if (this.isBrowser) {
+          localStorage.removeItem('isAuthenticated');
         }
+        this.router.navigate(['/login']);
+      } catch (error) {
+        console.error('Logout failed', error);
+      }
     }
+  }
+
+  isAuthenticated(): boolean {
+    return this.isAuthenticatedSubject.value;
+  }
+
+  getUsername(): string | null {
+    return this.keycloak?.tokenParsed?.['preferred_username'] || null;
+  }
+
+  async login(): Promise<void> {
+    if (this.keycloak) {
+      await this.keycloak.login();
+    }
+  }
+
+  async register(role?: string): Promise<void> {
+    if (this.keycloak) {
+      await this.keycloak.register(); 
+    }
+  }
+
+  private startTokenRefresh(): void {
+    if (!this.keycloak) return;
+
+    setInterval(async () => {
+      try {
+        if (this.keycloak) {
+          await this.keycloak.updateToken(60); 
+          console.log('Token refreshed successfully');
+        }
+      } catch (error) {
+        console.error('Failed to refresh token', error);
+        this.logout();
+      }
+    }, 60000);
+  }
 }

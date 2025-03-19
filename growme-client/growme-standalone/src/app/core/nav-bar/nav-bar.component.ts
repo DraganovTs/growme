@@ -18,7 +18,7 @@ export class NavBarComponent {
   constructor(private keycloakService: KeycloakService, private cdRef: ChangeDetectorRef) {
     this.isAuthenticated = !!this.keycloakService.isAuthenticated();
     if (this.isAuthenticated) {
-        this.username = this.keycloakService.getUsername();
+    this.username = this.keycloakService.getUsername() ?? '';
     }
 }
 
