@@ -36,6 +36,10 @@
             <groupId>jakarta.validation</groupId>
             <artifactId>jakarta.validation-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.home</groupId>
+            <artifactId>common-module</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

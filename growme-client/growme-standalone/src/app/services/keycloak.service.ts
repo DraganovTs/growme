@@ -29,7 +29,7 @@ export class KeycloakService {
   }
 
   async init(): Promise<void> {
-    if (!this.isBrowser) return; 
+    if (!this.isBrowser) return;
   
     this.keycloak = new Keycloak({
       url: environment.keycloakUrl,
@@ -38,15 +38,25 @@ export class KeycloakService {
     });
   
     try {
-      const authenticated = await this.keycloak.init({ onLoad: 'check-sso', checkLoginIframe: false }); 
+      const authenticated = await this.keycloak.init({ onLoad: 'check-sso', checkLoginIframe: false });
       this.isAuthenticatedSubject.next(authenticated);
       
       if (this.isBrowser) {
         localStorage.setItem('isAuthenticated', JSON.stringify(authenticated));
       }
   
-      if (authenticated) {
+      if (authenticated && this.keycloak.tokenParsed) {
         console.log('User is logged in');
+  
+        
+        const userInfo = {
+            userId: this.keycloak.tokenParsed.sub,
+            username: this.keycloak.tokenParsed['preferred_username'],
+            email: this.keycloak.tokenParsed['email'],
+            roles: this.keycloak.tokenParsed.realm_access?.roles || [], 
+          };
+  
+        this.syncUserToBackend(userInfo);
         this.startTokenRefresh();
       } else {
         console.log('User is NOT logged in');
@@ -60,6 +70,12 @@ export class KeycloakService {
     }
   }
   
+  private syncUserToBackend(userInfo: any) {
+    this.http.post(`${environment.userApi}`, userInfo).subscribe({
+      next: (response) => console.log('User synced successfully:', response),
+      error: (error) => console.error('Failed to sync user:', error),
+    });
+  }
 
   getToken(): string | null {
     return this.keycloak?.token || null;

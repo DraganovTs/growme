@@ -4,6 +4,8 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 @Builder
 public class KeycloakUserDTO {
@@ -14,5 +16,5 @@ public class KeycloakUserDTO {
     @NotBlank(message = "Email is required")
     private String email;
     @NotBlank(message = "Role is required")
-    private String role;
+    private List<String> roles;
 }
