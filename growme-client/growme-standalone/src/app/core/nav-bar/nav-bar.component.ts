@@ -6,40 +6,27 @@ import { KeycloakService } from '../../services/keycloak.service';
 @Component({
   selector: 'app-nav-bar',
   standalone: true,
-  imports: [RouterLinkActive , CommonModule , RouterModule , RouterLinkActive , RouterLink , NgIf ],
+  imports: [RouterLinkActive, CommonModule, RouterModule, RouterLink, NgIf],
   templateUrl: './nav-bar.component.html',
   styleUrl: './nav-bar.component.scss'
 })
 export class NavBarComponent {
   isAuthenticated = false;
-  username:  string = '';
-  showRegisterModal: boolean = false;
+  username: string = '';
+  showRegisterModal = false;
 
   constructor(private keycloakService: KeycloakService, private cdRef: ChangeDetectorRef) {
-    this.isAuthenticated = !!this.keycloakService.isAuthenticated();
-    if (this.isAuthenticated) {
-    this.username = this.keycloakService.getUsername() ?? '';
-    }
-}
+    this.keycloakService.isAuthenticated$.subscribe(authenticated => {
+      this.isAuthenticated = authenticated;
+      if (this.isAuthenticated) {
+        this.username = this.keycloakService.getUsername() ?? '';
+      }
+    });
+  }
 
   login() { this.keycloakService.login(); }
   logout() { this.keycloakService.logout(); }
-
-
-
-
-  showRegisterOptions() {
-    this.showRegisterModal = true;
-    console.log('Modal should open:', this.showRegisterModal);
-  }
-
-register(role: 'BUYER' | 'SELLER') {
-    console.log(`Registering as ${role}`);
-    this.keycloakService.register(role);
-    this.showRegisterModal = false;
-}
-
-closeModal() {
-  this.showRegisterModal = false;
-}
+  showRegisterOptions() { this.showRegisterModal = true; }
+  register(role: 'BUYER' | 'SELLER') { this.keycloakService.register(role); this.showRegisterModal = false; }
+  closeModal() { this.showRegisterModal = false; }
 }
