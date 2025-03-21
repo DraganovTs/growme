@@ -3,12 +3,12 @@ package com.home.user.service.mapper;
 
 import com.home.user.service.exception.NotValidUserRoleException;
 import com.home.user.service.model.dto.KeycloakUserDTO;
+import com.home.user.service.model.entity.Address;
 import com.home.user.service.model.entity.User;
+import com.home.user.service.model.enums.AccountStatus;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Component
 public class UserMapper {
@@ -18,7 +18,13 @@ public class UserMapper {
                 .userId(UUID.fromString(keycloakUserDTO.getUserId()))
                 .username(keycloakUserDTO.getUsername())
                 .email(keycloakUserDTO.getEmail())
-                .role(extractValidRole(keycloakUserDTO.getRoles()))
+                .role("USER_PENDING")
+                .accountStatus(AccountStatus.PENDING)
+                .address(new Address())
+                .createdAt(new Date())
+                .updatedAt(new Date())
+                .ownedProductIds(new ArrayList<>())
+                .purchasedOrderIds(new ArrayList<>())
                 .build();
     }
 

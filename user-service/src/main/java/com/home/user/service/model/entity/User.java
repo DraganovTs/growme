@@ -1,6 +1,7 @@
 package com.home.user.service.model.entity;
 
 import com.home.user.service.model.enums.AccountStatus;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
@@ -36,7 +37,7 @@ public class User {
 
     @Column(nullable = false)
     @NotBlank(message = "Role is required")
-    @Pattern(regexp = "^(BUYER|SELLER|ADMIN)$", message = "Invalid role. Allowed values: BUYER, SELLER, ADMIN")
+    @Pattern(regexp = "^(BUYER|SELLER|ADMIN|USER_PENDING)$", message = "Invalid role. Allowed values: BUYER, SELLER, ADMIN")
     private String role;
 
 

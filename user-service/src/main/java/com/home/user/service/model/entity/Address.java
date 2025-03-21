@@ -12,22 +12,22 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class Address {
-    @Column(name = "street", nullable = false)
+    @Column(name = "street")
     @NotBlank(message = "Street is required")
     @Size(max = 100, message = "Street name cannot exceed 100 characters")
     private String street;
 
-    @Column(name = "city", nullable = false)
+    @Column(name = "city")
     @NotBlank(message = "City is required")
     @Size(max = 50, message = "City name cannot exceed 50 characters")
     private String city;
 
-    @Column(name = "state", nullable = false)
+    @Column(name = "state")
     @NotBlank(message = "State is required")
     @Size(max = 50, message = "State name cannot exceed 50 characters")
     private String state;
 
-    @Column(name = "zip_code", nullable = false)
+    @Column(name = "zip_code")
     @NotBlank(message = "Zip code is required")
     @Pattern(regexp = "^[0-9]{5}(-[0-9]{4})?$", message = "Invalid zip code format")
     private String zipCode;
