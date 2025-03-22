@@ -20,7 +20,7 @@ public class UserMapper {
                 .email(keycloakUserDTO.getEmail())
                 .role("USER_PENDING")
                 .accountStatus(AccountStatus.PENDING)
-                .address(new Address())
+                .address(null)
                 .createdAt(new Date())
                 .updatedAt(new Date())
                 .ownedProductIds(new ArrayList<>())

@@ -41,7 +41,7 @@ export class KeycloakService {
       if (authenticated && this.keycloak.tokenParsed) {
         const userInfo = {
           userId: this.keycloak.tokenParsed.sub,
-          username: this.keycloak.tokenParsed['username'],
+          username: this.keycloak.tokenParsed['preferred_username'],
           email: this.keycloak.tokenParsed['email'],
           roles: this.keycloak.tokenParsed.realm_access?.roles || [], 
         };
