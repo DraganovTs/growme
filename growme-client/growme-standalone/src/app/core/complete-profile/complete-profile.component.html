@@ -1,0 +1,68 @@
+<div class="container mt-5">
+    <div class="card shadow-lg border-0 p-4">
+      <h2 class="text-center text-primary fw-bold mb-4">Complete Your Profile</h2>
+  
+      <form (submit)="submitProfile()" class="row g-3">
+        <!-- First Name -->
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">First Name</label>
+          <input type="text" class="form-control" [(ngModel)]="userProfile.firstName" name="firstName" required />
+        </div>
+  
+        <!-- Last Name -->
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Last Name</label>
+          <input type="text" class="form-control" [(ngModel)]="userProfile.lastName" name="lastName" required />
+        </div>
+  
+        <!-- Phone -->
+        <div class="col-md-12">
+          <label class="form-label fw-semibold">Phone</label>
+          <input type="text" class="form-control" [(ngModel)]="userProfile.phone" name="phone" required />
+        </div>
+  
+        <!-- Address Section -->
+        <h3 class="text-secondary mt-4">Address</h3>
+  
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Street</label>
+          <input type="text" class="form-control" [(ngModel)]="userProfile.address.street" name="street" />
+        </div>
+  
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">City</label>
+          <input type="text" class="form-control" [(ngModel)]="userProfile.address.city"  name="city"/>
+        </div>
+  
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">State</label>
+          <input type="text" class="form-control" [(ngModel)]="userProfile.address.state"  name="state"/>
+        </div>
+  
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Zip Code</label>
+          <input type="text" class="form-control" [(ngModel)]="userProfile.address.zipCode" name="zipCode" />
+        </div>
+  
+        <!-- Role Selection -->
+        <h3 class="text-secondary mt-4">Select Your Role(s)</h3>
+        <div class="col-md-12">
+          <div class="form-check" *ngFor="let role of availableRoles">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              [value]="role"
+              [checked]="userProfile.roles.includes(role)"
+              (change)="toggleRole(role)" />
+            <label class="form-check-label">{{ role }}</label>
+          </div>
+        </div>
+  
+        <!-- Submit Button -->
+        <div class="col-12 text-center">
+          <button type="submit" class="btn btn-primary px-4 py-2 fw-bold">Update Profile</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  

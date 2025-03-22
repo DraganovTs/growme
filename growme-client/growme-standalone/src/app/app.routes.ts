@@ -1,10 +1,12 @@
 import { Routes } from '@angular/router';
 import { HomeComponent } from './home/home.component';
 import { AuthCallbackComponent } from './auth/auth-callback/auth-callback.component';
+import { CompleteProfileComponent } from './core/complete-profile/complete-profile.component';
 
 export const routes: Routes = [
     {path: '' , redirectTo: 'welcome', pathMatch: 'full'},
     {path: 'welcome', component: HomeComponent},
+    { path: 'complete-profile', component: CompleteProfileComponent },
 
     {path: 'shop'
         ,loadChildren: () => import('./shop/shop.routes').then(r => r.SHOP_ROUTES)},
@@ -14,5 +16,7 @@ export const routes: Routes = [
         },
         { path: 'auth/callback', component: AuthCallbackComponent },
         { path: '**', redirectTo: '' },
+       
+
     
 ];

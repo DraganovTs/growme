@@ -36,7 +36,7 @@
         <!-- Authentication Actions -->
         <ng-container *ngIf="!isAuthenticated">
             <button (click)="login()" class="btn btn-outline-primary me-3">Login</button>
-            <button (click)="showRegisterOptions()" class="btn btn-primary">Register</button>
+            <button (click)="register()" class="btn btn-primary">Register</button>
         </ng-container>
     
         <ng-container *ngIf="isAuthenticated">
@@ -48,12 +48,3 @@
     </div>
 </header>
 
-<!-- Registration Modal -->
-<div *ngIf="showRegisterModal" class="modal-backdrop d-flex justify-content-center align-items-center">
-    <div class="modal-content p-4 bg-white rounded shadow">
-        <h2>Select Account Type</h2>
-        <button (click)="register('BUYER')" class="btn btn-primary my-2">Register as Buyer</button>
-        <button (click)="register('SELLER')" class="btn btn-secondary my-2">Register as Seller</button>
-        <button (click)="closeModal()" class="btn btn-danger">Close</button>
-    </div>
-</div>

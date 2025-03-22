@@ -1,9 +1,11 @@
 package com.home.user.service.service.impl;
 
+import com.home.user.service.exception.UserNotFoundException;
 import com.home.user.service.mapper.UserMapper;
 import com.home.user.service.model.dto.KeycloakUserDTO;
 import com.home.user.service.model.dto.UserDTO;
 import com.home.user.service.model.entity.User;
+import com.home.user.service.model.enums.AccountStatus;
 import com.home.user.service.repository.UserRepository;
 import com.home.user.service.service.UserService;
 import org.springframework.stereotype.Service;
@@ -24,8 +26,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public KeycloakUserDTO syncUserFromKeycloak(KeycloakUserDTO keycloakUserDTO) {
-        User user = userMapper.mapKeyCloakDtoToUser(keycloakUserDTO);
-        return userMapper.mapUserToKeycloakDto(userRepository.save(user));
+        User existingUser = userRepository.findById(UUID.fromString(keycloakUserDTO.getUserId()))
+                .orElse(null);
+
+        if (existingUser == null) {
+            User newUser = userMapper.mapKeyCloakDtoToUser(keycloakUserDTO);
+            return userMapper.mapUserToKeycloakDto(userRepository.save(newUser));
+
+        }
+        return userMapper.mapUserToKeycloakDto(existingUser);
     }
 
     @Override
@@ -37,7 +46,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO updateUser(UUID id, UserDTO userDTO) {
-        return null;
+        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found"));
+        user = userMapper.updateUserInitialAccount(user,userDTO);
+        return userMapper.mapUserToUserDTO(userRepository.save(user));
     }
 
     @Override

@@ -16,7 +16,12 @@ public class UserExceptionHandler {
 
 
     @ExceptionHandler(NotValidUserRoleException.class)
-    public ResponseEntity<ErrorResponseDTO> handleProductNotFoundException(NotValidUserRoleException exception, WebRequest webRequest){
+    public ResponseEntity<ErrorResponseDTO> handleNotValidUserRoleException(NotValidUserRoleException exception, WebRequest webRequest){
+        return buildErrorResponse(exception, webRequest, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ErrorResponseDTO> handleUserNotFoundException(UserNotFoundException exception, WebRequest webRequest){
         return buildErrorResponse(exception, webRequest, HttpStatus.NOT_FOUND);
     }
 

@@ -3,6 +3,7 @@ package com.home.user.service.mapper;
 
 import com.home.user.service.exception.NotValidUserRoleException;
 import com.home.user.service.model.dto.KeycloakUserDTO;
+import com.home.user.service.model.dto.UserDTO;
 import com.home.user.service.model.entity.Address;
 import com.home.user.service.model.entity.User;
 import com.home.user.service.model.enums.AccountStatus;
@@ -33,7 +34,7 @@ public class UserMapper {
                 .userId(user.getUserId().toString())
                 .username(user.getUsername())
                 .email(user.getEmail())
-                .roles(user.getRole().lines().toList())
+                .accountStatus(user.getAccountStatus())
                 .build();
     }
 
@@ -47,5 +48,13 @@ public class UserMapper {
                 .filter(ALLOWED_ROLES::contains)
                 .findFirst()
                 .orElseThrow(()-> new NotValidUserRoleException("No valid role found"));
+    }
+
+    public User updateUserInitialAccount(User user, UserDTO userDTO) {
+        return null;
+    }
+
+    public UserDTO mapUserToUserDTO(User save) {
+        return null;
     }
 }

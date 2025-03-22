@@ -6,12 +6,14 @@ import { ShopComponent } from './shop/shop.component';
 import { ProductItemComponent } from './shop/product-item/product-item.component';
 import { ProductFormComponent } from './product/product-form/product-form.component';
 import { ProductListComponent } from './product/product-list/product-list.component';
+import { FormsModule } from '@angular/forms';
+import { CompleteProfileComponent } from './core/complete-profile/complete-profile.component';
 
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, NavBarComponent, CommonModule, ShopComponent, ProductItemComponent, ProductFormComponent, ProductListComponent],
+  imports: [RouterOutlet, NavBarComponent, CommonModule, ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })

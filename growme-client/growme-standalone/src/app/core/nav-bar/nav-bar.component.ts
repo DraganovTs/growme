@@ -13,7 +13,7 @@ import { KeycloakService } from '../../services/keycloak.service';
 export class NavBarComponent {
   isAuthenticated = false;
   username: string = '';
-  showRegisterModal = false;
+ 
 
   constructor(private keycloakService: KeycloakService, private cdRef: ChangeDetectorRef) {
     this.keycloakService.isAuthenticated$.subscribe(authenticated => {
@@ -26,7 +26,5 @@ export class NavBarComponent {
 
   login() { this.keycloakService.login(); }
   logout() { this.keycloakService.logout(); }
-  showRegisterOptions() { this.showRegisterModal = true; }
-  register(role: 'BUYER' | 'SELLER') { this.keycloakService.register(role); this.showRegisterModal = false; }
-  closeModal() { this.showRegisterModal = false; }
+  register() { this.keycloakService.register(); }  
 }
