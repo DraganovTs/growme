@@ -1,68 +1,145 @@
 <div class="container mt-5">
-    <div class="card shadow-lg border-0 p-4">
-      <h2 class="text-center text-primary fw-bold mb-4">Complete Your Profile</h2>
-  
-      <form (submit)="submitProfile()" class="row g-3">
-        <!-- First Name -->
-        <div class="col-md-6">
-          <label class="form-label fw-semibold">First Name</label>
-          <input type="text" class="form-control" [(ngModel)]="userProfile.firstName" name="firstName" required />
+  <div class="card shadow-lg border-0 p-4">
+    <h2 class="text-center text-primary fw-bold mb-4">Complete Your Profile</h2>
+
+    <form (submit)="submitProfile()" class="row g-3">
+      <!-- Username (Read-only) -->
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">Username</label>
+        <input type="text" class="form-control" [(ngModel)]="userProfile.username" name="username" readonly />
+      </div>
+
+      <!-- Email (Read-only) -->
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">Email</label>
+        <input type="email" class="form-control" [(ngModel)]="userProfile.email" name="email" readonly />
+      </div>
+
+      <!-- First Name -->
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">First Name <span class="text-danger">*</span></label>
+        <input
+          type="text"
+          class="form-control"
+          [class.is-invalid]="submitted && !userProfile.firstName"
+          [(ngModel)]="userProfile.firstName"
+          name="firstName"
+          required
+        />
+        <div *ngIf="submitted && !userProfile.firstName" class="text-danger">First Name is required.</div>
+      </div>
+
+      <!-- Last Name -->
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">Last Name <span class="text-danger">*</span></label>
+        <input
+          type="text"
+          class="form-control"
+          [class.is-invalid]="submitted && !userProfile.lastName"
+          [(ngModel)]="userProfile.lastName"
+          name="lastName"
+          required
+        />
+        <div *ngIf="submitted && !userProfile.lastName" class="text-danger">Last Name is required.</div>
+      </div>
+
+      <!-- Phone (Adjusted Width) -->
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">Phone <span class="text-danger">*</span></label>
+        <input
+          type="text"
+          class="form-control"
+          style="max-width: 350px;"
+          [class.is-invalid]="submitted && !userProfile.phone"
+          [(ngModel)]="userProfile.phone"
+          name="phone"
+          required
+        />
+        <div *ngIf="submitted && !userProfile.phone" class="text-danger">Phone is required.</div>
+      </div>
+
+      <!-- Address Section -->
+      <h3 class="text-secondary mt-4">Address</h3>
+
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">Street <span class="text-danger">*</span></label>
+        <input
+          type="text"
+          class="form-control"
+          [class.is-invalid]="submitted && !userProfile.address.street"
+          [(ngModel)]="userProfile.address.street"
+          name="street"
+          required
+        />
+        <div *ngIf="submitted && !userProfile.address.street" class="text-danger">Street is required.</div>
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">City <span class="text-danger">*</span></label>
+        <input
+          type="text"
+          class="form-control"
+          [class.is-invalid]="submitted && !userProfile.address.city"
+          [(ngModel)]="userProfile.address.city"
+          name="city"
+          required
+        />
+        <div *ngIf="submitted && !userProfile.address.city" class="text-danger">City is required.</div>
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">State <span class="text-danger">*</span></label>
+        <input
+          type="text"
+          class="form-control"
+          [class.is-invalid]="submitted && !userProfile.address.state"
+          [(ngModel)]="userProfile.address.state"
+          name="state"
+          required
+        />
+        <div *ngIf="submitted && !userProfile.address.state" class="text-danger">State is required.</div>
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">Zip Code <span class="text-danger">*</span></label>
+        <input
+          type="text"
+          class="form-control"
+          [class.is-invalid]="submitted && !userProfile.address.zipCode"
+          [(ngModel)]="userProfile.address.zipCode"
+          name="zipCode"
+          required
+        />
+        <div *ngIf="submitted && !userProfile.address.zipCode" class="text-danger">Zip Code is required.</div>
+      </div>
+
+      <!-- Role Selection -->
+      <h3 class="text-secondary mt-4">Select Your Role(s) <span class="text-danger">*</span></h3>
+
+      <div class="col-md-12">
+        <div class="form-check" *ngFor="let role of availableRoles">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            [value]="role"
+            [checked]="userProfile.roles.includes(role)"
+            (change)="toggleRole(role)"
+          />
+          <label class="form-check-label">{{ role }}</label>
         </div>
-  
-        <!-- Last Name -->
-        <div class="col-md-6">
-          <label class="form-label fw-semibold">Last Name</label>
-          <input type="text" class="form-control" [(ngModel)]="userProfile.lastName" name="lastName" required />
-        </div>
-  
-        <!-- Phone -->
-        <div class="col-md-12">
-          <label class="form-label fw-semibold">Phone</label>
-          <input type="text" class="form-control" [(ngModel)]="userProfile.phone" name="phone" required />
-        </div>
-  
-        <!-- Address Section -->
-        <h3 class="text-secondary mt-4">Address</h3>
-  
-        <div class="col-md-6">
-          <label class="form-label fw-semibold">Street</label>
-          <input type="text" class="form-control" [(ngModel)]="userProfile.address.street" name="street" />
-        </div>
-  
-        <div class="col-md-6">
-          <label class="form-label fw-semibold">City</label>
-          <input type="text" class="form-control" [(ngModel)]="userProfile.address.city"  name="city"/>
-        </div>
-  
-        <div class="col-md-6">
-          <label class="form-label fw-semibold">State</label>
-          <input type="text" class="form-control" [(ngModel)]="userProfile.address.state"  name="state"/>
-        </div>
-  
-        <div class="col-md-6">
-          <label class="form-label fw-semibold">Zip Code</label>
-          <input type="text" class="form-control" [(ngModel)]="userProfile.address.zipCode" name="zipCode" />
-        </div>
-  
-        <!-- Role Selection -->
-        <h3 class="text-secondary mt-4">Select Your Role(s)</h3>
-        <div class="col-md-12">
-          <div class="form-check" *ngFor="let role of availableRoles">
-            <input
-              class="form-check-input"
-              type="checkbox"
-              [value]="role"
-              [checked]="userProfile.roles.includes(role)"
-              (change)="toggleRole(role)" />
-            <label class="form-check-label">{{ role }}</label>
-          </div>
-        </div>
-  
-        <!-- Submit Button -->
-        <div class="col-12 text-center">
-          <button type="submit" class="btn btn-primary px-4 py-2 fw-bold">Update Profile</button>
-        </div>
-      </form>
-    </div>
+        <div *ngIf="submitted && userProfile.roles.length === 0" class="text-danger">At least one role is required.</div>
+      </div>
+
+      <!-- Role Explanation (Placed after checkboxes) -->
+      <div class="col-md-12 mt-2">
+        <p><strong>Buyer:</strong> Purchase fresh, homegrown products or request custom-grown goods just for you.</p>
+        <p><strong>Seller:</strong> Sell your own production, from fruits to homemade drinks, and bring joy to others.</p>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="col-12 text-center">
+        <button type="submit" class="btn btn-primary px-4 py-2 fw-bold">Update Profile</button>
+      </div>
+    </form>
   </div>
-  
+</div>

@@ -164,4 +164,13 @@ export class KeycloakService {
   register(): Observable<void> {
     return from(this.keycloak?.register() || Promise.resolve());
   }
+
+  getUserId(): string | null {
+    return this.keycloak?.tokenParsed?.sub || localStorage.getItem('userId') || null;
+  }
+
+  getEmail(): string {
+    return this.keycloak?.tokenParsed?.['email'] ?? '';
+  }
+  
 }
