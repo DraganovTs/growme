@@ -28,6 +28,9 @@ export class CompleteProfileComponent {
 
   availableRoles: string[] = ['Buyer', 'Seller']; 
 
+  constructor(private http: HttpClient, private router: Router) {}
+
+
   toggleRole(role: string) {
     const index = this.userProfile.roles.indexOf(role);
     if (index === -1) {
@@ -38,6 +41,18 @@ export class CompleteProfileComponent {
   }
 
   submitProfile() {
-    console.log('Updated Profile:', this.userProfile);
+    const apiUrl = `${environment.apiUrl}/update`; 
+
+    this.http.post(apiUrl, this.userProfile).subscribe({
+      next: (response) => {
+        console.log('Profile updated successfully:', response);
+        alert('Profile updated successfully!');
+        this.router.navigate(['/home']); 
+      },
+      error: (error) => {
+        console.error('Error updating profile:', error);
+        alert('Failed to update profile. Please try again.');
+      },
+    });
   }
 }
