@@ -1,0 +1,24 @@
+server:
+  port: 8082
+
+keycloak:
+  realm: grow-me
+  adminClientId: admin-cli
+  adminClientSecret: Ky5PORe5pVizUPkS0CF0sw6T3znPJkiy
+  client: authenticationClientId
+  urls:
+    auth: http://localhost:7080/realms/grow-me
+
+
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:7080/realms/grow-me
+
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.keycloak: DEBUG

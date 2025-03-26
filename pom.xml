@@ -31,10 +31,16 @@
         <spring-cloud-starter-gateway.version>4.2.0</spring-cloud-starter-gateway.version>
         <spring.cloud.dependencies.version>2024.0.0</spring.cloud.dependencies.version>
         <spring-security-oauth2-client.version>6.4.3</spring-security-oauth2-client.version>
+        <keycloak.admin.client.version>26.0.4</keycloak.admin.client.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.keycloak</groupId>
+                <artifactId>keycloak-admin-client</artifactId>
+                <version>${keycloak.admin.client.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>org.springframework.boot</groupId>
