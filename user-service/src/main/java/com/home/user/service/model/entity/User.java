@@ -35,10 +35,10 @@ public class User {
     @Email(message = "Invalid email format")
     private String email;
 
-    @Column(nullable = false)
-    @NotBlank(message = "Role is required")
+    @ElementCollection
+    @CollectionTable(name = "user_owned_roles", joinColumns = @JoinColumn(name = "user_id"))
     @Pattern(regexp = "^(BUYER|SELLER|ADMIN|USER_PENDING)$", message = "Invalid role. Allowed values: BUYER, SELLER, ADMIN")
-    private String role;
+    private List<String> roles;
 
 
     @Column(nullable = true)

@@ -9,6 +9,8 @@ import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 @Builder
 public class UserDTO {
@@ -33,7 +35,7 @@ public class UserDTO {
     private AddressDto address;
 
     @NotBlank(message = "Role is required")
-    private String role;
+    private List<String> roles;
 
     private AccountStatus accountStatus;
 }

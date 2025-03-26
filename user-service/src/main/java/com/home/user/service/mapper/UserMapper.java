@@ -2,6 +2,7 @@ package com.home.user.service.mapper;
 
 
 import com.home.user.service.exception.NotValidUserRoleException;
+import com.home.user.service.model.dto.AddressDto;
 import com.home.user.service.model.dto.KeycloakUserDTO;
 import com.home.user.service.model.dto.UserDTO;
 import com.home.user.service.model.entity.Address;
@@ -19,7 +20,7 @@ public class UserMapper {
                 .userId(UUID.fromString(keycloakUserDTO.getUserId()))
                 .username(keycloakUserDTO.getUsername())
                 .email(keycloakUserDTO.getEmail())
-                .role("USER_PENDING")
+                .roles(new ArrayList<>(List.of("USER_PENDING")))
                 .accountStatus(AccountStatus.PENDING)
                 .address(null)
                 .createdAt(new Date())
@@ -39,19 +40,40 @@ public class UserMapper {
     }
 
 
-    private String extractValidRole(List<String> keycloakRoles){
+    private String extractValidRole(List<String> keycloakRoles) {
 
         final Set<String> ALLOWED_ROLES = Set.of("BUYER", "SELLER", "ADMIN");
 
 
-        return  keycloakRoles.stream()
+        return keycloakRoles.stream()
                 .filter(ALLOWED_ROLES::contains)
                 .findFirst()
-                .orElseThrow(()-> new NotValidUserRoleException("No valid role found"));
+                .orElseThrow(() -> new NotValidUserRoleException("No valid role found"));
     }
 
     public User updateUserInitialAccount(User user, UserDTO userDTO) {
-        return null;
+        return user.builder()
+                .username(userDTO.getUsername())
+                .email(userDTO.getEmail())
+                .firstName(userDTO.getFirstName())
+                .lastName(userDTO.getLastName())
+                .phone(userDTO.getPhone())
+                .address(mapAddressDTOToAddress(userDTO.getAddress()))
+                .roles(new ArrayList<>(userDTO.getRoles()))
+                .accountStatus(AccountStatus.ACTIVE)
+                .updatedAt(new Date())
+                .ownedProductIds(new ArrayList<>())
+                .purchasedOrderIds(new ArrayList<>())
+                .build();
+    }
+
+    private Address mapAddressDTOToAddress(AddressDto addressDto) {
+        return Address.builder()
+                .street(addressDto.getStreet())
+                .city(addressDto.getCity())
+                .state(addressDto.getState())
+                .zipCode(addressDto.getZipCode())
+                .build();
     }
 
     public UserDTO mapUserToUserDTO(User save) {
