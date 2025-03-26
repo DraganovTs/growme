@@ -20,7 +20,7 @@ public class UserMapper {
                 .userId(UUID.fromString(keycloakUserDTO.getUserId()))
                 .username(keycloakUserDTO.getUsername())
                 .email(keycloakUserDTO.getEmail())
-                .roles(new ArrayList<>(List.of("USER_PENDING")))
+                .roles(new ArrayList<>())
                 .accountStatus(AccountStatus.PENDING)
                 .address(null)
                 .createdAt(new Date())
@@ -52,19 +52,20 @@ public class UserMapper {
     }
 
     public User updateUserInitialAccount(User user, UserDTO userDTO) {
-        return user.builder()
-                .username(userDTO.getUsername())
-                .email(userDTO.getEmail())
-                .firstName(userDTO.getFirstName())
-                .lastName(userDTO.getLastName())
-                .phone(userDTO.getPhone())
-                .address(mapAddressDTOToAddress(userDTO.getAddress()))
-                .roles(new ArrayList<>(userDTO.getRoles()))
-                .accountStatus(AccountStatus.ACTIVE)
-                .updatedAt(new Date())
-                .ownedProductIds(new ArrayList<>())
-                .purchasedOrderIds(new ArrayList<>())
-                .build();
+
+        user.setUsername(userDTO.getUsername());
+        user.setEmail(userDTO.getEmail());
+        user.setFirstName(userDTO.getFirstName());
+        user.setLastName(userDTO.getLastName());
+        user.setPhone(userDTO.getPhone());
+        user.setAddress(mapAddressDTOToAddress(userDTO.getAddress()));
+        user.setRoles(new ArrayList<>(userDTO.getRoles()));
+        user.setAccountStatus(AccountStatus.ACTIVE);
+        user.setUpdatedAt(new Date());
+        user.setOwnedProductIds(new ArrayList<>());
+        user.setPurchasedOrderIds(new ArrayList<>());
+
+        return user;
     }
 
     private Address mapAddressDTOToAddress(AddressDto addressDto) {

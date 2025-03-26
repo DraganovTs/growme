@@ -37,7 +37,6 @@ public class User {
 
     @ElementCollection
     @CollectionTable(name = "user_owned_roles", joinColumns = @JoinColumn(name = "user_id"))
-    @Pattern(regexp = "^(BUYER|SELLER|ADMIN|USER_PENDING)$", message = "Invalid role. Allowed values: BUYER, SELLER, ADMIN")
     private List<String> roles;
 
 
