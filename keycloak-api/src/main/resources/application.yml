@@ -5,10 +5,8 @@ keycloak:
   realm: grow-me
   adminClientId: admin-cli
   adminClientSecret: Ky5PORe5pVizUPkS0CF0sw6T3znPJkiy
-  client: authenticationClientId
   urls:
-    auth: http://localhost:7080/realms/grow-me
-
+    auth: http://localhost:7080
 
 spring:
   security:
@@ -17,6 +15,10 @@ spring:
         jwt:
           issuer-uri: http://localhost:7080/realms/grow-me
 
+jwt:
+  auth:
+    converter:
+      resource-id: authenticationClientId
 
 logging:
   level:
