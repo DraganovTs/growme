@@ -1,67 +1,135 @@
 package com.home.keycloak.api.service.impl;
 
+import com.home.keycloak.api.exception.KeycloakUserCreationException;
+import com.home.keycloak.api.exception.KeycloakUserNotFoundException;
 import com.home.keycloak.api.model.dto.UserRegistrationRecord;
 import com.home.keycloak.api.service.KeycloakRoleUserService;
+import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
+import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.Keycloak;
+import org.keycloak.admin.client.resource.RealmResource;
+import org.keycloak.admin.client.resource.UserResource;
+import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 
+
 import java.util.Collections;
-import java.util.logging.Logger;
+import java.util.List;
 
 @Slf4j
 @Service
 public class KeycloakRoleUserServiceImpl implements KeycloakRoleUserService {
 
-
+    private static final int HTTP_CREATED = 201;
+    private final String realmName;
     private final Keycloak keycloak;
 
-    public KeycloakRoleUserServiceImpl(Keycloak keycloak) {
+    public KeycloakRoleUserServiceImpl(@Value("${keycloak.realm}") String realmName, Keycloak keycloak) {
+        this.realmName = realmName;
         this.keycloak = keycloak;
     }
 
     @Override
     public UserRegistrationRecord createUser(UserRegistrationRecord userRegistrationRecord) {
 
+        validateUserRegistration(userRegistrationRecord);
         try {
-            CredentialRepresentation credentials = new CredentialRepresentation();
-            credentials.setType(CredentialRepresentation.PASSWORD);
-            credentials.setValue(userRegistrationRecord.password());
-            credentials.setTemporary(false);
+            UserRepresentation user = createUserRepresentation(userRegistrationRecord);
+            Response response = getUsersResource().create(user);
 
-            UserRepresentation user = new UserRepresentation();
-            user.setUsername(userRegistrationRecord.username());
-            user.setEmail(userRegistrationRecord.email());
-            user.setFirstName(userRegistrationRecord.firstName());
-            user.setLastName(userRegistrationRecord.lastName());
-            user.setEnabled(true);
-            user.setEmailVerified(true);
-            user.setCredentials(Collections.singletonList(credentials));
-
-            var response = keycloak.realm("grow-me").users().create(user);
-
-            if (response.getStatus() == 201) {
+            if (response.getStatus() == HTTP_CREATED) {
                 log.info("User created successfully: {}", userRegistrationRecord.username());
                 return userRegistrationRecord;
-            } else {
-                log.error("Failed to create user. Status: {}, Error: {}",
-                        response.getStatus(), response.getStatusInfo());
-                throw new RuntimeException("Failed to create user. Keycloak response: " + response.getStatus());
             }
+
+            handleFailedUserCreation(response, userRegistrationRecord.username());
         } catch (Exception e) {
-            log.error("Keycloak user creation failed", e);
-            throw new RuntimeException("Keycloak error: " + e.getMessage(), e);
+            log.error("Failed to create user: {}", userRegistrationRecord.username(), e);
+            throw new KeycloakUserCreationException("Failed to create user: " + e.getMessage(), e);
+        }
+
+        return userRegistrationRecord;
+    }
+
+
+    @Override
+    public UserRepresentation getUserById(String userId) {
+        try {
+            UserResource userResource = getUsersResource().get(userId);
+            return userResource.toRepresentation();
+        } catch (NotFoundException e) {
+            log.warn("User not found with ID: {}", userId);
+            throw new KeycloakUserNotFoundException("User not found with ID: " + userId);
+        } catch (Exception e) {
+            log.error("Failed to fetch user with ID: {}", userId, e);
+            throw new KeycloakUserNotFoundException("Failed to fetch user: " + e.getMessage(), e);
         }
     }
 
 
     @Override
     public void deleteUser(String userId) {
+        try {
+            getUsersResource().delete(userId);
+            log.info("Successfully deleted user with ID: {}", userId);
+        } catch (NotFoundException e) {
+            log.warn("Attempted to delete non-existent user with ID: {}", userId);
+            throw new KeycloakUserNotFoundException("User not found with ID: " + userId);
+        } catch (Exception e) {
+            log.error("Failed to delete user with ID: {}", userId, e);
+            throw new KeycloakUserCreationException("Failed to delete user: " + e.getMessage(), e);
+        }
+    }
 
+
+    private UsersResource getUsersResource() {
+        RealmResource realm = keycloak.realm(realmName);
+        return realm.users();
+    }
+
+    private void validateUserRegistration(UserRegistrationRecord registration) {
+        if (registration == null || registration.username() == null || registration.password() == null) {
+            throw new IllegalArgumentException("Invalid user registration data");
+        }
+    }
+
+    private UserRepresentation createUserRepresentation(UserRegistrationRecord registration) {
+        UserRepresentation user = new UserRepresentation();
+        user.setEnabled(true);
+        user.setUsername(registration.username());
+        user.setEmail(registration.email());
+        user.setFirstName(registration.firstName());
+        user.setLastName(registration.lastName());
+        user.setEmailVerified(true);
+        user.setCredentials(createCredentials(registration.password()));
+        return user;
+    }
+
+    private List<CredentialRepresentation> createCredentials(String password) {
+        CredentialRepresentation credentials = new CredentialRepresentation();
+        credentials.setType(OAuth2Constants.PASSWORD);
+        credentials.setValue(password);
+        credentials.setTemporary(false);
+        return Collections.singletonList(credentials);
+    }
+
+
+    private void handleFailedUserCreation(Response response, String username) {
+        String errorMessage = String.format(
+                "Failed to create user %s. Status: %d, Reason: %s",
+                username,
+                response.getStatus(),
+                response.getStatusInfo().getReasonPhrase()
+        );
+
+        log.error(errorMessage);
+        throw new KeycloakUserCreationException(errorMessage);
     }
 
 
