@@ -3,7 +3,7 @@ package com.home.keycloak.api.service.impl;
 import com.home.keycloak.api.exception.KeycloakUserCreationException;
 import com.home.keycloak.api.exception.KeycloakUserNotFoundException;
 import com.home.keycloak.api.model.dto.UserRegistrationRecord;
-import com.home.keycloak.api.service.KeycloakRoleUserService;
+import com.home.keycloak.api.service.KeycloakUserService;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
@@ -24,13 +24,13 @@ import java.util.List;
 
 @Slf4j
 @Service
-public class KeycloakRoleUserServiceImpl implements KeycloakRoleUserService {
+public class KeycloakUserServiceImpl implements KeycloakUserService {
 
     private static final int HTTP_CREATED = 201;
     private final String realmName;
     private final Keycloak keycloak;
 
-    public KeycloakRoleUserServiceImpl(@Value("${keycloak.realm}") String realmName, Keycloak keycloak) {
+    public KeycloakUserServiceImpl(@Value("${keycloak.realm}") String realmName, Keycloak keycloak) {
         this.realmName = realmName;
         this.keycloak = keycloak;
     }
