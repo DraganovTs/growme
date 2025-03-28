@@ -132,5 +132,11 @@ public class KeycloakUserServiceImpl implements KeycloakUserService {
         throw new KeycloakUserCreationException(errorMessage);
     }
 
+    @Override
+    public UserResource getUserResources(String userId){
+        UsersResource usersResource = getUsersResource();
+        return usersResource.get(userId);
+    }
+
 
 }
