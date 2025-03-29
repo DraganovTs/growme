@@ -27,12 +27,20 @@ public class KeycloakRoleServiceImpl implements KeycloakRoleService {
 
     @Override
     public void assignRole(String userId, String roleName) {
-        UserResource userResources = keycloakUserService.getUserResources(userId);
+        try {
+            UserResource userResource = keycloakUserService.getUserResources(userId);
+            RolesResource rolesResource = getRolesResource();
 
-        RolesResource rolesResource = getRolesResource();
-        RoleRepresentation representation = rolesResource.get(roleName).toRepresentation();
 
-        userResources.roles().realmLevel().add(Collections.singletonList(representation));
+            RoleRepresentation role = rolesResource.get(roleName).toRepresentation();
+            if (role == null) {
+                throw new IllegalArgumentException("Role " + roleName + " does not exist!");
+            }
+
+            userResource.roles().realmLevel().add(Collections.singletonList(role));
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to assign role: " + e.getMessage(), e);
+        }
     }
 
     @Override

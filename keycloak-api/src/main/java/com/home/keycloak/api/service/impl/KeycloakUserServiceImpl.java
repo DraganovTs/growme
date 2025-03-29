@@ -135,7 +135,13 @@ public class KeycloakUserServiceImpl implements KeycloakUserService {
     @Override
     public UserResource getUserResources(String userId){
         UsersResource usersResource = getUsersResource();
-        return usersResource.get(userId);
+        UserResource userResource = usersResource.get(userId);
+        try {
+            userResource.toRepresentation();
+            return userResource;
+        } catch (NotFoundException e) {
+            throw new IllegalArgumentException("User " + userId + " not found!");
+        }
     }
 
 
