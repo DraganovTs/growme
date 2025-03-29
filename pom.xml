@@ -32,6 +32,7 @@
         <spring.cloud.dependencies.version>2024.0.0</spring.cloud.dependencies.version>
         <spring-security-oauth2-client.version>6.4.3</spring-security-oauth2-client.version>
         <keycloak.admin.client.version>26.0.4</keycloak.admin.client.version>
+        <spring.kafka.version>3.3.4</spring.kafka.version>
     </properties>
 
     <dependencyManagement>
@@ -109,6 +110,12 @@
                 <version>${spring.cloud.dependencies.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.kafka</groupId>
+                <artifactId>spring-kafka</artifactId>
+                <version>${spring.kafka.version}</version>
             </dependency>
 
 

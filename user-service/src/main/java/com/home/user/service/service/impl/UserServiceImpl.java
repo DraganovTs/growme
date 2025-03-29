@@ -1,11 +1,13 @@
 package com.home.user.service.service.impl;
 
+import com.home.growme.common.module.dto.RoleAssignmentMessage;
 import com.home.user.service.exception.UserNotFoundException;
 import com.home.user.service.mapper.UserMapper;
 import com.home.user.service.model.dto.KeycloakUserDTO;
 import com.home.user.service.model.dto.UserDTO;
 import com.home.user.service.model.entity.User;
 import com.home.user.service.model.enums.AccountStatus;
+import com.home.user.service.publisher.RoleAssigmentEventPublisher;
 import com.home.user.service.repository.UserRepository;
 import com.home.user.service.service.UserService;
 import org.springframework.stereotype.Service;
@@ -18,10 +20,13 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final RoleAssigmentEventPublisher roleAssigmentEventPublisher;
 
-    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper) {
+    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper,
+                           RoleAssigmentEventPublisher roleAssigmentEventPublisher) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
+        this.roleAssigmentEventPublisher = roleAssigmentEventPublisher;
     }
 
     @Override
@@ -48,6 +53,9 @@ public class UserServiceImpl implements UserService {
     public UserDTO updateUser(UUID id, UserDTO userDTO) {
         User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found"));
         user = userMapper.updateUserInitialAccount(user,userDTO);
+
+        roleAssigmentEventPublisher.publishRoleAssignment(id.toString(),userDTO.getRoles().getFirst());
+
         return userMapper.mapUserToUserDTO(userRepository.save(user));
     }
 
