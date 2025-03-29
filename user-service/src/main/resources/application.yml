@@ -16,7 +16,7 @@ spring:
         format_sql: true
         generate_statistics: true
   kafka:
-    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    bootstrap-servers: localhost:9091,localhost:9092,localhost:9093
     producer:
       properties:
         delivery.timeout.ms: 120000

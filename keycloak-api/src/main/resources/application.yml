@@ -4,7 +4,7 @@ server:
 keycloak:
   realm: grow-me
   adminClientId: admin-cli
-  adminClientSecret: Ky5PORe5pVizUPkS0CF0sw6T3znPJkiy
+  adminClientSecret: z0eDUFAWjC1AkjPDfE8gfVwiORufyTQo
   urls:
     auth: http://localhost:7080
 
@@ -15,11 +15,12 @@ spring:
         jwt:
           issuer-uri: http://localhost:7080/realms/grow-me
   kafka:
-    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    bootstrap-servers: localhost:9091,localhost:9092,localhost:9093
     consumer:
       properties:
         max.poll.interval.ms: 300000
         session.timeout.ms: 10000
+        spring.json.trusted.packages: "*"
 
 jwt:
   auth:

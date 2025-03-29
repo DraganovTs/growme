@@ -54,7 +54,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found"));
         user = userMapper.updateUserInitialAccount(user,userDTO);
 
-        roleAssigmentEventPublisher.publishRoleAssignment(id.toString(),userDTO.getRoles().getFirst());
+        roleAssigmentEventPublisher.publishRoleAssignment(id.toString(),"ADMIN");
 
         return userMapper.mapUserToUserDTO(userRepository.save(user));
     }
