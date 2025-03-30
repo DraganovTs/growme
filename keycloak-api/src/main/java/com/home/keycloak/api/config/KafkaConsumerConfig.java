@@ -30,12 +30,16 @@ public class KafkaConsumerConfig {
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-        props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
+        props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, true);
+        props.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, 5000);
+
+        JsonDeserializer<RoleAssignmentMessage> deserializer = new JsonDeserializer<>(RoleAssignmentMessage.class);
+        deserializer.addTrustedPackages("*");
 
         return new DefaultKafkaConsumerFactory<>(
                 props,
                 new StringDeserializer(),
-                new JsonDeserializer<>(RoleAssignmentMessage.class)
+                deserializer
         );
     }
 
@@ -45,6 +49,7 @@ public class KafkaConsumerConfig {
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(roleAssignmentConsumerFactory());
         factory.setBatchListener(false);
+
         return factory;
     }
 }

@@ -38,6 +38,7 @@ public class KeycloakRoleServiceImpl implements KeycloakRoleService {
             }
 
             userResource.roles().realmLevel().add(Collections.singletonList(role));
+
         } catch (Exception e) {
             throw new RuntimeException("Failed to assign role: " + e.getMessage(), e);
         }

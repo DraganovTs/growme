@@ -22,14 +22,14 @@ public class RoleAssigmentConsumer {
             topics = "${kafka.topics.role-assignment}",
             containerFactory = "roleAssignmentListenerFactory"
     )
-    public void consumeRoleAssignment(RoleAssignmentMessage message, Acknowledgment ack) {
+    public void consumeRoleAssignment(RoleAssignmentMessage message) {
         try {
             log.info("Received role assignment request for user {} to role {}",
                     message.userId(), message.roleName());
 
             keycloakRoleService.assignRole(message.userId(), message.roleName());
 
-            ack.acknowledge();
+
             log.info("Successfully assigned role {} to user {}",
                     message.roleName(), message.userId());
         } catch (Exception e) {
