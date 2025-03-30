@@ -4,7 +4,6 @@ import com.home.growme.common.module.dto.RoleAssignmentMessage;
 import com.home.keycloak.api.service.KeycloakRoleService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -24,11 +23,10 @@ public class RoleAssigmentConsumer {
     )
     public void consumeRoleAssignment(RoleAssignmentMessage message) {
         try {
-            log.info("Received role assignment request for user {} to role {}",
+            log.info("Processing role assignment: user={}, role={}",
                     message.userId(), message.roleName());
 
             keycloakRoleService.assignRole(message.userId(), message.roleName());
-
 
             log.info("Successfully assigned role {} to user {}",
                     message.roleName(), message.userId());
