@@ -1,0 +1,24 @@
+.image-card {
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  
+  .image-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .image-card.selected {
+    border: 2px solid #0d6efd;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+  }
+  
+  .img-thumbnail {
+    max-height: 150px;
+    object-fit: contain;
+    background-color: #f8f9fa;
+  }
+  
+  .nav-tabs .nav-link.active {
+    font-weight: bold;
+  }
