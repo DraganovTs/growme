@@ -12,6 +12,7 @@ import { KeycloakService } from '../../services/keycloak.service';
 })
 export class NavBarComponent {
   isAuthenticated = false;
+  isSeller = false;
   username: string = '';
  
 
@@ -20,6 +21,8 @@ export class NavBarComponent {
       this.isAuthenticated = authenticated;
       if (this.isAuthenticated) {
         this.username = this.keycloakService.getUsername() ?? '';
+        this.isSeller = this.keycloakService.hasRole('SELLER'); 
+
       }
     });
   }

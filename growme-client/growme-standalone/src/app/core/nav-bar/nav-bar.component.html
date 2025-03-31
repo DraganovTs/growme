@@ -21,7 +21,8 @@
            routerLink="/about" 
            [routerLinkActive]="'active'">About</a>
 
-        <a class="py-2 text-decoration-none text-dark hover-underline" 
+        <!-- Show only if user is a seller -->
+        <a *ngIf="isSeller" class="py-2 text-decoration-none text-dark hover-underline" 
            routerLink="/products/add" 
            [routerLinkActive]="'active'">Add Product</a>
     </nav>
@@ -47,4 +48,3 @@
         </ng-container>
     </div>
 </header>
-

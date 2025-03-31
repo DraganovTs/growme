@@ -1,12 +1,10 @@
 package com.home.user.service.service.impl;
 
-import com.home.growme.common.module.dto.RoleAssignmentMessage;
 import com.home.user.service.exception.UserNotFoundException;
 import com.home.user.service.mapper.UserMapper;
 import com.home.user.service.model.dto.KeycloakUserDTO;
 import com.home.user.service.model.dto.UserDTO;
 import com.home.user.service.model.entity.User;
-import com.home.user.service.model.enums.AccountStatus;
 import com.home.user.service.publisher.RoleAssigmentEventPublisher;
 import com.home.user.service.repository.UserRepository;
 import com.home.user.service.service.UserService;

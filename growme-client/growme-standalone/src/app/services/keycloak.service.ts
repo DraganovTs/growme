@@ -54,61 +54,32 @@ export class KeycloakService {
           email: this.keycloak.tokenParsed['email'] || '',
         };
   
-        const accountStatus = await this.syncUserToBackend(userInfo);
-  
-        localStorage.setItem('userId', userInfo.userId);
-  
-        console.log("Account Status:", accountStatus); 
-  
-        if (accountStatus === 'PENDING') {
-            console.log("Redirecting to complete profile...");
-            
-            this.ngZone.run(() => {
-                console.log("Inside NgZone, navigating now...");
+        const userRoles = this.keycloak.tokenParsed.realm_access?.roles || [];
+      console.log("User Roles:", userRoles);
 
-              this.router.navigate(['/complete-profile']).then(success => {
-                console.log('Navigation success:', success);
-              }).catch(err => {
-                console.error('Navigation error:', err);
-              });
-            });
-          }
-          
-  
-        this.startTokenRefresh();
+      localStorage.setItem('userId', userInfo.userId);
+
+      if (!this.hasRequiredRole(userRoles)) {
+        console.log("Redirecting to complete profile...");
+
+        this.ngZone.run(() => {
+          this.router.navigate(['/complete-profile']).then(success => {
+            console.log('Navigation success:', success);
+          }).catch(err => {
+            console.error('Navigation error:', err);
+          });
+        });
       }
-    } catch (error) {
-      console.error('Keycloak initialization failed:', error);
-      this.isAuthenticatedSubject.next(false);
-      localStorage.removeItem('isAuthenticated');
+
+      this.startTokenRefresh();
     }
+  } catch (error) {
+    console.error('Keycloak initialization failed:', error);
+    this.isAuthenticatedSubject.next(false);
+    localStorage.removeItem('isAuthenticated');
   }
+}
 
-
-  private extractUserInfo(): any {
-    if (!this.keycloak?.tokenParsed) return null;
-
-    return {
-      userId: this.keycloak.tokenParsed.sub,
-      username: this.keycloak.tokenParsed['preferred_username'],
-      email: this.keycloak.tokenParsed['email'],
-    };
-  }
-
-  private async syncUserToBackend(userInfo: any): Promise<string> {
-    console.log("Syncing user to backend with data:", userInfo);
-  
-    return this.http.post<{ accountStatus?: string }>(`${environment.userApi}/sync`, userInfo)
-      .toPromise()
-      .then(response => {
-        console.log("Backend Response:", response);
-        return response?.accountStatus ?? 'PENDING';
-      })
-      .catch(error => {
-        console.error('Failed to sync user:', error);
-        return 'PENDING';
-      });
-  }
   
 
   
@@ -173,4 +144,12 @@ export class KeycloakService {
     return this.keycloak?.tokenParsed?.['email'] ?? '';
   }
   
+  private hasRequiredRole(userRoles: string[]): boolean {
+    const requiredRoles = ['SELLER', 'BUYER', 'ADMIN'];
+    return userRoles.some(role => requiredRoles.includes(role.toUpperCase()));
+  }
+
+  hasRole(role: string): boolean {
+    return this.keycloak?.tokenParsed?.realm_access?.roles?.includes(role) ?? false;
+  }
 }

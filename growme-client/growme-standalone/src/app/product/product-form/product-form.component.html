@@ -1,56 +1,77 @@
 <div class="container">
-    <h2>{{ isEditMode ? 'Update Product' : 'Add Product' }}</h2>
-  
-    <form [formGroup]="productForm" (ngSubmit)="onSubmit()">
-      <div class="mb-3">
-        <label class="form-label">Name</label>
-        <input type="text" class="form-control" formControlName="name" required>
-      </div>
-  
-      <div class="mb-3">
-        <label class="form-label">Brand</label>
-        <input type="text" class="form-control" formControlName="brand">
-      </div>
-  
-      <div class="mb-3">
-        <label class="form-label">Description</label>
-        <textarea class="form-control" formControlName="description" required></textarea>
-      </div>
-  
-      <div class="mb-3">
-        <label class="form-label">Price</label>
-        <input type="number" class="form-control" formControlName="price" required>
-      </div>
-  
-      <div class="mb-3">
-        <label class="form-label">Units in Stock</label>
-        <input type="number" class="form-control" formControlName="unitsInStock" required>
-      </div>
-  
-      <div class="mb-3">
-        <label class="form-label">Image URL</label>
-        <input type="text" class="form-control" formControlName="imageUrl">
-      </div>
-  
-      <!-- Category Dropdown -->
-      <div class="mb-3">
-        <label class="form-label">Category</label>
-        <select class="form-control" formControlName="categoryId">
-          <option *ngFor="let category of categories" [value]="category.id">
-            {{ category.name }}
-          </option>
-        </select>
-      </div>
-  
-      <!-- Owner (Read-Only for Now) -->
-      <div class="mb-3">
-        <label class="form-label">Owner</label>
-        <input type="text" class="form-control" formControlName="ownerName" required readonly>
-      </div>
-  
-      <button type="submit" class="btn btn-primary">
-        {{ isEditMode ? 'Update' : 'Add' }} Product
-      </button>
-    </form>
-  </div>
-  
+  <h2>{{ isEditMode ? 'Update Product' : 'Add Product' }}</h2>
+
+  <form [formGroup]="productForm" (ngSubmit)="submitForm()">
+    <!-- Name -->
+    <div class="mb-3">
+      <label class="form-label">Name</label>
+      <input type="text" class="form-control" formControlName="name" required>
+    </div>
+
+    <!-- Brand -->
+    <div class="mb-3">
+      <label class="form-label">Brand</label>
+      <input type="text" class="form-control" formControlName="brand">
+    </div>
+
+    <!-- Description -->
+    <div class="mb-3">
+      <label class="form-label">Description</label>
+      <textarea class="form-control" formControlName="description" required></textarea>
+    </div>
+
+    <!-- Price -->
+    <div class="mb-3">
+      <label class="form-label">Price</label>
+      <input type="number" class="form-control" formControlName="price" required>
+    </div>
+
+    <!-- Units in Stock -->
+    <div class="mb-3">
+      <label class="form-label">Units in Stock</label>
+      <input type="number" class="form-control" formControlName="unitsInStock" required>
+    </div>
+
+<!-- Image Upload -->
+<div class="mb-3">
+  <label class="form-label">Upload New Image</label>
+  <input type="file" class="form-control" (change)="onFileSelected($event)">
+</div>
+
+<!-- Choose from Existing Images -->
+<div class="mb-3">
+  <label class="form-label">Or Choose an Existing Image</label>
+  <select class="form-control" (change)="onExistingImageSelected($event)">
+    <option *ngFor="let image of existingImages" [value]="image">
+      {{ image }}
+    </option>
+  </select>
+</div>
+
+<!-- Image Preview -->
+<div class="mb-3" *ngIf="selectedImageUrl">
+  <label class="form-label">Preview</label>
+  <img [src]="selectedImageUrl" class="img-thumbnail" style="max-width: 200px;">
+</div>
+
+    <!-- Category Dropdown -->
+    <div class="mb-3">
+      <label class="form-label">Category</label>
+      <select class="form-control" formControlName="categoryId">
+        <option *ngFor="let category of categories" [value]="category.id">
+          {{ category.name }}
+        </option>
+      </select>
+    </div>
+
+    <!-- Owner -->
+    <div class="mb-3">
+      <label class="form-label">Owner</label>
+      <input type="text" class="form-control" formControlName="ownerName" required readonly>
+    </div>
+
+    <button type="submit" class="btn btn-primary">
+      {{ isEditMode ? 'Update' : 'Add' }} Product
+    </button>
+  </form>
+</div>

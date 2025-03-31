@@ -78,13 +78,13 @@ export class CompleteProfileComponent {
   submitProfile() {
     this.submitted = true;
     if (!this.isFormValid()) return;
-
+  
     const apiUrl = `${environment.userApi}/update/${this.userProfile.id}`;
-
+  
     this.http.put(apiUrl, this.userProfile).subscribe({
       next: () => {
         alert('Profile updated successfully!');
-        this.router.navigate(['/home']);
+        this.router.navigate(['/home']); 
       },
       error: (error) => {
         console.error('Error updating profile:', error);
