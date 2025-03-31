@@ -2,6 +2,7 @@ package com.home.growme.produt.service.service.impl;
 
 import com.home.growme.produt.service.exception.ProductNotFoundException;
 import com.home.growme.produt.service.mapper.ProductMapper;
+import com.home.growme.produt.service.model.dto.ProductRequestDTO;
 import com.home.growme.produt.service.model.dto.ProductResponseDTO;
 import com.home.growme.produt.service.model.dto.ProductResponseListDTO;
 import com.home.growme.produt.service.model.entity.Category;
@@ -13,11 +14,13 @@ import com.home.growme.produt.service.repository.ProductRepository;
 import com.home.growme.produt.service.service.ProductService;
 import com.home.growme.produt.service.specification.ProductSpecParams;
 import com.home.growme.produt.service.specification.ProductSpecificationTitleOwnerCategory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.List;
@@ -25,6 +28,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class ProductServiceImpl implements ProductService {
 
@@ -72,21 +76,51 @@ public class ProductServiceImpl implements ProductService {
     }
 
 
+    @Transactional
     @Override
-    public ProductResponseDTO createProduct(ProductResponseDTO productResponseDto) {
-        Optional<Owner> owner = ownerRepository.findById(UUID.fromString(productResponseDto.getOwnerId().toString()));
-        Optional<Category> category = categoryRepository.findById(productResponseDto.getProductCategoryId());
-        Product product = productMapper.mapProductResponseDTOToProduct(productResponseDto , category.get(), owner.get());
-        return productMapper.mapProductToProductResponseDTO(productRepository.save(product));
+    public ProductResponseDTO createProduct(ProductRequestDTO productRequestDTO) {
+        log.info("Creating new product: {}", productRequestDTO.getName());
+
+
+        Category category = categoryRepository.findById(productRequestDTO.getCategoryId())
+                .orElseThrow(() -> new RuntimeException("Category not found"));
+
+        Owner owner = ownerRepository.findById(productRequestDTO.getOwnerId())
+                .orElseThrow(() -> new RuntimeException("Owner not found"));
+
+
+        Product product = productMapper.mapProductRequestDTOToProduct(productRequestDTO, category, owner);
+        productRepository.save(product);
+
+        log.info("Product saved successfully: {}", product.getProductId());
+
+        return productMapper.mapProductToProductResponseDTO(product);
+    }
+
+    @Transactional
+    @Override
+    public ProductResponseDTO updateProduct(String productId, ProductRequestDTO productRequestDTO) {
+        log.info("Updating product with ID: {}", productId);
+
+        Product product = productRepository.findById(UUID.fromString(productId))
+                .orElseThrow(() -> new ProductNotFoundException("Product not found"));
+
+        product.setName(productRequestDTO.getName());
+        product.setBrand(productRequestDTO.getBrand());
+        product.setDescription(productRequestDTO.getDescription());
+        product.setPrice(productRequestDTO.getPrice());
+        product.setUnitsInStock(productRequestDTO.getUnitsInStock());
+        product.setImageUrl(productRequestDTO.getImageUrl());
+
+        productRepository.save(product);
+
+        log.info("Product updated successfully: {}", productId);
+
+        return productMapper.mapProductToProductResponseDTO(product);
     }
 
     @Override
-    public Product updateProduct(UUID productId, ProductResponseDTO productResponseDto) {
-        return null;
-    }
-
-    @Override
-    public void deleteProduct(UUID productId) {
+    public void deleteProduct(String productId) {
 
     }
 

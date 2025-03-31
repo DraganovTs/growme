@@ -1,13 +1,16 @@
 package com.home.growme.produt.service.mapper;
 
+import com.home.growme.produt.service.model.dto.ProductRequestDTO;
 import com.home.growme.produt.service.model.dto.ProductResponseDTO;
 import com.home.growme.produt.service.model.entity.Category;
 import com.home.growme.produt.service.model.entity.Owner;
 import com.home.growme.produt.service.model.entity.Product;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 
 
+@Slf4j
 @Component
 public class ProductMapper {
 
@@ -15,15 +18,11 @@ public class ProductMapper {
 
 
     public ProductResponseDTO mapProductToProductResponseDTO(Product product) {
+        if (product == null) {
+            throw new IllegalArgumentException("Product cannot be null");
+        }
 
-
-            if (product.getCategory() == null) {
-                System.out.println("Product ID: " + product.getProductId() + " has a NULL category!");
-            } else {
-                System.out.println("Product ID: " + product.getProductId() + " Category: " + product.getCategory().getCategoryName());
-            }
-
-
+        log.info("Mapping Product ID: {}", product.getProductId());
 
         return ProductResponseDTO.builder()
                 .productId(product.getProductId())
@@ -32,22 +31,28 @@ public class ProductMapper {
                 .description(product.getDescription())
                 .price(product.getPrice())
                 .unitsInStock(product.getUnitsInStock())
-                .imageUrl(product.getImageUrl())
-                .categoryName(product.getCategory().getCategoryName())
-                .ownerName(product.getOwner().getOwnerName())
-                .ownerId(product.getOwner().getOwnerId())
-                .productCategoryId(product.getCategory().getCategoryId())
+                .imageUrl(product.getImageUrl() != null ? product.getImageUrl() : "No image available")
+                .categoryName(product.getCategory() != null ? product.getCategory().getCategoryName() : "Uncategorized")
+                .ownerName(product.getOwner() != null ? product.getOwner().getOwnerName() : "Unknown Owner")
+                .ownerId(product.getOwner() != null ? product.getOwner().getOwnerId() : null)
+                .productCategoryId(product.getCategory() != null ? product.getCategory().getCategoryId() : null)
                 .build();
     }
 
-    public Product mapProductResponseDTOToProduct(ProductResponseDTO productResponseDto , Category category , Owner owner) {
+    public Product mapProductRequestDTOToProduct(ProductRequestDTO productRequestDTO, Category category, Owner owner) {
+        if (productRequestDTO == null) {
+            throw new IllegalArgumentException("ProductRequestDTO cannot be null");
+        }
+
+        log.info("Mapping ProductRequestDTO: {}", productRequestDTO.getName());
+
         return Product.builder()
-                .name(productResponseDto.getName())
-                .brand(productResponseDto.getBrand())
-                .description(productResponseDto.getDescription())
-                .price(productResponseDto.getPrice())
-                .unitsInStock(productResponseDto.getUnitsInStock())
-                .imageUrl(productResponseDto.getImageUrl())
+                .name(productRequestDTO.getName())
+                .brand(productRequestDTO.getBrand())
+                .description(productRequestDTO.getDescription())
+                .price(productRequestDTO.getPrice())
+                .unitsInStock(productRequestDTO.getUnitsInStock())
+                .imageUrl(productRequestDTO.getImageUrl()) // Image URL is now handled
                 .category(category)
                 .owner(owner)
                 .build();

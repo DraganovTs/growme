@@ -1,5 +1,6 @@
 package com.home.growme.produt.service.service;
 
+import com.home.growme.produt.service.model.dto.ProductRequestDTO;
 import com.home.growme.produt.service.model.dto.ProductResponseDTO;
 import com.home.growme.produt.service.model.dto.ProductResponseListDTO;
 import com.home.growme.produt.service.model.entity.Product;
@@ -13,9 +14,9 @@ public interface ProductService {
     ProductResponseListDTO getAllProducts(ProductSpecParams specParams);
 
     //TODO implement
-    ProductResponseDTO createProduct(ProductResponseDTO productResponseDto);
-    Product updateProduct(UUID productId, ProductResponseDTO productResponseDto);
-    void deleteProduct(UUID productId);
+    ProductResponseDTO createProduct(ProductRequestDTO productRequestDTO);
+    ProductResponseDTO updateProduct(String productId, ProductRequestDTO productRequestDTO);
+    void deleteProduct(String productId);
     List<ProductResponseDTO> getProductsByCategory(UUID categoryId);
     List<ProductResponseDTO> getProductsByOwner(UUID ownerId);
 
