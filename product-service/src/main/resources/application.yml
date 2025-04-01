@@ -28,3 +28,7 @@ pagination:
     size:
       default: 12
 
+app:
+  upload:
+    dir: uploads
+

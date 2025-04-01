@@ -3,6 +3,8 @@ import { environment } from "../environment/environments";
 import { HttpClient } from "@angular/common/http";
 import { IProduct } from "../shared/model/product";
 import { Observable } from "rxjs";
+import { ProductCreateDTO } from "../shared/model/product-create";
+import { ProductUpdateDTO } from "../shared/model/product-update";
 
 @Injectable({
     providedIn: 'root'
@@ -17,12 +19,12 @@ export class ProductService {
         return this.http.get<IProduct[]>(this.apiUrl);
       }
 
-    addProduct(product: IProduct): Observable<IProduct>{
-        return this.http.post<IProduct>(this.apiUrl,product);
+      addProduct(product: ProductCreateDTO): Observable<IProduct> {
+        return this.http.post<IProduct>(this.apiUrl, product);
     }
 
-    updateProduct(id: string, product: IProduct): Observable<IProduct>{
-        return this.http.put<IProduct>(`${this.apiUrl}/${id}`,product);
+    updateProduct(id: string, product: ProductUpdateDTO): Observable<IProduct> {
+        return this.http.put<IProduct>(`${this.apiUrl}/${id}`, product);
     }
 
     getProductById(id: string): Observable<IProduct> {
@@ -33,4 +35,3 @@ export class ProductService {
         return this.http.delete<void>(`${this.apiUrl}/${id}`);
       }
 }
-

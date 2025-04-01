@@ -11,6 +11,7 @@ import { KeycloakService } from '../../services/keycloak.service';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { finalize } from 'rxjs';
 import { FilenamePipe } from './Filename.Pipe';
+import { ProductCreateDTO } from '../../shared/model/product-create';
 
 
 @Component({
@@ -62,7 +63,7 @@ export class ProductFormComponent implements OnInit {
   initializeForm(): void {
     this.productForm = this.fb.group({
       name: ['', [Validators.required]],
-      brand: ['', [Validators.required]],
+      brand: [''],
       description: ['', [Validators.required, Validators.minLength(10)]],
       price: [0, [Validators.required, Validators.min(0.1)]],
       unitsInStock: [0, [Validators.required, Validators.min(1)]],
@@ -177,7 +178,9 @@ onFileSelected(event: any): void {
       this.saveProduct();
       return;
     }
-
+  
+    this.isSubmitting = true;
+    
     this.imageService.uploadImage(this.selectedImageFile).pipe(
       finalize(() => this.isSubmitting = false)
     ).subscribe({
@@ -193,24 +196,47 @@ onFileSelected(event: any): void {
   }
 
   saveProduct(): void {
-    const productData = this.productForm.value;
+
+    if (this.productForm.invalid) {
+      this.productForm.markAllAsTouched();
+      return;
+    }
+    const formValue = this.productForm.value;
+    const productData: ProductCreateDTO = {
+      name: formValue.name,
+      brand: formValue.brand || undefined,
+      description: formValue.description,
+      price: Number(formValue.price),
+      unitsInStock: Number(formValue.unitsInStock),
+      imageUrl: this.getImageUrlString(this.selectedImageUrl),
+      categoryId: formValue.categoryId,
+      ownerId: this.keycloakService.getUserId() ?? ''
+    };
 
     if (this.isEditMode) {
-      this.productService.updateProduct(productData.id, productData).subscribe({
+      const updateData = {
+        ...productData,
+        productId: this.route.snapshot.paramMap.get('id')!
+      };
+      this.productService.updateProduct(updateData.productId, updateData).subscribe({
         next: () => this.router.navigate(['/products']),
-        error: (err) => {
-          console.error('Update failed', err);
-          this.isSubmitting = false;
-        }
+        error: (err) => this.handleError(err)
       });
     } else {
       this.productService.addProduct(productData).subscribe({
         next: () => this.router.navigate(['/products']),
-        error: (err) => {
-          console.error('Create failed', err);
-          this.isSubmitting = false;
-        }
+        error: (err) => this.handleError(err)
       });
     }
   }
-}
+    private handleError(err: any): void {
+      console.error('Operation failed', err);
+      this.isSubmitting = false;
+      this.uploadError = err.message || 'Operation failed. Please try again.';
+    }
+
+    private getImageUrlString(image: SafeUrl | string | null): string | undefined {
+      if (!image) return undefined;
+      return typeof image === 'string' ? image : image.toString();
+    }
+  }
