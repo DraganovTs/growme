@@ -1,5 +1,6 @@
 package com.home.growme.produt.service.controller;
 
+import com.home.growme.produt.service.model.dto.ImageUploadResponse;
 import com.home.growme.produt.service.model.dto.ProductRequestDTO;
 import com.home.growme.produt.service.model.dto.ProductResponseDTO;
 import com.home.growme.produt.service.model.dto.ProductResponseListDTO;
@@ -69,17 +70,16 @@ public class ProductController {
     }
 
     @PostMapping("/upload-image")
-    public ResponseEntity<String> uploadImage(@RequestParam("file") MultipartFile file) {
-        log.info("Uploading image: {}", file.getOriginalFilename());
-        String imageUrl = imageService.saveImage(file);
-        return ResponseEntity.ok(imageUrl);
+    public ResponseEntity<ImageUploadResponse> uploadImage(
+            @RequestParam("file") MultipartFile file) {
+
+        String imageUrl = imageService.uploadImage(file);
+        return ResponseEntity.ok(new ImageUploadResponse(imageUrl));
     }
 
-    @GetMapping("/existing-images")
-    public ResponseEntity<List<String>> getExistingImages() {
-        log.info("Fetching existing images");
-        List<String> imageUrls = imageService.getAllImages();
-        return ResponseEntity.ok(imageUrls);
+    @GetMapping("/images")
+    public ResponseEntity<List<String>> getAllImages() {
+        return ResponseEntity.ok(imageService.getAllImages());
     }
 
 

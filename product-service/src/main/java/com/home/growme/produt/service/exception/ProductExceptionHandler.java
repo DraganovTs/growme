@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import java.time.LocalDateTime;
 
@@ -19,6 +20,11 @@ public class ProductExceptionHandler {
         return buildErrorResponse(exception, webRequest, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ErrorResponseDTO> handleMaxUploadSizeException(MaxUploadSizeExceededException exception, WebRequest webRequest){
+        return buildErrorResponse(exception, webRequest, HttpStatus.PAYLOAD_TOO_LARGE);
+    }
+
     private ResponseEntity<ErrorResponseDTO> buildErrorResponse(Exception exception, WebRequest webRequest, HttpStatus httpStatus) {
 
         ErrorResponseDTO errorResponseDTO = new ErrorResponseDTO(
@@ -29,5 +35,7 @@ public class ProductExceptionHandler {
         );
         return new ResponseEntity<>(errorResponseDTO, httpStatus);
     }
+
+
 
 }

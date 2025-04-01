@@ -90,6 +90,13 @@ public class ProductServiceImpl implements ProductService {
 
 
         Product product = productMapper.mapProductRequestDTOToProduct(productRequestDTO, category, owner);
+
+        if (productRequestDTO.getImageUrl() != null &&
+                !productRequestDTO.getImageUrl().isBlank()) {
+            product.setImageUrl(productRequestDTO.getImageUrl());
+        }
+
+
         productRepository.save(product);
 
         log.info("Product saved successfully: {}", product.getProductId());
