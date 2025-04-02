@@ -116,9 +116,10 @@
     <!-- Category Dropdown -->
     <div class="mb-3">
       <label class="form-label">Category</label>
-      <select class="form-control" formControlName="categoryId">
-        <option *ngFor="let category of categories" [value]="category.id">
-          {{ category.name }}
+      <select class="form-control" formControlName="categoryName" required>
+        <option value="">Select a category</option>
+        <option *ngFor="let category of categories" [value]="category.categoryName">
+          {{ category.categoryName }} <!-- Changed from category.name to category.categoryName -->
         </option>
       </select>
     </div>

@@ -11,7 +11,7 @@ import { KeycloakService } from '../../services/keycloak.service';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { finalize } from 'rxjs';
 import { FilenamePipe } from './Filename.Pipe';
-import { ProductCreateDTO } from '../../shared/model/product-create';
+import { ProductCreateDTO, ProductUpdateDTO } from '../../shared/model/product-create';
 
 
 @Component({
@@ -68,23 +68,45 @@ export class ProductFormComponent implements OnInit {
       price: [0, [Validators.required, Validators.min(0.1)]],
       unitsInStock: [0, [Validators.required, Validators.min(1)]],
       imageUrl: [''],
-      categoryId: ['', Validators.required],
+      categoryName: ['', Validators.required],
       ownerName: [{ value: this.keycloakService.getUsername(), disabled: true }, Validators.required], 
     });
   }
 
   loadCategories(): void {
-    this.categoryService.getCategories().subscribe((data) => {
-      this.categories = data;
+    this.categoryService.getCategories().subscribe({
+      next: (data) => {
+        this.categories = data;
+        if (this.isEditMode && this.productForm.value.categoryName) {
+          const categoryExists = this.categories.some(
+            c => c.categoryName === this.productForm.value.categoryName
+          );
+          if (!categoryExists) {
+            this.productForm.patchValue({ categoryName: '' });
+          }
+        }
+      },
+      error: (err) => {
+        console.error('Failed to load categories', err);
+        this.uploadError = 'Failed to load categories. Please try again.';
+      }
     });
   }
 
   loadProduct(productId: string): void {
     this.productService.getProductById(productId).subscribe((product) => {
-      this.productForm.patchValue(product);
+      this.productForm.patchValue({
+        name: product.name,
+        brand: product.brand,
+        description: product.description,
+        price: product.price,
+        unitsInStock: product.unitsInStock,
+        imageUrl: product.imageUrl,
+        categoryName: product.categoryName, 
+        ownerName: product.ownerName
+      });
       if (product.imageUrl) {
         this.selectedImageUrl = product.imageUrl;
-        this.productForm.patchValue({ imageUrl: product.imageUrl });
       }
     });
   }
@@ -196,29 +218,53 @@ onFileSelected(event: any): void {
   }
 
   saveProduct(): void {
-
     if (this.productForm.invalid) {
       this.productForm.markAllAsTouched();
       return;
     }
+  
+    const userId = this.keycloakService.getUserId();
+    if (!userId) {
+      this.uploadError = 'You must be logged in to create/update a product';
+      return;
+    }
+  
     const formValue = this.productForm.value;
-    const productData: ProductCreateDTO = {
-      name: formValue.name,
-      brand: formValue.brand || undefined,
-      description: formValue.description,
+    
+    // Enhanced category validation
+    if (!formValue.categoryName || formValue.categoryName === 'undefined') {
+      this.uploadError = 'Please select a valid category';
+      return;
+    }
+  
+    // Proper image URL handling
+    let finalImageUrl: string | null = null;
+    if (this.selectedImageUrl) {
+      if (typeof this.selectedImageUrl === 'string') {
+        // If it's already a string (existing image URL)
+        finalImageUrl = this.selectedImageUrl;
+      } else {
+        // If it's a SafeValue (new uploaded image)
+        const unsafeUrl = this.selectedImageUrl.toString();
+        // Extract just the URL part if it's a SafeValue wrapper
+        finalImageUrl = unsafeUrl.replace(/^SafeValue must use \[property\]=binding: /, '');
+      }
+    }
+  
+    const productData = {
+      ...formValue,
       price: Number(formValue.price),
       unitsInStock: Number(formValue.unitsInStock),
-      imageUrl: this.getImageUrlString(this.selectedImageUrl),
-      categoryId: formValue.categoryId,
-      ownerId: this.keycloakService.getUserId() ?? ''
+      imageUrl: finalImageUrl,
+      ownerId: userId
     };
-
+  
     if (this.isEditMode) {
-      const updateData = {
+      const productId = this.route.snapshot.paramMap.get('id')!;
+      this.productService.updateProduct(productId, {
         ...productData,
-        productId: this.route.snapshot.paramMap.get('id')!
-      };
-      this.productService.updateProduct(updateData.productId, updateData).subscribe({
+        productId: productId
+      }).subscribe({
         next: () => this.router.navigate(['/products']),
         error: (err) => this.handleError(err)
       });
@@ -229,11 +275,24 @@ onFileSelected(event: any): void {
       });
     }
   }
-    private handleError(err: any): void {
-      console.error('Operation failed', err);
-      this.isSubmitting = false;
+  private handleError(err: any): void {
+    console.error('Operation failed', err);
+    this.isSubmitting = false;
+    
+    if (err.status === 400) {
+      if (err.error?.message?.includes('category')) {
+        this.uploadError = 'Invalid category selected. Please choose a valid category.';
+      } else if (err.error?.errors) {
+        // Handle validation errors from backend
+        const errorMessages = Object.values(err.error.errors).join(', ');
+        this.uploadError = `Validation errors: ${errorMessages}`;
+      } else {
+        this.uploadError = 'Invalid form data. Please check all fields.';
+      }
+    } else {
       this.uploadError = err.message || 'Operation failed. Please try again.';
     }
+  }
 
     private getImageUrlString(image: SafeUrl | string | null): string | undefined {
       if (!image) return undefined;

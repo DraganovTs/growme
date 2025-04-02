@@ -82,7 +82,7 @@ public class ProductServiceImpl implements ProductService {
         log.info("Creating new product: {}", productRequestDTO.getName());
 
 
-        Category category = categoryRepository.findById(productRequestDTO.getCategoryId())
+        Category category = categoryRepository.findByCategoryName(productRequestDTO.getCategoryName())
                 .orElseThrow(() -> new RuntimeException("Category not found"));
 
         Owner owner = ownerRepository.findById(productRequestDTO.getOwnerId())

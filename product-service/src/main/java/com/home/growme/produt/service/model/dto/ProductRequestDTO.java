@@ -29,8 +29,8 @@ public class ProductRequestDTO {
 
     private String imageUrl;
 
-    @NotNull(message = "Category ID is required")
-    private UUID categoryId;
+    @NotNull(message = "Category name is required")
+    private String categoryName;
 
     @NotNull(message = "Owner ID is required")
     private UUID ownerId;
