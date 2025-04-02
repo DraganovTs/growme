@@ -29,3 +29,5 @@ spring:
 kafka:
   topics:
     role-assignment: user.role.assignments
+  consumer:
+    group-id: user-service-group

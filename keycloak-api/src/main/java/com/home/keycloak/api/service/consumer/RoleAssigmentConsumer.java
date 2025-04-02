@@ -19,7 +19,7 @@ public class RoleAssigmentConsumer {
 
     @KafkaListener(
             topics = "${kafka.topics.role-assignment}",
-            containerFactory = "roleAssignmentListenerFactory"
+            containerFactory = "kafkaListenerContainerFactory"
     )
     public void consumeRoleAssignment(RoleAssignmentMessage message) {
         try {

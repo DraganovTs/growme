@@ -17,9 +17,8 @@ spring:
   kafka:
     bootstrap-servers: localhost:9091,localhost:9092,localhost:9093
     consumer:
+      group-id: keycloak-role-service
       properties:
-        max.poll.interval.ms: 300000
-        session.timeout.ms: 10000
         spring.json.trusted.packages: "*"
 
 jwt:
