@@ -34,5 +34,6 @@ logging:
 kafka:
   topics:
     role-assignment: user.role.assignments
+    role-assignment-result: user.role.assignments.result
   consumer:
     group-id: keycloak-role-service

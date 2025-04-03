@@ -5,7 +5,7 @@ import com.home.user.service.mapper.UserMapper;
 import com.home.user.service.model.dto.KeycloakUserDTO;
 import com.home.user.service.model.dto.UserDTO;
 import com.home.user.service.model.entity.User;
-import com.home.user.service.publisher.RoleAssigmentEventPublisher;
+import com.home.user.service.publisher.RoleEventPublisher;
 import com.home.user.service.repository.UserRepository;
 import com.home.user.service.service.UserService;
 import org.springframework.stereotype.Service;
@@ -18,13 +18,13 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-    private final RoleAssigmentEventPublisher roleAssigmentEventPublisher;
+    private final RoleEventPublisher roleEventPublisher;
 
     public UserServiceImpl(UserRepository userRepository, UserMapper userMapper,
-                           RoleAssigmentEventPublisher roleAssigmentEventPublisher) {
+                           RoleEventPublisher roleEventPublisher) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
-        this.roleAssigmentEventPublisher = roleAssigmentEventPublisher;
+        this.roleEventPublisher = roleEventPublisher;
     }
 
     @Override
@@ -53,7 +53,7 @@ public class UserServiceImpl implements UserService {
         user = userMapper.updateUserInitialAccount(user,userDTO);
 
         if (userDTO.getRoles() != null && !userDTO.getRoles().isEmpty()) {
-            roleAssigmentEventPublisher.publishRoleAssignments(id.toString(), userDTO.getRoles());
+            roleEventPublisher.publishRoleAssignments(id.toString(), userDTO.getRoles());
         }
         return userMapper.mapUserToUserDTO(userRepository.save(user));
     }
