@@ -5,6 +5,7 @@ import { environment } from '../../environment/environments';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { KeycloakService } from '../../services/keycloak.service';
+import { catchError, switchMap, of } from 'rxjs';
 
 @Component({
   selector: 'app-complete-profile',
@@ -32,6 +33,7 @@ export class CompleteProfileComponent {
 
   availableRoles: string[] = ['Buyer', 'Seller'];
   submitted = false;
+  errorMessage: string = '';
 
   constructor(
     private http: HttpClient,
@@ -46,53 +48,74 @@ export class CompleteProfileComponent {
     const userId = this.keycloakService.getUserId();
     const email = this.keycloakService.getEmail();
     const username = this.keycloakService.getUsername();
-  
-    if (userId) {
-      this.userProfile.id = userId;
-    } else {
-      console.error('User ID not found');
-    }
-  
-    if (email) {
-      this.userProfile.email = email;
-    } else {
-      console.warn('Email not found in Keycloak');
-    }
-  
-    if (username) {
-      this.userProfile.username = username;
-    } else {
-      console.warn('Username not found in Keycloak');
-    }
+
+    this.userProfile.id = userId || '';
+    this.userProfile.email = email || '';
+    this.userProfile.username = username || '';
+
+    if (!userId) console.error('User ID not found');
+    if (!email) console.warn('Email not found in Keycloak');
+    if (!username) console.warn('Username not found in Keycloak');
   }
 
   toggleRole(role: string) {
     const index = this.userProfile.roles.indexOf(role);
     if (index === -1) {
-      this.userProfile.roles.push(role); 
+      this.userProfile.roles.push(role);
     } else {
       this.userProfile.roles.splice(index, 1);
     }
   }
 
+  /** Submit profile and sync user with backend */
   submitProfile() {
     this.submitted = true;
     if (!this.isFormValid()) return;
   
     const apiUrl = `${environment.userApi}/update/${this.userProfile.id}`;
   
+    console.log('🚀 Sending profile update:', this.userProfile); // ✅ Debug log
+  
     this.http.put(apiUrl, this.userProfile).subscribe({
       next: () => {
-        alert('Profile updated successfully!');
-        this.router.navigate(['/home']); 
+        console.log('✅ Profile updated successfully!');
+        
+        // 🔹 Call syncUserWithBackend() after profile update
+        this.syncUserWithBackend(); 
+  
+        this.router.navigate(['/home']);
       },
       error: (error) => {
-        console.error('Error updating profile:', error);
+        console.error('❌ Error updating profile:', error);
         alert('Failed to update profile. Please try again.');
       },
     });
   }
+  
 
+  /** Ensure the user is synced with the backend after updating */
+  private syncUserWithBackend() {
+    const syncUrl = `${environment.userApi}/sync`;
+    const syncData = {
+      userId: this.userProfile.id,
+      username: this.userProfile.username,
+      email: this.userProfile.email,
+      firstName: this.userProfile.firstName,
+      lastName: this.userProfile.lastName,
+      roles: this.userProfile.roles,
+    };
+  
+    console.log('🛠️ Preparing to sync user with backend:', syncData); // ✅ Debug log
+  
+    this.http.post(syncUrl, syncData).subscribe({
+      next: () => console.log('✅ User synced successfully!'),
+      error: (error) => console.error('❌ Sync failed:', error),
+    });
+  }
+  
+  
+
+  /** Validate required fields */
   private isFormValid(): boolean {
     return (
       !!this.userProfile.firstName &&
@@ -105,5 +128,4 @@ export class CompleteProfileComponent {
       this.userProfile.roles.length > 0
     );
   }
-  
 }

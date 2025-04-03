@@ -1,8 +1,8 @@
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { BehaviorSubject, Observable, from, of } from 'rxjs';
-import { catchError, switchMap, tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, from, of, throwError } from 'rxjs';
+import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { environment } from '../environment/environments';
 import Keycloak from 'keycloak-js';
 import { isPlatformBrowser } from '@angular/common';
@@ -59,17 +59,18 @@ export class KeycloakService {
 
       localStorage.setItem('userId', userInfo.userId);
 
-      if (!this.hasRequiredRole(userRoles)) {
-        console.log("Redirecting to complete profile...");
-
-        this.ngZone.run(() => {
-          this.router.navigate(['/complete-profile']).then(success => {
-            console.log('Navigation success:', success);
-          }).catch(err => {
-            console.error('Navigation error:', err);
+      this.syncUserWithBackend().subscribe(() => {
+        if (!this.hasRequiredRole(userRoles)) {
+          console.log("Redirecting to complete profile...");
+          this.ngZone.run(() => {
+            this.router.navigate(['/complete-profile']).then(success => {
+              console.log('Navigation success:', success);
+            }).catch(err => {
+              console.error('Navigation error:', err);
+            });
           });
-        });
-      }
+        }
+      });
 
       this.startTokenRefresh();
     }
@@ -133,7 +134,44 @@ export class KeycloakService {
 
 
   register(): Observable<void> {
-    return from(this.keycloak?.register() || Promise.resolve());
+    if (!this.keycloak) {
+      return of(undefined);
+    }
+
+    return from(this.keycloak.register()).pipe(
+      switchMap(() => from(this.keycloak!.init({ onLoad: 'check-sso', checkLoginIframe: false }))),
+      switchMap(authenticated => {
+        if (!authenticated || !this.keycloak?.tokenParsed) {
+          throw new Error('Authentication failed');
+        }
+
+        const userRoles = this.keycloak.tokenParsed.realm_access?.roles || [];
+        this.updateAuthState(true);
+        
+        console.log("📡 Calling syncUserWithBackend()...");
+
+
+        return this.syncUserWithBackend().pipe(
+          switchMap(() => {
+            const redirectUrl = this.hasRequiredRole(userRoles) ? '/dashboard' : '/update';
+            return from(this.ngZone.run(() => this.router.navigate([redirectUrl])));
+          }),
+          map(() => void 0)
+        );
+      }),
+      catchError(error => {
+        console.error('Registration failed:', error);
+        this.updateAuthState(false);
+        return of(void 0);
+      })
+    );
+  }
+  
+  
+  
+  private updateAuthState(isAuthenticated: boolean): void {
+    this.isAuthenticatedSubject.next(isAuthenticated);
+    localStorage.setItem('isAuthenticated', JSON.stringify(isAuthenticated));
   }
 
   getUserId(): string | null {
@@ -148,6 +186,34 @@ export class KeycloakService {
     const requiredRoles = ['SELLER', 'BUYER', 'ADMIN'];
     return userRoles.some(role => requiredRoles.includes(role.toUpperCase()));
   }
+
+  private syncUserWithBackend(): Observable<any> {
+    if (!this.keycloak?.tokenParsed) {
+      console.warn("❌ No Keycloak token parsed, skipping sync.");
+      return of(null);
+    }
+  
+    const userData = {
+      userId: this.keycloak.tokenParsed.sub,
+      username: this.keycloak.tokenParsed['preferred_username'],
+      email: this.keycloak.tokenParsed['email'],
+      firstName: this.keycloak.tokenParsed['given_name'] || '',
+      lastName: this.keycloak.tokenParsed['family_name'] || ''
+    };
+  
+    console.log("🚀 Syncing user with backend:", userData);
+    console.log(`🔗 API Endpoint: ${environment.userApi}/sync`);
+  
+    return this.http.post(`${environment.userApi}/sync`, userData).pipe(
+      tap(() => console.log('✅ User synced successfully with backend')),
+      catchError(error => {
+        console.error('❌ Failed to sync user:', error);
+        return throwError(() => new Error('Sync failed')); // Ensure error is not silently ignored
+      })
+    );
+  }
+  
+  
 
   hasRole(role: string): boolean {
     return this.keycloak?.tokenParsed?.realm_access?.roles?.includes(role) ?? false;

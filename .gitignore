@@ -234,3 +234,5 @@ docker-compose/volume-data/mysql_keycloak_data/performance_schema/users_145.sdi
 docker-compose/volume-data/mysql_keycloak_data/performance_schema/variables_by_thr_184.sdi
 docker-compose/volume-data/mysql_keycloak_data/performance_schema/variables_info_187.sdi
 docker-compose/volume-data/mysql_keycloak_data/sys/sys_config.ibd
+/kafka-volumes/
+/docker-compose/volume-data/
