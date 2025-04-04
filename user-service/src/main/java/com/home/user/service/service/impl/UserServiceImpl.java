@@ -5,7 +5,7 @@ import com.home.user.service.mapper.UserMapper;
 import com.home.user.service.model.dto.KeycloakUserDTO;
 import com.home.user.service.model.dto.UserDTO;
 import com.home.user.service.model.entity.User;
-import com.home.user.service.publisher.RoleEventPublisher;
+import com.home.user.service.kafka.publisher.RoleEventPublisher;
 import com.home.user.service.repository.UserRepository;
 import com.home.user.service.service.UserService;
 import org.springframework.stereotype.Service;
