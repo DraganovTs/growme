@@ -1,5 +1,6 @@
 package com.home.growme.produt.service.service.impl;
 
+import com.home.growme.common.module.events.UserCreatedEvent;
 import com.home.growme.produt.service.mapper.ProductMapper;
 import com.home.growme.produt.service.model.dto.OwnerDTO;
 import com.home.growme.produt.service.model.entity.Owner;
@@ -30,5 +31,11 @@ public class OwnerServiceImpl implements OwnerService {
 //                .collect(Collectors.toList());
 
         return null;
+    }
+
+    @Override
+    public void createOwner(UserCreatedEvent event) {
+        Owner owner = ProductMapper.mapUserCreatedEventToOwner(event);
+        ownerRepository.save(owner);
     }
 }

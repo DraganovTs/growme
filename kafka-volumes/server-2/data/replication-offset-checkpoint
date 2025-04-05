@@ -1,19 +1,20 @@
 0
-18
+19
 __consumer_offsets 0 0
 __consumer_offsets 32 0
 __consumer_offsets 21 0
-user.role.assignments 0 18
+user.role.assignments 0 24
 __consumer_offsets 19 0
 __consumer_offsets 7 0
-__consumer_offsets 25 29
+__consumer_offsets 25 52
 __consumer_offsets 41 0
 __consumer_offsets 49 0
 __consumer_offsets 46 8
 __consumer_offsets 3 0
 __consumer_offsets 27 0
+user.created 0 3
 __consumer_offsets 15 0
-__consumer_offsets 12 401
+__consumer_offsets 12 418
 __consumer_offsets 36 0
 __consumer_offsets 34 0
 __consumer_offsets 11 0
