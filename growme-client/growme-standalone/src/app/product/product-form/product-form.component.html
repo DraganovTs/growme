@@ -67,7 +67,7 @@
             <div class="row">
               <div class="col-md-4 mb-3" *ngFor="let image of filteredImages">
                 <div class="card image-card" [class.selected]="selectedImageUrl === image" (click)="selectExistingImage(image)">
-                  <img [src]="image" class="card-img-top img-thumbnail">
+                  <img [src]="getImageUrlForExisting(image)" class="card-img-top img-thumbnail">
                   <div class="card-body p-2">
                     <small class="text-muted text-truncate d-block">{{ image | filename }}</small>
                   </div>
@@ -102,7 +102,7 @@
         <div class="mt-3" *ngIf="selectedImageUrl">
           <label class="form-label">Selected Image Preview</label>
           <div class="d-flex align-items-center">
-            <img [src]="selectedImageUrl" class="img-thumbnail me-3" style="max-width: 200px;">
+            <img [src]="getImageUrlForPreview(selectedImageUrl)" class="img-thumbnail me-3" style="max-width: 200px;">
             <div>
               <button class="btn btn-sm btn-outline-danger" (click)="clearImageSelection()">
                 Remove

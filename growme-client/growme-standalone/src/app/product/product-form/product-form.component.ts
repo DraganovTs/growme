@@ -41,11 +41,11 @@ export class ProductFormComponent implements OnInit {
     private fb: FormBuilder,
     private productService: ProductService,
     private categoryService: CategoryService,
-    private imageService: ImageService,
+    public imageService: ImageService,
     private route: ActivatedRoute,
     private router: Router,
     private keycloakService: KeycloakService,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
   ) {}
 
   ngOnInit(): void {
@@ -241,13 +241,13 @@ onFileSelected(event: any): void {
     let finalImageUrl: string | null = null;
     if (this.selectedImageUrl) {
       if (typeof this.selectedImageUrl === 'string') {
-        // If it's already a string (existing image URL)
-        finalImageUrl = this.selectedImageUrl;
+        // If it's already a string (existing image name)
+        finalImageUrl = this.imageService.getImageUrl(this.selectedImageUrl);
       } else {
         // If it's a SafeValue (new uploaded image)
         const unsafeUrl = this.selectedImageUrl.toString();
-        // Extract just the URL part if it's a SafeValue wrapper
-        finalImageUrl = unsafeUrl.replace(/^SafeValue must use \[property\]=binding: /, '');
+        // Extract just the filename if needed
+        finalImageUrl = unsafeUrl; // or parse filename if needed
       }
     }
   
@@ -294,8 +294,11 @@ onFileSelected(event: any): void {
     }
   }
 
-    private getImageUrlString(image: SafeUrl | string | null): string | undefined {
-      if (!image) return undefined;
-      return typeof image === 'string' ? image : image.toString();
-    }
+  public getImageUrlForExisting(image: string): string {
+    return this.imageService.getImageUrl(image);
+  }
+  
+  public getImageUrlForPreview(image: SafeUrl): SafeUrl {
+    return image;
+  }
   }

@@ -22,4 +22,8 @@ export class ImageService {
   getExistingImages(): Observable<string[]> {
     return this.http.get<string[]>(`${this.apiUrl}/images`);
   }
+
+  getImageUrl(filename: string): string {
+    return `${this.apiUrl}/images/${filename}`;
+  }
 }

@@ -31,12 +31,15 @@ public class ImageServiceImpl implements ImageService {
 
             String originalFilename = file.getOriginalFilename();
             String fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
-            String uniqueFilename = System.currentTimeMillis() + fileExtension;
+            String simpleName = originalFilename.substring(0, originalFilename.lastIndexOf("."))
+
+                    .replaceAll("[^a-zA-Z0-9]", "_");
+            String uniqueFilename = simpleName + "_" + System.currentTimeMillis() + fileExtension;
 
             Path targetLocation = uploadPath.resolve(uniqueFilename);
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
-            return "/uploads/" + uniqueFilename;
+            return uniqueFilename;
         } catch (IOException ex) {
             throw new RuntimeException("Could not store file: " + ex.getMessage());
         }
@@ -47,7 +50,7 @@ public class ImageServiceImpl implements ImageService {
         try (Stream<Path> paths = Files.walk(Paths.get(uploadDir), 1)) {
             return paths
                     .filter(Files::isRegularFile)
-                    .map(path -> "/uploads/" + path.getFileName().toString())
+                    .map(path -> path.getFileName().toString())
                     .collect(Collectors.toList());
         } catch (IOException e) {
             throw new RuntimeException("Failed to read stored files", e);

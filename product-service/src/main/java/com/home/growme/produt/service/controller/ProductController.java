@@ -9,11 +9,16 @@ import com.home.growme.produt.service.service.ProductService;
 import com.home.growme.produt.service.specification.ProductSpecParams;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 
@@ -21,6 +26,9 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "/api/products", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ProductController {
+
+    @Value("${app.upload.dir}")
+    private String uploadDir;
 
     private final ProductService productService;
     private final ImageService imageService;
@@ -82,6 +90,18 @@ public class ProductController {
         return ResponseEntity.ok(imageService.getAllImages());
     }
 
+    @GetMapping("/images/{filename:.+}")
+    public ResponseEntity<byte[]> getImage(@PathVariable String filename) {
+        try {
+            Path file = Paths.get(uploadDir).resolve(filename);
+            byte[] imageBytes = Files.readAllBytes(file);
 
+            return ResponseEntity.ok()
+                    .contentType(MediaType.IMAGE_JPEG)
+                    .body(imageBytes);
+        } catch (IOException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 
 }

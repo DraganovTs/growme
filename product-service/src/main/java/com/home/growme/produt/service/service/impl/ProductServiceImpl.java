@@ -91,9 +91,9 @@ public class ProductServiceImpl implements ProductService {
 
         Product product = productMapper.mapProductRequestDTOToProduct(productRequestDTO, category, owner);
 
-        if (productRequestDTO.getImageUrl() != null &&
-                !productRequestDTO.getImageUrl().isBlank()) {
-            product.setImageUrl(productRequestDTO.getImageUrl());
+        if (productRequestDTO.getImageUrl() != null) {
+            String filename = extractFilename(productRequestDTO.getImageUrl());
+            product.setImageUrl(filename);
         }
 
 
@@ -157,5 +157,9 @@ public class ProductServiceImpl implements ProductService {
                 .pageSize(pageSize)
                 .dataList(productResponseDTOList)
                 .build();
+    }
+
+    private String extractFilename(String url) {
+        return url.substring(url.lastIndexOf('/') + 1);
     }
 }
