@@ -236,4 +236,4 @@ docker-compose/volume-data/mysql_keycloak_data/performance_schema/variables_info
 docker-compose/volume-data/mysql_keycloak_data/sys/sys_config.ibd
 /kafka-volumes/
 /docker-compose/volume-data/
-/kafka-volumes/
+

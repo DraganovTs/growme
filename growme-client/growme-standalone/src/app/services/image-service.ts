@@ -12,10 +12,21 @@ export class ImageService {
   constructor(private http: HttpClient) {}
 
  
-  uploadImage(imageFile: File): Observable<{ url: string }> {
-    const formData = new FormData();
-    formData.append('file', imageFile);
+  getImageUrl(filename: string): string {
+    if (!filename) return this.getDefaultImageUrl();
     
+    const cleanName = filename.split('/').pop() || filename;
+    
+    return `${this.apiUrl}/images/${encodeURIComponent(cleanName)}`;
+  }
+
+  getDefaultImageUrl(): string {
+    return 'assets/images/default-product.jpg';
+  }
+
+  uploadImage(file: File): Observable<{ url: string }> {
+    const formData = new FormData();
+    formData.append('file', file);
     return this.http.post<{ url: string }>(`${this.apiUrl}/upload-image`, formData);
   }
 
@@ -23,7 +34,14 @@ export class ImageService {
     return this.http.get<string[]>(`${this.apiUrl}/images`);
   }
 
-  getImageUrl(filename: string): string {
-    return `${this.apiUrl}/images/${filename}`;
+  getRecentImages(): Observable<ImageDisplay[]> {
+    return this.http.get<ImageDisplay[]>(`${this.apiUrl}/images/recent`);
   }
+  
 }
+
+export interface ImageDisplay {
+    filename: string;
+    displayName: string;
+    url: string;
+  }

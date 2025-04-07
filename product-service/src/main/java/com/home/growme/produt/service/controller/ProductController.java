@@ -1,9 +1,6 @@
 package com.home.growme.produt.service.controller;
 
-import com.home.growme.produt.service.model.dto.ImageUploadResponse;
-import com.home.growme.produt.service.model.dto.ProductRequestDTO;
-import com.home.growme.produt.service.model.dto.ProductResponseDTO;
-import com.home.growme.produt.service.model.dto.ProductResponseListDTO;
+import com.home.growme.produt.service.model.dto.*;
 import com.home.growme.produt.service.service.ImageService;
 import com.home.growme.produt.service.service.ProductService;
 import com.home.growme.produt.service.specification.ProductSpecParams;
@@ -102,6 +99,11 @@ public class ProductController {
         } catch (IOException e) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping("/images/recent")
+    public ResponseEntity<List<ImageDisplayDTO>> getRecentImages() {
+        return ResponseEntity.ok(imageService.getRecentImagesForDisplay());
     }
 
 }

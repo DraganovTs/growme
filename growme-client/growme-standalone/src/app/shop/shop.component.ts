@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { PaginationModule } from 'ngx-bootstrap/pagination';
 import { ShopParams } from '../shared/model/shopparams';
 import { ProductItemComponent } from "./product-item/product-item.component";
+import { ImageService } from '../services/image-service';
 
 @Component({
   selector: 'app-shop',
@@ -26,7 +27,7 @@ export class ShopComponent implements OnInit {
     {name: 'Price: High to low', value: 'priceDesc'}
 
   ];
-  constructor(private shopService: ShopService){
+  constructor(private shopService: ShopService, public imageService: ImageService){
     this.shopParams = this.shopService.getShopParams();
 
   }

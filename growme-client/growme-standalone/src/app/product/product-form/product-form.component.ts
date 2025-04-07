@@ -6,7 +6,7 @@ import { IProduct } from '../../shared/model/product';
 import { ProductService } from '../../services/product-service'
 import { CommonModule } from '@angular/common';
 import { CategoryService } from '../../services/category-service';
-import { ImageService } from '../../services/image-service';
+import { ImageDisplay, ImageService } from '../../services/image-service';
 import { KeycloakService } from '../../services/keycloak.service';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { finalize } from 'rxjs';
@@ -36,6 +36,8 @@ export class ProductFormComponent implements OnInit {
   imageSearchTerm = '';
   uploadError: string | null = null;
   maxFileSize = 2 * 1024 * 1024; // 2MB
+  recentImages: ImageDisplay[] = [];
+
 
   constructor(
     private fb: FormBuilder,
@@ -52,6 +54,8 @@ export class ProductFormComponent implements OnInit {
     this.initializeForm();
     this.loadCategories();
     this.loadExistingImages();
+    this.loadRecentImages();
+
 
     const productId = this.route.snapshot.paramMap.get('id');
     if (productId) {
@@ -113,12 +117,24 @@ export class ProductFormComponent implements OnInit {
 
   loadExistingImages(): void {
     this.imageService.getExistingImages().subscribe({
-      next: (images) => {
+      next: (images: string[]) => {
         this.existingImages = images;
         this.filteredImages = [...images];
       },
       error: (err) => {
         console.error('Failed to load existing images', err);
+        this.uploadError = 'Failed to load existing images. Please try again later.';
+      }
+    });
+  }
+
+  loadRecentImages(): void {
+    this.imageService.getRecentImages().subscribe({
+      next: (images: ImageDisplay[]) => {
+        this.recentImages = images;
+      },
+      error: (err) => {
+        console.error('Failed to load recent images', err);
       }
     });
   }
@@ -168,11 +184,13 @@ onFileSelected(event: any): void {
   reader.readAsDataURL(file);
 }
 
-  selectExistingImage(imageUrl: string): void {
-    this.selectedImageUrl = imageUrl;
-    this.selectedImageFile = null;
-    this.productForm.patchValue({ imageUrl: imageUrl });
-  }
+
+
+selectExistingImage(image: ImageDisplay): void {
+  this.selectedImageUrl = this.imageService.getImageUrl(image.filename);
+  this.selectedImageFile = null;
+  this.productForm.patchValue({ imageUrl: image.filename });
+}
 
   clearImageSelection(): void {
     this.selectedImageUrl = null;
@@ -298,7 +316,11 @@ onFileSelected(event: any): void {
     return this.imageService.getImageUrl(image);
   }
   
-  public getImageUrlForPreview(image: SafeUrl): SafeUrl {
-    return image;
+  getImageUrlForPreview(image: string | SafeUrl): string | SafeUrl {
+    if (typeof image === 'string') {
+      // Check if it's already a full URL or needs prefix
+      return image.startsWith('http') ? image : this.imageService.getImageUrl(image);
+    }
+    return image; 
   }
   }
