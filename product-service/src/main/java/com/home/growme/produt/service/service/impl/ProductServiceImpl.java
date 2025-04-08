@@ -160,6 +160,9 @@ public class ProductServiceImpl implements ProductService {
     }
 
     private String extractFilename(String url) {
-        return url.substring(url.lastIndexOf('/') + 1);
+        String filename = url.substring(url.lastIndexOf('/') + 1);
+        String nameWithoutExt = filename.substring(0, filename.lastIndexOf("."));
+        String extension = filename.substring(filename.lastIndexOf("."));
+        return nameWithoutExt.replaceAll("[^a-zA-Z0-9]", "_") + extension;
     }
 }

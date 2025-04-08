@@ -27,7 +27,7 @@ export class ShopComponent implements OnInit {
     {name: 'Price: High to low', value: 'priceDesc'}
 
   ];
-  constructor(private shopService: ShopService, public imageService: ImageService){
+  constructor(private shopService: ShopService){
     this.shopParams = this.shopService.getShopParams();
 
   }

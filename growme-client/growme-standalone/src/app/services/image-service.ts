@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpRequest } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../environment/environments';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 
 @Injectable({
   providedIn: 'root',
@@ -9,14 +10,12 @@ import { environment } from '../environment/environments';
 export class ImageService {
   private apiUrl = environment.productApi; 
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient,private sanitizer: DomSanitizer) {}
 
  
   getImageUrl(filename: string): string {
     if (!filename) return this.getDefaultImageUrl();
-    
     const cleanName = filename.split('/').pop() || filename;
-    
     return `${this.apiUrl}/images/${encodeURIComponent(cleanName)}`;
   }
 

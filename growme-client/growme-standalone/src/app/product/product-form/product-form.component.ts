@@ -130,7 +130,7 @@ export class ProductFormComponent implements OnInit {
 
   loadRecentImages(): void {
     this.imageService.getRecentImages().subscribe({
-      next: (images: ImageDisplay[]) => {
+      next: (images) => {
         this.recentImages = images;
       },
       error: (err) => {

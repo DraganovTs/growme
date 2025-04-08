@@ -1,22 +1,21 @@
-<div class="card h-100 shadow-sm" *ngIf="product">
+<!-- product-item.component.html -->
+<div class="card h-100 shadow-sm">
     <div class="image position-relative" style="cursor: pointer;">
-      <!-- Debug info - remove in production -->
-      <div *ngIf="showDebug" class="alert alert-warning small p-1 mb-1">
-        <div>Original: {{product.imageUrl}}</div>
-        <div>Current: {{currentImageUrl}}</div>
+      <!-- Debug info - now properly type-checked -->
+      <div class="alert alert-warning small p-1 mb-1" *ngIf="false">
+        <div>Original: {{ product?.imageUrl }}</div>
+        <div>Current: {{ imageUrl }}</div>
       </div>
-      
-      <img [src]="currentImageUrl" 
-           [alt]="'Image of ' + product.name"
-           class="img-fluid bg-success-subtle w-100">
+  
+      <img [src]="imageUrl" [alt]="product?.name" class="product-image" />
   
       <div class="hover-overlay">
         <button class="btn btn-primary">Add to Cart</button>
       </div>
     </div>
-    
+  
     <div class="card-body">
-      <h5>{{product.name}}</h5>
-      <span>{{product.price | currency}}</span>
+      <h5>{{ product?.name }}</h5>
+      <span>{{ product?.price | currency }}</span>
     </div>
   </div>
