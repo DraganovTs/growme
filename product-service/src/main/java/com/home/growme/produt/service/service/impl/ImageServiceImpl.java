@@ -1,5 +1,6 @@
 package com.home.growme.produt.service.service.impl;
 
+import com.home.growme.produt.service.exception.FileStorageException;
 import com.home.growme.produt.service.model.dto.ImageDisplayDTO;
 import com.home.growme.produt.service.model.dto.ImageMetadataDTO;
 import com.home.growme.produt.service.service.ImageService;
@@ -31,24 +32,24 @@ public class ImageServiceImpl implements ImageService {
     @Override
     public String uploadImage(MultipartFile file) {
         try {
+            // 1. Prepare upload directory
             Path uploadPath = Paths.get(uploadDir);
             if (!Files.exists(uploadPath)) {
                 Files.createDirectories(uploadPath);
             }
 
-            String originalFilename = file.getOriginalFilename();
-            String fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
-            String simpleName = originalFilename.substring(0, originalFilename.lastIndexOf("."))
+            // 2. Generate safe filename
+            String filename = generateUniqueFilename(file.getOriginalFilename());
 
-                    .replaceAll("[^a-zA-Z0-9]", "_");
-            String uniqueFilename = simpleName + "_" + System.currentTimeMillis() + fileExtension;
+            // 3. Store file
+            Files.copy(file.getInputStream(),
+                    uploadPath.resolve(filename),
+                    StandardCopyOption.REPLACE_EXISTING);
 
-            Path targetLocation = uploadPath.resolve(uniqueFilename);
-            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-
-            return uniqueFilename;
+            // 4. Return just the filename
+            return filename;
         } catch (IOException ex) {
-            throw new RuntimeException("Could not store file: " + ex.getMessage());
+            throw new FileStorageException("Could not store file: " + ex.getMessage());
         }
     }
 
@@ -99,6 +100,13 @@ public class ImageServiceImpl implements ImageService {
         } catch (IOException e) {
             return 0;
         }
+    }
+
+    private String generateUniqueFilename(String originalFilename) {
+        String fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
+        String baseName = originalFilename.substring(0, originalFilename.lastIndexOf("."))
+                .replaceAll("[^a-zA-Z0-9]", "_");
+        return baseName + "_" + System.currentTimeMillis() + fileExtension;
     }
 }
 

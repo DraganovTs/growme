@@ -10,12 +10,16 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 export class ImageService {
   private apiUrl = environment.productApi; 
 
-  constructor(private http: HttpClient,private sanitizer: DomSanitizer) {}
+  constructor(private http: HttpClient) {}
 
  
   getImageUrl(filename: string): string {
     if (!filename) return this.getDefaultImageUrl();
-    const cleanName = filename.split('/').pop() || filename;
+    
+    let cleanName = decodeURIComponent(filename);
+    
+    cleanName = cleanName.split('/').pop() || cleanName;
+    
     return `${this.apiUrl}/images/${encodeURIComponent(cleanName)}`;
   }
 

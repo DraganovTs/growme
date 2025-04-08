@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class ProductSpecParams {
 
-    private int pageSize;
+    private Integer pageSize;
     private String search;
     private String sort;
     private String owner;

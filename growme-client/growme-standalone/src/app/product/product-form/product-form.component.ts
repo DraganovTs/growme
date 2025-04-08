@@ -151,23 +151,19 @@ export class ProductFormComponent implements OnInit {
       .slice(0, 12);
   }
 
- // In your ProductFormComponent
-onFileSelected(event: any): void {
+
+ onFileSelected(event: any): void {
   this.uploadError = null;
   const file = event.target.files[0];
   
-  if (!file) {
-    return;
-  }
+  if (!file) return;
 
-  // Validate file type
-  const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
-  if (!validTypes.includes(file.type)) {
+  // Validate file type and size
+  if (!['image/jpeg', 'image/png', 'image/jpg'].includes(file.type)) {
     this.uploadError = 'Only JPG/PNG images are allowed';
     return;
   }
 
-  // Validate file size (2MB max)
   if (file.size > this.maxFileSize) {
     this.uploadError = 'Image size must be less than 2MB';
     return;
@@ -178,8 +174,10 @@ onFileSelected(event: any): void {
   // Create preview
   const reader = new FileReader();
   reader.onload = () => {
-    this.selectedImageUrl = this.sanitizer.bypassSecurityTrustUrl(reader.result as string);
-    this.productForm.patchValue({ imageUrl: file.name });
+    this.selectedImageUrl = reader.result as string;
+    this.productForm.patchValue({ 
+      imageUrl: file.name // Send original filename to backend
+    });
   };
   reader.readAsDataURL(file);
 }
@@ -224,9 +222,25 @@ selectExistingImage(image: ImageDisplay): void {
     this.imageService.uploadImage(this.selectedImageFile).pipe(
       finalize(() => this.isSubmitting = false)
     ).subscribe({
-      next: (response) => {
-        this.productForm.patchValue({ imageUrl: response.url });
-        this.saveProduct();
+      next: (response: any) => {  // Use proper interface instead of 'any' in production
+        try {
+          // Handle both string and object responses
+          const imageUrl = typeof response === 'string' 
+            ? response 
+            : response?.url || response?.filename || this.selectedImageFile?.name;
+          
+          if (!imageUrl) {
+            throw new Error('No image URL received');
+          }
+  
+          // Extract just the filename if it's a full URL
+          const filename = imageUrl.split('/').pop() || imageUrl;
+          this.productForm.patchValue({ imageUrl: filename });
+          this.saveProduct();
+        } catch (err) {
+          console.error('Error processing image upload:', err);
+          this.uploadError = 'Failed to process image upload response';
+        }
       },
       error: (err) => {
         console.error('Image upload failed', err);

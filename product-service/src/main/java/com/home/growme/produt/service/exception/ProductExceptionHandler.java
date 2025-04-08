@@ -20,6 +20,12 @@ public class ProductExceptionHandler {
         return buildErrorResponse(exception, webRequest, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(FileStorageException.class)
+    public ResponseEntity<ErrorResponseDTO> handleFileStorageException(FileStorageException exception, WebRequest webRequest){
+        return buildErrorResponse(exception, webRequest, HttpStatus.INSUFFICIENT_STORAGE);
+    }
+
+
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ResponseEntity<ErrorResponseDTO> handleMaxUploadSizeException(MaxUploadSizeExceededException exception, WebRequest webRequest){
         return buildErrorResponse(exception, webRequest, HttpStatus.PAYLOAD_TOO_LARGE);

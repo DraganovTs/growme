@@ -93,6 +93,9 @@ public class ProductServiceImpl implements ProductService {
 
         if (productRequestDTO.getImageUrl() != null) {
             String filename = extractFilename(productRequestDTO.getImageUrl());
+            if (filename.isBlank()) {
+                filename = "default_" + System.currentTimeMillis() + ".jpg";
+            }
             product.setImageUrl(filename);
         }
 
@@ -160,9 +163,41 @@ public class ProductServiceImpl implements ProductService {
     }
 
     private String extractFilename(String url) {
+        if (url == null || url.isEmpty()) {
+            return "default_" + System.currentTimeMillis() + ".jpg";
+        }
+
+        // Extract filename after last slash
         String filename = url.substring(url.lastIndexOf('/') + 1);
-        String nameWithoutExt = filename.substring(0, filename.lastIndexOf("."));
-        String extension = filename.substring(filename.lastIndexOf("."));
-        return nameWithoutExt.replaceAll("[^a-zA-Z0-9]", "_") + extension;
+
+        // Handle filenames without extension
+        int lastDotIndex = filename.lastIndexOf('.');
+        if (lastDotIndex <= 0) { // No extension or starts with dot
+            return sanitizeFilename(filename) + ".jpg";
+        }
+
+        // Separate name and extension
+        String nameWithoutExt = filename.substring(0, lastDotIndex);
+        String extension = filename.substring(lastDotIndex);
+
+        return sanitizeFilename(nameWithoutExt) + extension;
+    }
+
+    private String sanitizeFilename(String name) {
+        // 1. Replace problematic characters with underscore
+        String sanitized = name.replaceAll("[^a-zA-Z0-9._-]", "_");
+
+        // 2. Remove consecutive underscores
+        sanitized = sanitized.replaceAll("_{2,}", "_");
+
+        // 3. Remove leading/trailing underscores
+        sanitized = sanitized.replaceAll("^_+|_+$", "");
+
+        // 4. Ensure not empty
+        if (sanitized.isEmpty()) {
+            return "file_" + System.currentTimeMillis();
+        }
+
+        return sanitized;
     }
 }
