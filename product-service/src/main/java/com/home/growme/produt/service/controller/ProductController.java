@@ -77,9 +77,12 @@ public class ProductController {
     @PostMapping("/upload-image")
     public ResponseEntity<ImageUploadResponse> uploadImage(
             @RequestParam("file") MultipartFile file) {
-
-        String imageUrl = imageService.uploadImage(file);
-        return ResponseEntity.ok(new ImageUploadResponse(imageUrl));
+        String filename = imageService.uploadImage(file);
+        return ResponseEntity.ok(new ImageUploadResponse(
+                filename,          // ← Must include this
+                file.getOriginalFilename(),
+                "/images/" + filename
+        ));
     }
 
     @GetMapping("/images")

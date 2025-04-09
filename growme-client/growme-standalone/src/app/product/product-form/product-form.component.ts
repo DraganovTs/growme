@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, SecurityContext } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
@@ -71,9 +71,9 @@ export class ProductFormComponent implements OnInit {
       description: ['', [Validators.required, Validators.minLength(10)]],
       price: [0, [Validators.required, Validators.min(0.1)]],
       unitsInStock: [0, [Validators.required, Validators.min(1)]],
-      imageUrl: [''],
+      imageUrl: [''],  
       categoryName: ['', Validators.required],
-      ownerName: [{ value: this.keycloakService.getUsername(), disabled: true }, Validators.required], 
+      ownerName: [{ value: this.keycloakService.getUsername(), disabled: true }, Validators.required]
     });
   }
 
@@ -152,45 +152,55 @@ export class ProductFormComponent implements OnInit {
   }
 
 
- onFileSelected(event: any): void {
-  this.uploadError = null;
-  const file = event.target.files[0];
+  onFileSelected(event: any): void {
+    this.uploadError = null;
+    const file = event.target.files[0];
+    
+    if (!file) return;
   
-  if (!file) return;
+    // Validate file
+    if (!['image/jpeg', 'image/png', 'image/jpg'].includes(file.type)) {
+      this.uploadError = 'Only JPG/PNG images are allowed';
+      return;
+    }
+  
+    if (file.size > this.maxFileSize) {
+      this.uploadError = 'Image size must be less than 2MB';
+      return;
+    }
+  
+    this.selectedImageFile = file;
+    
+    // 1. Update the form FIRST
+    this.productForm.patchValue({ imageUrl: file.name });
+  
+    // 2. Then set the preview
+    this.selectedImageUrl = window.URL.createObjectURL(file);
 
-  // Validate file type and size
-  if (!['image/jpeg', 'image/png', 'image/jpg'].includes(file.type)) {
-    this.uploadError = 'Only JPG/PNG images are allowed';
-    return;
+    console.log('Selected file name:', file.name);
+
   }
 
-  if (file.size > this.maxFileSize) {
-    this.uploadError = 'Image size must be less than 2MB';
-    return;
-  }
 
-  this.selectedImageFile = file;
+
+  selectExistingImage(image: ImageDisplay): void {
+    // 1. Update the form FIRST
+    this.productForm.patchValue({ imageUrl: image.filename });
   
-  // Create preview
-  const reader = new FileReader();
-  reader.onload = () => {
-    this.selectedImageUrl = reader.result as string;
-    this.productForm.patchValue({ 
-      imageUrl: file.name // Send original filename to backend
-    });
-  };
-  reader.readAsDataURL(file);
-}
+    // 2. Then set the preview
+    this.selectedImageUrl = this.imageService.getImageUrl(image.filename);
+    this.selectedImageFile = null;
 
+    console.log('Existing image filename:', image.filename);
 
-
-selectExistingImage(image: ImageDisplay): void {
-  this.selectedImageUrl = this.imageService.getImageUrl(image.filename);
-  this.selectedImageFile = null;
-  this.productForm.patchValue({ imageUrl: image.filename });
-}
+  }
 
   clearImageSelection(): void {
+    // Clean up any object URL first
+    if (this.selectedImageUrl && typeof this.selectedImageUrl === 'string' && this.selectedImageUrl.startsWith('blob:')) {
+      window.URL.revokeObjectURL(this.selectedImageUrl);
+    }
+    
     this.selectedImageUrl = null;
     this.selectedImageFile = null;
     this.productForm.patchValue({ imageUrl: '' });
@@ -219,32 +229,19 @@ selectExistingImage(image: ImageDisplay): void {
   
     this.isSubmitting = true;
     
-    this.imageService.uploadImage(this.selectedImageFile).pipe(
-      finalize(() => this.isSubmitting = false)
-    ).subscribe({
-      next: (response: any) => {  // Use proper interface instead of 'any' in production
-        try {
-          // Handle both string and object responses
-          const imageUrl = typeof response === 'string' 
-            ? response 
-            : response?.url || response?.filename || this.selectedImageFile?.name;
-          
-          if (!imageUrl) {
-            throw new Error('No image URL received');
-          }
-  
-          // Extract just the filename if it's a full URL
-          const filename = imageUrl.split('/').pop() || imageUrl;
-          this.productForm.patchValue({ imageUrl: filename });
-          this.saveProduct();
-        } catch (err) {
-          console.error('Error processing image upload:', err);
-          this.uploadError = 'Failed to process image upload response';
+    this.imageService.uploadImage(this.selectedImageFile).subscribe({
+      next: (response) => {
+        if (!response.filename) {
+          throw new Error('Server did not return filename!');
         }
+        
+        // Update form IMMEDIATELY
+        this.productForm.patchValue({ imageUrl: response.filename });
+        this.saveProduct();
       },
       error: (err) => {
-        console.error('Image upload failed', err);
-        this.uploadError = 'Failed to upload image. Please try again.';
+        this.isSubmitting = false;
+        this.uploadError = err.message;
       }
     });
   }
@@ -255,58 +252,50 @@ selectExistingImage(image: ImageDisplay): void {
       return;
     }
   
-    const userId = this.keycloakService.getUserId();
-    if (!userId) {
-      this.uploadError = 'You must be logged in to create/update a product';
-      return;
-    }
-  
-    const formValue = this.productForm.value;
-    
-    // Enhanced category validation
-    if (!formValue.categoryName || formValue.categoryName === 'undefined') {
-      this.uploadError = 'Please select a valid category';
-      return;
-    }
-  
-    // Proper image URL handling
-    let finalImageUrl: string | null = null;
-    if (this.selectedImageUrl) {
-      if (typeof this.selectedImageUrl === 'string') {
-        // If it's already a string (existing image name)
-        finalImageUrl = this.imageService.getImageUrl(this.selectedImageUrl);
-      } else {
-        // If it's a SafeValue (new uploaded image)
-        const unsafeUrl = this.selectedImageUrl.toString();
-        // Extract just the filename if needed
-        finalImageUrl = unsafeUrl; // or parse filename if needed
-      }
-    }
+    // Get RAW form values (including disabled fields)
+    const formValue = this.productForm.getRawValue();
   
     const productData = {
       ...formValue,
       price: Number(formValue.price),
       unitsInStock: Number(formValue.unitsInStock),
-      imageUrl: finalImageUrl,
-      ownerId: userId
+      ownerId: this.keycloakService.getUserId(),
+      imageUrl: formValue.imageUrl || ''  // Fallback to empty string if null
     };
+  
+    // DEBUG: Log the data before saving
+    console.log('Saving product with imageUrl:', productData.imageUrl);
   
     if (this.isEditMode) {
       const productId = this.route.snapshot.paramMap.get('id')!;
-      this.productService.updateProduct(productId, {
-        ...productData,
-        productId: productId
-      }).subscribe({
-        next: () => this.router.navigate(['/products']),
+      this.productService.updateProduct(productId, productData).subscribe({
+        next: () => this.cleanUpAndNavigate(),
         error: (err) => this.handleError(err)
       });
     } else {
       this.productService.addProduct(productData).subscribe({
-        next: () => this.router.navigate(['/products']),
+        next: () => this.cleanUpAndNavigate(),
         error: (err) => this.handleError(err)
       });
     }
+    console.log('Form imageUrl before save:', this.productForm.value.imageUrl);
+
   }
+  
+  private cleanUpAndNavigate(): void {
+    // Clean up any object URLs
+    if (this.selectedImageUrl && typeof this.selectedImageUrl === 'string' && this.selectedImageUrl.startsWith('blob:')) {
+      window.URL.revokeObjectURL(this.selectedImageUrl);
+    }
+    console.log('Final imageUrl value:', this.productForm.value.imageUrl); // Debug log
+    this.router.navigate(['/products']);
+  }
+
+  handleImageError(event: Event): void {
+    const imgElement = event.target as HTMLImageElement;
+    imgElement.src = this.imageService.getDefaultImageUrl();
+  }
+
   private handleError(err: any): void {
     console.error('Operation failed', err);
     this.isSubmitting = false;
@@ -331,10 +320,50 @@ selectExistingImage(image: ImageDisplay): void {
   }
   
   getImageUrlForPreview(image: string | SafeUrl): string | SafeUrl {
+    if (!image) return this.imageService.getDefaultImageUrl();
+    
     if (typeof image === 'string') {
+      // Check if it's already a blob URL (preview)
+      if (image.startsWith('blob:')) {
+        return image;
+      }
       // Check if it's already a full URL or needs prefix
       return image.startsWith('http') ? image : this.imageService.getImageUrl(image);
     }
-    return image; 
+    return image;
   }
+
+  private getCleanFilename(url: string): string {
+    // Decode URI components first
+    let cleanName = decodeURIComponent(url);
+    // Extract just the filename part
+    cleanName = cleanName.split('/').pop() || cleanName;
+    // Remove any query parameters if present
+    cleanName = cleanName.split('?')[0];
+    // Remove any fragments if present
+    cleanName = cleanName.split('#')[0];
+    return cleanName;
+}
+
+  getImageDisplayName(image: ImageDisplay | string | SafeUrl): string {
+    if (typeof image === 'string') {
+      const cleanName = this.getCleanFilename(image);
+      return cleanName.replace(/_/g, ' ').replace(/\.[^/.]+$/, "");
+    }
+    
+    if (image && 'displayName' in image) {
+      // Handle ImageDisplay case
+      return image.displayName || image.filename;
+    }
+    
+    // Handle SafeUrl case
+    const urlStr = this.sanitizer.sanitize(SecurityContext.URL, image as SafeUrl) || '';
+    const cleanName = this.getCleanFilename(urlStr);
+    return cleanName.replace(/_/g, ' ').replace(/\.[^/.]+$/, "");
+}
+
+ngOnDestroy(): void {
+  this.clearImageSelection();
+}
+
   }

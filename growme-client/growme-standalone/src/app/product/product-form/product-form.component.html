@@ -68,7 +68,9 @@
                   <!-- Update image source here -->
                   <img [src]="imageService.getImageUrl(image.filename)" class="card-img-top img-thumbnail">
                   <div class="card-body p-2">
-                    <small class="text-muted text-truncate d-block">{{ image.displayName }}</small>
+                    <small class="text-muted text-truncate d-block">
+                      {{ getImageDisplayName(image) }}
+                    </small>
                   </div>
                 </div>
               </div>
@@ -101,9 +103,12 @@
         <div class="mt-3" *ngIf="selectedImageUrl">
           <label class="form-label">Selected Image Preview</label>
           <div class="d-flex align-items-center">
-            <!-- Handle both SafeUrl and string URLs -->
-            <img [src]="getImageUrlForPreview(selectedImageUrl)" class="img-thumbnail me-3" style="max-width: 200px;">
+            <img [src]="getImageUrlForPreview(selectedImageUrl)" 
+                 class="img-thumbnail me-3" 
+                 style="max-width: 200px;"
+                 (error)="handleImageError($event)">
             <div>
+              <p class="mb-1">{{ getImageDisplayName(selectedImageUrl) }}</p>
               <button class="btn btn-sm btn-outline-danger" (click)="clearImageSelection()">
                 Remove
               </button>

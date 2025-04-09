@@ -92,11 +92,8 @@ public class ProductServiceImpl implements ProductService {
         Product product = productMapper.mapProductRequestDTOToProduct(productRequestDTO, category, owner);
 
         if (productRequestDTO.getImageUrl() != null) {
-            String filename = extractFilename(productRequestDTO.getImageUrl());
-            if (filename.isBlank()) {
-                filename = "default_" + System.currentTimeMillis() + ".jpg";
-            }
-            product.setImageUrl(filename);
+            // Store the exact filename without modification
+            product.setImageUrl(productRequestDTO.getImageUrl());
         }
 
 

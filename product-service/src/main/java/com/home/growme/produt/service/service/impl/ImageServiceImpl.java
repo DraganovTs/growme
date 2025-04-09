@@ -103,10 +103,19 @@ public class ImageServiceImpl implements ImageService {
     }
 
     private String generateUniqueFilename(String originalFilename) {
-        String fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
-        String baseName = originalFilename.substring(0, originalFilename.lastIndexOf("."))
-                .replaceAll("[^a-zA-Z0-9]", "_");
-        return baseName + "_" + System.currentTimeMillis() + fileExtension;
+        if (originalFilename == null || originalFilename.isEmpty()) {
+            return "product_" + System.currentTimeMillis() + ".jpg";
+        }
+
+        // Keep only safe characters
+        String safeName = originalFilename.replaceAll("[^a-zA-Z0-9.-]", "_");
+
+        // Add timestamp before extension
+        int dotIndex = safeName.lastIndexOf('.');
+        String baseName = dotIndex > 0 ? safeName.substring(0, dotIndex) : safeName;
+        String extension = dotIndex > 0 ? safeName.substring(dotIndex) : ".jpg";
+
+        return baseName + "_" + System.currentTimeMillis() + extension;
     }
 }
 

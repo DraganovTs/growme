@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpRequest } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { catchError, Observable } from 'rxjs';
 import { environment } from '../environment/environments';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 
@@ -17,20 +17,32 @@ export class ImageService {
     if (!filename) return this.getDefaultImageUrl();
     
     let cleanName = decodeURIComponent(filename);
+
+    cleanName = cleanName.replace(/\.\.\//g, '')
+                       .replace(/\.\.\\/g, '');
     
     cleanName = cleanName.split('/').pop() || cleanName;
     
-    return `${this.apiUrl}/images/${encodeURIComponent(cleanName)}`;
-  }
+    return `${this.apiUrl}/images/${encodeURIComponent(cleanName).replace(/%2F/g, '/')}`;
+}
 
   getDefaultImageUrl(): string {
     return 'assets/images/default-product.jpg';
   }
 
-  uploadImage(file: File): Observable<{ url: string }> {
+  uploadImage(file: File): Observable<{filename: string}> {
     const formData = new FormData();
     formData.append('file', file);
-    return this.http.post<{ url: string }>(`${this.apiUrl}/upload-image`, formData);
+    
+    return this.http.post<{filename: string}>(
+      `${this.apiUrl}/upload-image`, 
+      formData
+    ).pipe(
+      catchError(error => {
+        console.error('Upload failed!', error);
+        throw new Error('Upload failed');
+      })
+    );
   }
 
   getExistingImages(): Observable<string[]> {
@@ -47,4 +59,10 @@ export interface ImageDisplay {
     filename: string;
     displayName: string;
     url: string;
+  }
+
+  export interface ImageUploadResponse {
+    filename: string;
+    originalName?: string;
+    url?: string;
   }
