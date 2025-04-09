@@ -53,7 +53,7 @@ services:
     ports:
       - 9091:9091
     volumes:
-      - ../kafka-volumes/server-1:/bitnami/kafka
+      - kafka-1-data:/bitnami/kafka
     networks:
       - grow-me
 
@@ -75,7 +75,7 @@ services:
     ports:
       - 9092:9092
     volumes:
-      - ../kafka-volumes/server-2:/bitnami/kafka
+      - kafka-2-data:/bitnami/kafka
     networks:
       - grow-me
 
@@ -97,7 +97,7 @@ services:
     ports:
       - 9093:9093
     volumes:
-      - ../kafka-volumes/server-3:/bitnami/kafka
+      - kafka-3-data:/bitnami/kafka
     networks:
       - grow-me
 

@@ -46,11 +46,10 @@ public class UserServiceImpl implements UserService {
     }
 
 
-
     @Override
     public UserDTO updateUser(UUID id, UserDTO userDTO) {
         User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found"));
-        user = userMapper.updateUserInitialAccount(user,userDTO);
+        user = userMapper.updateUserInitialAccount(user, userDTO);
 
         if (userDTO.getRoles() != null && !userDTO.getRoles().isEmpty()) {
             roleEventPublisher.publishRoleAssignments(id.toString(), userDTO.getRoles());
@@ -71,5 +70,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserDTO> getUsersByRole(String role) {
         return List.of();
+    }
+
+    @Override
+    public void addProductToUser(String userId, String productId) {
+        User user = userRepository.findById(UUID.fromString(userId))
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        user.getOwnedProductIds().add(UUID.fromString(productId));
+        userRepository.save(user);
     }
 }

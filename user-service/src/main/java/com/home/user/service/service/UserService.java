@@ -14,5 +14,5 @@ public interface UserService {
     void markProfileAsComplete(UUID id);
     void deleteUser(UUID id);
     List<UserDTO> getUsersByRole(String role);
-
+    void addProductToUser(String userId, String productId);
 }

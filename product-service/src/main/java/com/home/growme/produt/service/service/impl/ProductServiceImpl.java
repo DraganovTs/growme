@@ -101,8 +101,9 @@ public class ProductServiceImpl implements ProductService {
 
         productRepository.save(product);
 
-        productEventPublisher.publishProductAssignment(product.getProductId().toString(),
-                productRequestDTO.getOwnerId().toString());
+        productEventPublisher.publishProductAssignment(
+                productRequestDTO.getOwnerId().toString(),
+                product.getProductId().toString());
 
         log.info("Product saved successfully: {}", product.getProductId());
         return productMapper.mapProductToProductResponseDTO(product);
