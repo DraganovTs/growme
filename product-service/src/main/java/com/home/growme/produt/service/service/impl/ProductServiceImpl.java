@@ -1,6 +1,7 @@
 package com.home.growme.produt.service.service.impl;
 
 import com.home.growme.produt.service.exception.ProductNotFoundException;
+import com.home.growme.produt.service.kafka.publisher.ProductEventPublisher;
 import com.home.growme.produt.service.mapper.ProductMapper;
 import com.home.growme.produt.service.model.dto.ProductRequestDTO;
 import com.home.growme.produt.service.model.dto.ProductResponseDTO;
@@ -39,15 +40,18 @@ public class ProductServiceImpl implements ProductService {
     private final ProductSpecificationTitleOwnerCategory productSpecification;
     private final CategoryRepository categoryRepository;
     private final OwnerRepository ownerRepository;
+    private final ProductEventPublisher productEventPublisher;
 
     public ProductServiceImpl(ProductRepository productRepository, ProductMapper productMapper,
                               ProductSpecificationTitleOwnerCategory productSpecification,
-                              CategoryRepository categoryRepository, OwnerRepository ownerRepository) {
+                              CategoryRepository categoryRepository, OwnerRepository ownerRepository,
+                              ProductEventPublisher productEventPublisher) {
         this.productRepository = productRepository;
         this.productMapper = productMapper;
         this.productSpecification = productSpecification;
         this.categoryRepository = categoryRepository;
         this.ownerRepository = ownerRepository;
+        this.productEventPublisher = productEventPublisher;
     }
 
 
@@ -71,7 +75,6 @@ public class ProductServiceImpl implements ProductService {
         Page<Product> productPage = productRepository.findAll(productSpecification.getProducts(specParams), paging);
 
 
-
         return buildProductResponseListDTO(productPage, pageIndex, pageSize);
     }
 
@@ -92,15 +95,16 @@ public class ProductServiceImpl implements ProductService {
         Product product = productMapper.mapProductRequestDTOToProduct(productRequestDTO, category, owner);
 
         if (productRequestDTO.getImageUrl() != null) {
-            // Store the exact filename without modification
             product.setImageUrl(productRequestDTO.getImageUrl());
         }
 
 
         productRepository.save(product);
 
-        log.info("Product saved successfully: {}", product.getProductId());
+        productEventPublisher.publishProductAssignment(product.getProductId().toString(),
+                productRequestDTO.getOwnerId().toString());
 
+        log.info("Product saved successfully: {}", product.getProductId());
         return productMapper.mapProductToProductResponseDTO(product);
     }
 
@@ -164,16 +168,13 @@ public class ProductServiceImpl implements ProductService {
             return "default_" + System.currentTimeMillis() + ".jpg";
         }
 
-        // Extract filename after last slash
         String filename = url.substring(url.lastIndexOf('/') + 1);
 
-        // Handle filenames without extension
         int lastDotIndex = filename.lastIndexOf('.');
-        if (lastDotIndex <= 0) { // No extension or starts with dot
+        if (lastDotIndex <= 0) {
             return sanitizeFilename(filename) + ".jpg";
         }
 
-        // Separate name and extension
         String nameWithoutExt = filename.substring(0, lastDotIndex);
         String extension = filename.substring(lastDotIndex);
 
