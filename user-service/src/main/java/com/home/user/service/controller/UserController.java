@@ -4,8 +4,10 @@ import com.home.user.service.model.dto.KeycloakUserDTO;
 import com.home.user.service.model.dto.SyncUserResponseDTO;
 import com.home.user.service.model.dto.UserDTO;
 import com.home.user.service.service.UserService;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,23 +20,23 @@ import java.util.UUID;
 public class UserController {
 
     private final UserService userService;
-    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
+    private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
     public UserController(UserService userService) {
         this.userService = userService;
     }
 
     @PostMapping("/sync")
-    public ResponseEntity<SyncUserResponseDTO> syncUserFromKeycloak(@RequestBody KeycloakUserDTO keycloakUserDTO) {
-        logger.info("Syncing user from Keycloak: {}", keycloakUserDTO);
-        KeycloakUserDTO syncedUser = userService.syncUserFromKeycloak(keycloakUserDTO);
-        return ResponseEntity.ok(new SyncUserResponseDTO(syncedUser));
+    public ResponseEntity<Void> syncUserFromKeycloak(@Valid @RequestBody KeycloakUserDTO request) {
+        log.debug("Initiating user sync for Keycloak ID: {}", request.getUserId());
+        userService.requestAccountCreation(request);
+        return ResponseEntity.accepted().build();
     }
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<UserDTO> updateUser(@PathVariable UUID id, @RequestBody UserDTO userUpdate) {
-        UserDTO updatedUser = userService.updateUser(id, userUpdate);
-        return ResponseEntity.ok(updatedUser);
+    @PutMapping("/update/{userId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void updateUser(@PathVariable UUID userId, @RequestBody UserDTO updateRequest) {
+        userService.requestAccountUpdate(userId, updateRequest);
     }
 
 

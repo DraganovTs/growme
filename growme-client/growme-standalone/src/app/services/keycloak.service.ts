@@ -147,7 +147,7 @@ export class KeycloakService {
 
         const userRoles = this.keycloak.tokenParsed.realm_access?.roles || [];
         this.updateAuthState(true);
-        
+
         console.log("📡 Calling syncUserWithBackend()...");
 
 
@@ -189,7 +189,7 @@ export class KeycloakService {
 
   private syncUserWithBackend(): Observable<any> {
     if (!this.keycloak?.tokenParsed) {
-      console.warn("❌ No Keycloak token parsed, skipping sync.");
+      console.warn("No Keycloak token parsed, skipping sync.");
       return of(null);
     }
   
@@ -201,14 +201,14 @@ export class KeycloakService {
       lastName: this.keycloak.tokenParsed['family_name'] || ''
     };
   
-    console.log("🚀 Syncing user with backend:", userData);
-    console.log(`🔗 API Endpoint: ${environment.userApi}/sync`);
+    console.log("Syncing user with backend:", userData);
+    console.log(`API Endpoint: ${environment.userApi}/sync`);
   
     return this.http.post(`${environment.userApi}/sync`, userData).pipe(
-      tap(() => console.log('✅ User synced successfully with backend')),
+      tap(() => console.log('User synced successfully with backend')),
       catchError(error => {
-        console.error('❌ Failed to sync user:', error);
-        return throwError(() => new Error('Sync failed')); // Ensure error is not silently ignored
+        console.error('Failed to sync user:', error);
+        return throwError(() => new Error('Sync failed'));
       })
     );
   }
