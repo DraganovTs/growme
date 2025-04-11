@@ -1,8 +1,6 @@
 package com.home.user.service.controller;
 
-import com.home.user.service.exception.UserAlreadyExistException;
 import com.home.user.service.model.dto.KeycloakUserDTO;
-import com.home.user.service.model.dto.SyncUserResponseDTO;
 import com.home.user.service.model.dto.UserDTO;
 import com.home.user.service.service.UserService;
 import jakarta.validation.Valid;
