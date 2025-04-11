@@ -1,5 +1,6 @@
 package com.home.user.service.controller;
 
+import com.home.user.service.exception.UserAlreadyExistException;
 import com.home.user.service.model.dto.KeycloakUserDTO;
 import com.home.user.service.model.dto.SyncUserResponseDTO;
 import com.home.user.service.model.dto.UserDTO;
@@ -29,8 +30,10 @@ public class UserController {
     @PostMapping("/sync")
     public ResponseEntity<Void> syncUserFromKeycloak(@Valid @RequestBody KeycloakUserDTO request) {
         log.debug("Initiating user sync for Keycloak ID: {}", request.getUserId());
-        userService.requestAccountCreation(request);
-        return ResponseEntity.accepted().build();
+            userService.requestAccountCreation(request);
+            return ResponseEntity.accepted().build();
+
+
     }
 
     @PutMapping("/update/{userId}")
@@ -38,6 +41,14 @@ public class UserController {
     public void updateUser(@PathVariable UUID userId, @RequestBody UserDTO updateRequest) {
         userService.requestAccountUpdate(userId, updateRequest);
     }
+
+    @DeleteMapping("/{userId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteUser(@PathVariable UUID userId) {
+        userService.requestAccountDeletion(userId);
+    }
+
+
 
 
 }

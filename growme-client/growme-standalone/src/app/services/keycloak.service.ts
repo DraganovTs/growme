@@ -204,13 +204,21 @@ export class KeycloakService {
     console.log("Syncing user with backend:", userData);
     console.log(`API Endpoint: ${environment.userApi}/sync`);
   
-    return this.http.post(`${environment.userApi}/sync`, userData).pipe(
-      tap(() => console.log('User synced successfully with backend')),
+    return this.http.post(`${environment.userApi}/sync`, userData, { 
+      observe: 'response' 
+  }).pipe(
+      map(response => {
+          if (response.status === 202) {
+              console.log('Sync successful');
+              return undefined;
+          }
+          throw new Error('Unexpected response');
+      }),
       catchError(error => {
-        console.error('Failed to sync user:', error);
-        return throwError(() => new Error('Sync failed'));
+          console.error('Sync failed', error);
+          return throwError(() => new Error('Sync failed'));
       })
-    );
+  );
   }
   
   

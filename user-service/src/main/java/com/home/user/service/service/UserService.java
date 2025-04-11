@@ -12,7 +12,7 @@ public interface UserService {
 
     void requestAccountUpdate(UUID userId, UserDTO userDTO);
 
-    void requestAccountDeletion(String userId);
+    void requestAccountDeletion(UUID userId);
 
     void addProductForSell(String userId, String productId);
 }
