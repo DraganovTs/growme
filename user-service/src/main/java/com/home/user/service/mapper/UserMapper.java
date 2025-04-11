@@ -68,6 +68,21 @@ public class UserMapper {
         return user;
     }
 
+
+
+    public UserDTO mapUserToUserDTO(User save) {
+        return UserDTO.builder()
+                .username(save.getUsername())
+                .email(save.getEmail())
+                .firstName(save.getFirstName())
+                .lastName(save.getLastName())
+                .phone(save.getPhone())
+                .address(mapAddressToAddressDTO(save.getAddress()))
+                .roles(save.getRoles())
+                .accountStatus(save.getAccountStatus())
+                .build();
+    }
+
     private Address mapAddressDTOToAddress(AddressDto addressDto) {
         return Address.builder()
                 .street(addressDto.getStreet())
@@ -77,7 +92,12 @@ public class UserMapper {
                 .build();
     }
 
-    public UserDTO mapUserToUserDTO(User save) {
-        return null;
+    private AddressDto mapAddressToAddressDTO(Address address) {
+        return AddressDto.builder()
+                .street(address.getStreet())
+                .city(address.getCity())
+                .state(address.getState())
+                .zipCode(address.getZipCode())
+                .build();
     }
 }

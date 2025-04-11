@@ -44,22 +44,16 @@ public class UserValidator {
         if (dto == null) {
             throw new IllegalArgumentException("UserDTO cannot be null");
         }
-        if (dto.getEmail() != null) {
-            validateEmail(dto.getEmail());
-        }
-        if (dto.getUsername() != null) {
-            validateUsername(dto.getUsername());
-        }
     }
 
     public void validateUserUpdate(User existingUser, UserDTO updateDTO) {
         if (updateDTO == null) {
             throw new IllegalArgumentException("Update DTO cannot be null");
         }
-        if (updateDTO.getEmail() != null && !updateDTO.getEmail().equals(existingUser.getEmail())) {
+        if (!updateDTO.getEmail().equals(existingUser.getEmail())) {
             validateEmail(updateDTO.getEmail());
         }
-        if (updateDTO.getUsername() != null && !updateDTO.getUsername().equals(existingUser.getUsername())) {
+        if (!updateDTO.getUsername().equals(existingUser.getUsername())) {
             validateUsername(updateDTO.getUsername());
         }
     }
