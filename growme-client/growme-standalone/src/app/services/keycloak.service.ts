@@ -197,8 +197,6 @@ export class KeycloakService {
       userId: this.keycloak.tokenParsed.sub,
       username: this.keycloak.tokenParsed['preferred_username'],
       email: this.keycloak.tokenParsed['email'],
-      firstName: this.keycloak.tokenParsed['given_name'] || '',
-      lastName: this.keycloak.tokenParsed['family_name'] || ''
     };
   
     console.log("Syncing user with backend:", userData);
@@ -214,8 +212,9 @@ export class KeycloakService {
           }
           throw new Error('Unexpected response');
       }),
-      catchError(error => {
+        catchError(error => {
           console.error('Sync failed', error);
+          this.router.navigate(['/register']); 
           return throwError(() => new Error('Sync failed'));
       })
   );

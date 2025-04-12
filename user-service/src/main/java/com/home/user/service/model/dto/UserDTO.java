@@ -15,7 +15,7 @@ import java.util.List;
 @Builder
 public class UserDTO {
     @NotBlank(message = "Username is required")
-    @Size(min = 4, max = 20)
+    @Size(min = 3, max = 20)
     private String username;
 
     @NotBlank(message = "Email is required")

@@ -12,4 +12,6 @@ public interface UserQueryService {
     String getUserEmail(UUID userId);
     List<UserDTO>getUsersByRole(String role);
     List<UUID>getUsersOwnedProducts(String userId);
+    boolean existsByEmail(String email);
+    boolean existsByUsername(String username);
 }
