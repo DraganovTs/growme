@@ -72,9 +72,7 @@ public class UserUpdateServiceImpl implements UserUpdateService {
 
         if (userDTO.getRoles() != null && !userDTO.getRoles().isEmpty()) {
             log.debug("Publishing role assignments for user: {}", userId);
-            userDTO.getRoles().forEach(role -> {
-                eventPublisherService.publishRoleAssignment(userId.toString(), role);
-            });
+            userDTO.getRoles().forEach(role -> eventPublisherService.publishRoleAssignment(userId.toString(), role));
         }
 
         User savedUser = userRepository.save(user);
