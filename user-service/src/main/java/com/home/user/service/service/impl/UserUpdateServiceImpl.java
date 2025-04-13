@@ -1,12 +1,12 @@
 package com.home.user.service.service.impl;
 
 import com.home.user.service.exception.*;
-import com.home.user.service.kafka.publisher.RoleEventPublisher;
 import com.home.user.service.mapper.UserMapper;
 import com.home.user.service.model.dto.KeycloakUserDTO;
 import com.home.user.service.model.dto.UserDTO;
 import com.home.user.service.model.entity.User;
 import com.home.user.service.repository.UserRepository;
+import com.home.user.service.service.EventPublisherService;
 import com.home.user.service.service.UserUpdateService;
 import com.home.user.service.util.UserValidator;
 import lombok.extern.slf4j.Slf4j;
@@ -24,16 +24,16 @@ public class UserUpdateServiceImpl implements UserUpdateService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-    private final RoleEventPublisher roleEventPublisher;
     private final UserValidator validator;
+    private final EventPublisherService eventPublisherService;
 
 
     public UserUpdateServiceImpl(UserRepository userRepository, UserMapper userMapper,
-                                 RoleEventPublisher roleEventPublisher, UserValidator validator) {
+                                 UserValidator validator, EventPublisherService eventPublisherService) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
-        this.roleEventPublisher = roleEventPublisher;
         this.validator = validator;
+        this.eventPublisherService = eventPublisherService;
     }
 
     @Override
@@ -72,7 +72,9 @@ public class UserUpdateServiceImpl implements UserUpdateService {
 
         if (userDTO.getRoles() != null && !userDTO.getRoles().isEmpty()) {
             log.debug("Publishing role assignments for user: {}", userId);
-            roleEventPublisher.publishRoleAssignments(userId.toString(), userDTO.getRoles());
+            userDTO.getRoles().forEach(role -> {
+                eventPublisherService.publishRoleAssignment(userId.toString(), role);
+            });
         }
 
         User savedUser = userRepository.save(user);

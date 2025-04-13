@@ -28,16 +28,14 @@ public class EventHandlerServiceImpl implements EventHandlerService {
     public static final String USER_ROLE_ASSIGNMENT_RESULT = "user.role.assignments.result";
     private static final String PRODUCT_ASSIGNMENT_TOPIC = "product.user.assignment";
 
-    private final KafkaTemplate<String, Object> kafkaTemplate;
     private final UserRepository userRepository;
     private final EventPublisherService eventPublisherService;
     private final EventValidator eventValidator;
     private final UserUpdateService userUpdateService;
 
-    public EventHandlerServiceImpl(KafkaTemplate<String, Object> kafkaTemplate, UserRepository userRepository,
+    public EventHandlerServiceImpl( UserRepository userRepository,
                                    EventPublisherService eventPublisherService, EventValidator eventValidator,
                                    UserUpdateService userUpdateService) {
-        this.kafkaTemplate = kafkaTemplate;
         this.userRepository = userRepository;
         this.eventPublisherService = eventPublisherService;
         this.eventValidator = eventValidator;
@@ -49,6 +47,8 @@ public class EventHandlerServiceImpl implements EventHandlerService {
     @KafkaListener(topics = USER_ROLE_ASSIGNMENT_RESULT)
     public void handleRoleAssignmentResult(RoleAssignmentResult result) {
         try {
+            eventValidator.validateRoleAssignmentResult(result);
+
             User user = userRepository.findById(UUID.fromString(result.getUserId()))
                     .orElseThrow(() -> new UserNotFoundException(result.getUserId()));
 
