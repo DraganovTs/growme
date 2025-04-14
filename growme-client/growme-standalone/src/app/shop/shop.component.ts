@@ -35,7 +35,7 @@ export class ShopComponent implements OnInit {
   ngOnInit(): void {
      this.getProducts();
      this.getCategories();
-    //  this.getBrands();
+     this.getOwners();
   }
 
    getProducts() {
@@ -64,24 +64,35 @@ export class ShopComponent implements OnInit {
        error:error =>console.log(error)
     })
   }
+
   getOwners() {
-    // this.shopService.getOwners().subscribe({
-    //    next: response => {
-    //     console.log(response);
-    //     this.owners = [{ownerId:'', ownerName: 'All'}, ...response]
-    //    },
-    //    error:error =>console.log(error)
-    // })
+    console.log('Starting to fetch owners...');
+    this.shopService.getOwners().subscribe({
+      next: (response: any) => {
+        console.log('Raw owners API response:', response);
+        console.log('Is array:', Array.isArray(response));
+        console.log('Response type:', typeof response);
+        
+        const ownersArray = Array.isArray(response) ? response : [];
+        console.log('Processed owners array:', ownersArray);
+        
+        this.owners = [{ownerId: '', ownerName: 'All'}, ...ownersArray];
+        console.log('Final owners list:', this.owners);
+      },
+      error: error => {
+        console.error('Error fetching owners:', error);
+        this.owners = [{ownerId: '', ownerName: 'All'}];
+      }
+    });
   }
-  onBrandSelected(brandId: number) {
-      // const params = this.shopService.getShopParams();
-      // params.ownerId = brandId;
-      // console.log(params.brandId);
-      // params.pageIndex= 1;
-      // //if(params.pageSize ==0) params.pageSize=6;
-      // this.shopService.setShopParams(params);
-      // this.shopParams =params;
-      // this.getProducts();
+  
+  onBrandSelected(ownerId: string) {
+    const params = this.shopService.getShopParams();
+    params.ownerId = ownerId;
+    params.pageIndex = 1;
+    this.shopService.setShopParams(params);
+    this.shopParams = params;
+    this.getProducts();
   }
   onCategorySelected(categoryId: string)  {
     const params = this.shopService.getShopParams();

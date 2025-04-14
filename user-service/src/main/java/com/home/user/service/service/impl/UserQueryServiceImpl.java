@@ -5,7 +5,6 @@ import com.home.user.service.mapper.UserMapper;
 import com.home.user.service.model.dto.UserDTO;
 import com.home.user.service.model.entity.User;
 import com.home.user.service.repository.UserRepository;
-import com.home.user.service.service.UserExistenceChecker;
 import com.home.user.service.service.UserQueryService;
 import com.home.user.service.util.UserValidator;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +19,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @Transactional(readOnly = true)
-public class UserQueryServiceImpl implements UserQueryService, UserExistenceChecker {
+public class UserQueryServiceImpl implements UserQueryService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;

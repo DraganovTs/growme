@@ -14,20 +14,34 @@ import java.time.LocalDateTime;
 public class ProductExceptionHandler {
 
 
-
     @ExceptionHandler(ProductNotFoundException.class)
-    public ResponseEntity<ErrorResponseDTO> handleProductNotFoundException(ProductNotFoundException exception, WebRequest webRequest){
+    public ResponseEntity<ErrorResponseDTO> handleProductNotFoundException(ProductNotFoundException exception, WebRequest webRequest) {
         return buildErrorResponse(exception, webRequest, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(FileStorageException.class)
-    public ResponseEntity<ErrorResponseDTO> handleFileStorageException(FileStorageException exception, WebRequest webRequest){
+    public ResponseEntity<ErrorResponseDTO> handleFileStorageException(FileStorageException exception, WebRequest webRequest) {
         return buildErrorResponse(exception, webRequest, HttpStatus.INSUFFICIENT_STORAGE);
+    }
+
+    @ExceptionHandler(CategoryNotFoundException.class)
+    public ResponseEntity<ErrorResponseDTO> handleProductNotFoundException(CategoryNotFoundException exception, WebRequest webRequest) {
+        return buildErrorResponse(exception, webRequest, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(OwnerNotFoundException.class)
+    public ResponseEntity<ErrorResponseDTO> handleProductNotFoundException(OwnerNotFoundException exception, WebRequest webRequest) {
+        return buildErrorResponse(exception, webRequest, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(ProductRequestNotValidNameException.class)
+    public ResponseEntity<ErrorResponseDTO> handleProductNotFoundException(ProductRequestNotValidNameException exception, WebRequest webRequest) {
+        return buildErrorResponse(exception, webRequest, HttpStatus.NOT_FOUND);
     }
 
 
     @ExceptionHandler(MaxUploadSizeExceededException.class)
-    public ResponseEntity<ErrorResponseDTO> handleMaxUploadSizeException(MaxUploadSizeExceededException exception, WebRequest webRequest){
+    public ResponseEntity<ErrorResponseDTO> handleMaxUploadSizeException(MaxUploadSizeExceededException exception, WebRequest webRequest) {
         return buildErrorResponse(exception, webRequest, HttpStatus.PAYLOAD_TOO_LARGE);
     }
 
@@ -41,7 +55,6 @@ public class ProductExceptionHandler {
         );
         return new ResponseEntity<>(errorResponseDTO, httpStatus);
     }
-
 
 
 }

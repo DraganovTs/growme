@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/owners",produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/owners",produces = MediaType.APPLICATION_JSON_VALUE)
 public class OwnerController {
 
     private final OwnerService ownerService;

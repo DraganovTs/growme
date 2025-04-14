@@ -44,7 +44,7 @@ pagination?: IPagination<IProduct[]>;
     return this.http.get<ICategory[]>(environment.apiUrl +'categories');
   }
   getOwners() {
-    // return this.http.get<IOwner[]>(environment.apiUrl +'brands');
+    return this.http.get<IOwner[]>(environment.apiUrl +'owners');
   }
 
   setShopParams(params: ShopParams) {

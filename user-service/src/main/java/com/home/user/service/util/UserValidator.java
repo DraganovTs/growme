@@ -5,21 +5,22 @@ import com.home.user.service.exception.UsernameAlreadyExistsException;
 import com.home.user.service.model.dto.KeycloakUserDTO;
 import com.home.user.service.model.dto.UserDTO;
 import com.home.user.service.model.entity.User;
-import com.home.user.service.service.UserExistenceChecker;
-import org.springframework.stereotype.Service;
+import com.home.user.service.repository.UserRepository;
+import com.home.user.service.service.UserQueryService;
+import org.springframework.stereotype.Component;
 
 import java.util.Set;
 import java.util.UUID;
 
-@Service
+@Component
 public class UserValidator {
 
-    private final UserExistenceChecker existenceChecker;
+    private final UserRepository userRepository;
     private static final Set<String> VALID_ROLES =
             Set.of("ADMIN", "SELLER", "BUYER");
 
-    public UserValidator(UserExistenceChecker existenceChecker) {
-        this.existenceChecker = existenceChecker;
+    public UserValidator(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
 
@@ -103,7 +104,7 @@ public class UserValidator {
         if (email == null || !email.matches(".+@.+\\..+")) {
             throw new IllegalArgumentException("Invalid email format");
         }
-        if (existenceChecker.existsByEmail(email)) {
+        if (userRepository.existsByEmail(email)) {
             throw new EmailAlreadyExistsException(email);
         }
     }
@@ -113,9 +114,9 @@ public class UserValidator {
             throw new IllegalArgumentException("Username cannot be empty");
         }
         if (username.length() < 3 || username.length() > 20) {
-            throw new IllegalArgumentException("Username must be 4-20 characters");
+            throw new IllegalArgumentException("Username must be 3-20 characters");
         }
-        if (existenceChecker.existsByUsername(username)) {
+        if (userRepository.existsByUsername(username)) {
             throw new UsernameAlreadyExistsException(username);
         }
     }

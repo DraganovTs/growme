@@ -1,5 +1,7 @@
 package com.home.growme.produt.service.service.impl;
 
+import com.home.growme.produt.service.exception.CategoryNotFoundException;
+import com.home.growme.produt.service.exception.OwnerNotFoundException;
 import com.home.growme.produt.service.exception.ProductNotFoundException;
 import com.home.growme.produt.service.kafka.publisher.ProductEventPublisher;
 import com.home.growme.produt.service.mapper.ProductMapper;
@@ -14,7 +16,8 @@ import com.home.growme.produt.service.repository.OwnerRepository;
 import com.home.growme.produt.service.repository.ProductRepository;
 import com.home.growme.produt.service.service.ProductService;
 import com.home.growme.produt.service.specification.ProductSpecParams;
-import com.home.growme.produt.service.specification.ProductSpecificationTitleOwnerCategory;
+import com.home.growme.produt.service.specification.ProductSpecificationNameOwnerCategory;
+import com.home.growme.produt.service.util.ProductValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -37,21 +40,23 @@ public class ProductServiceImpl implements ProductService {
     private int defaultPageSize;
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
-    private final ProductSpecificationTitleOwnerCategory productSpecification;
+    private final ProductSpecificationNameOwnerCategory productSpecification;
     private final CategoryRepository categoryRepository;
     private final OwnerRepository ownerRepository;
     private final ProductEventPublisher productEventPublisher;
+    private final ProductValidator productValidator;
 
     public ProductServiceImpl(ProductRepository productRepository, ProductMapper productMapper,
-                              ProductSpecificationTitleOwnerCategory productSpecification,
+                              ProductSpecificationNameOwnerCategory productSpecification,
                               CategoryRepository categoryRepository, OwnerRepository ownerRepository,
-                              ProductEventPublisher productEventPublisher) {
+                              ProductEventPublisher productEventPublisher, ProductValidator productValidator) {
         this.productRepository = productRepository;
         this.productMapper = productMapper;
         this.productSpecification = productSpecification;
         this.categoryRepository = categoryRepository;
         this.ownerRepository = ownerRepository;
         this.productEventPublisher = productEventPublisher;
+        this.productValidator = productValidator;
     }
 
 
@@ -83,13 +88,16 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductResponseDTO createProduct(ProductRequestDTO productRequestDTO) {
         log.info("Creating new product: {}", productRequestDTO.getName());
+        productValidator.validateProductRequest(productRequestDTO);
 
 
         Category category = categoryRepository.findByCategoryName(productRequestDTO.getCategoryName())
-                .orElseThrow(() -> new RuntimeException("Category not found"));
+                .orElseThrow(() -> new CategoryNotFoundException("Category not found whit name: "
+                        + productRequestDTO.getCategoryName()));
 
         Owner owner = ownerRepository.findById(productRequestDTO.getOwnerId())
-                .orElseThrow(() -> new RuntimeException("Owner not found"));
+                .orElseThrow(() -> new OwnerNotFoundException("Owner not found whit ID: "
+                        + productRequestDTO.getOwnerId()));
 
 
         Product product = productMapper.mapProductRequestDTOToProduct(productRequestDTO, category, owner);
@@ -164,23 +172,6 @@ public class ProductServiceImpl implements ProductService {
                 .build();
     }
 
-    private String extractFilename(String url) {
-        if (url == null || url.isEmpty()) {
-            return "default_" + System.currentTimeMillis() + ".jpg";
-        }
-
-        String filename = url.substring(url.lastIndexOf('/') + 1);
-
-        int lastDotIndex = filename.lastIndexOf('.');
-        if (lastDotIndex <= 0) {
-            return sanitizeFilename(filename) + ".jpg";
-        }
-
-        String nameWithoutExt = filename.substring(0, lastDotIndex);
-        String extension = filename.substring(lastDotIndex);
-
-        return sanitizeFilename(nameWithoutExt) + extension;
-    }
 
     private String sanitizeFilename(String name) {
         // 1. Replace problematic characters with underscore
