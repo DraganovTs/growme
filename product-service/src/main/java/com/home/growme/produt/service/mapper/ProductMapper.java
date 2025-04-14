@@ -1,6 +1,7 @@
 package com.home.growme.produt.service.mapper;
 
 import com.home.growme.common.module.events.UserCreatedEvent;
+import com.home.growme.produt.service.model.dto.OwnerDTO;
 import com.home.growme.produt.service.model.dto.ProductRequestDTO;
 import com.home.growme.produt.service.model.dto.ProductResponseDTO;
 import com.home.growme.produt.service.model.entity.Category;
@@ -68,4 +69,10 @@ public class ProductMapper {
     }
 
 
+    public OwnerDTO maOwnerToOwnerDTO(Owner owner) {
+        return OwnerDTO.builder()
+                .ownerId(owner.getOwnerId())
+                .ownerName(owner.getOwnerName())
+                .build();
+    }
 }

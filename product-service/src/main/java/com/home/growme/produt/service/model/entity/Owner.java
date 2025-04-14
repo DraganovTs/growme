@@ -28,14 +28,9 @@ public class Owner {
     @PrePersist
     public void generateId() {
         if (ownerId == null) {
-            ownerId = UUID.randomUUID(); // Manually generate UUID
+            ownerId = UUID.randomUUID();
         }
     }
 
-    public OwnerDTO mapOwnerToOwnerDTO(Owner owner) {
-        return OwnerDTO.builder()
-                .ownerId(owner.getOwnerId())
-                .ownerName(owner.getOwnerName())
-                .build();
-    }
+
 }

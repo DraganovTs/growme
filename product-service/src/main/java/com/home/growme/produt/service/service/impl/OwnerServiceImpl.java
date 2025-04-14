@@ -27,10 +27,9 @@ public class OwnerServiceImpl implements OwnerService {
     public List<OwnerDTO> getAllOwners() {
 
         List<Owner> owners = ownerRepository.findAll();
-//        List<OwnerDTO> ownerDTOList = owners.stream().map(Owner::mapOwnerToOwnerDTO)
-//                .collect(Collectors.toList());
 
-        return null;
+        return owners.stream()
+                .map(productMapper::maOwnerToOwnerDTO).limit(8).collect(Collectors.toList());
     }
 
     @Override
