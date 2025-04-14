@@ -2,16 +2,13 @@ import { Component, OnInit, SecurityContext } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
-import { IProduct } from '../../shared/model/product';
 import { ProductService } from '../../services/product-service'
 import { CommonModule } from '@angular/common';
 import { CategoryService } from '../../services/category-service';
 import { ImageDisplay, ImageService } from '../../services/image-service';
 import { KeycloakService } from '../../services/keycloak.service';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
-import { finalize } from 'rxjs';
 import { FilenamePipe } from './Filename.Pipe';
-import { ProductCreateDTO, ProductUpdateDTO } from '../../shared/model/product-create';
 
 
 @Component({
