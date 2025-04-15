@@ -89,12 +89,13 @@ export class ShopComponent implements OnInit {
 
   onBrandSelected(ownerId: string) {
     const params = this.shopService.getShopParams();
-    params.ownerId = ownerId;
+    params.ownerId = ownerId === '' ? undefined : ownerId;
     params.pageIndex = 1;
     this.shopService.setShopParams(params);
     this.shopParams = params;
     this.getProducts();
   }
+
   onCategorySelected(categoryId: string)  {
     const params = this.shopService.getShopParams();
     params.categoryId = categoryId;;

@@ -8,4 +8,5 @@ import java.util.List;
 public interface OwnerService {
     List<OwnerDTO> getAllOwners();
     void createOwner(UserCreatedEvent userCreatedEvent);
+    List<OwnerDTO> getAllOwnersSortedByProductCount();
 }

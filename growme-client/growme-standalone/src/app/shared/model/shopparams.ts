@@ -1,5 +1,5 @@
 export class ShopParams {
-    ownerId: string = '';
+    ownerId?: string = '';
     categoryId: string = '';
     sort: string = 'name';
     pageIndex: number = 1;

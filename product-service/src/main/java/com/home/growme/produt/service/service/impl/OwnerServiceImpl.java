@@ -6,6 +6,8 @@ import com.home.growme.produt.service.model.dto.OwnerDTO;
 import com.home.growme.produt.service.model.entity.Owner;
 import com.home.growme.produt.service.repository.OwnerRepository;
 import com.home.growme.produt.service.service.OwnerService;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -36,5 +38,14 @@ public class OwnerServiceImpl implements OwnerService {
     public void createOwner(UserCreatedEvent event) {
         Owner owner = ProductMapper.mapUserCreatedEventToOwner(event);
         ownerRepository.save(owner);
+    }
+
+    @Override
+    public List<OwnerDTO> getAllOwnersSortedByProductCount() {
+        Pageable topEight = PageRequest.of(0, 8); // Get top 8 owners
+        return ownerRepository.findAllOrderByProductCountDesc(topEight)
+                .stream()
+                .map(productMapper::maOwnerToOwnerDTO)
+                .collect(Collectors.toList());
     }
 }

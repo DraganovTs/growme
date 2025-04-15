@@ -25,4 +25,10 @@ public class OwnerController {
         List<OwnerDTO>ownerDTOList = ownerService.getAllOwners();
         return ResponseEntity.ok(ownerDTOList);
     }
+
+    @GetMapping("/sorted-by-product-count")
+    public ResponseEntity<List<OwnerDTO>> getOwnersSortedByProductCount() {
+        List<OwnerDTO> ownerDTOList = ownerService.getAllOwnersSortedByProductCount();
+        return ResponseEntity.ok(ownerDTOList);
+    }
 }

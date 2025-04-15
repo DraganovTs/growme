@@ -21,9 +21,9 @@ public class ProductSpecificationNameOwnerCategory {
                 predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("name")),
                         "%" + specParams.getName().toLowerCase() + "%"));
             }
-            if (specParams.getOwner() != null && !specParams.getOwner().isEmpty()) {
+            if (specParams.getOwnerId() != null && !specParams.getOwnerId().isEmpty()) {
                 predicates.add(criteriaBuilder.equal(root.get("owner").get("ownerId"),
-                        UUID.fromString(specParams.getOwner())));
+                        UUID.fromString(specParams.getOwnerId())));
             }
             if (specParams.getCategoryId() != null && !specParams.getCategoryId().isEmpty()) {
                 predicates.add(criteriaBuilder.equal(root.get("category").get("categoryId"),
