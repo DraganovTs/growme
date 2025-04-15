@@ -12,16 +12,6 @@
                 </option>
             </select>
 
-
-            <h5 class="text-warning ms-3">Owners</h5>
-            <ul class="list-group my-3">
-              <li class="list-group-item" 
-                  *ngFor="let owner of owners"
-                  [class.active]="owner.ownerId === shopParams.ownerId"
-                  (click)="onBrandSelected(owner.ownerId)">
-                {{owner.ownerName}}
-              </li>
-            </ul>
             <h5 class="text-warning ms-3">Categories</h5>
             <ul class="list-group my-3">
                 <li class="list-group-item" *ngFor="let category of categories" 
@@ -31,6 +21,16 @@
                     {{category.categoryName}}
                 </li>
             </ul>
+            <h5 class="text-warning ms-3">Owners</h5>
+            <ul class="list-group my-3">
+              <li class="list-group-item" 
+                  *ngFor="let owner of owners"
+                  [class.active]="owner.ownerId === shopParams.ownerId"
+                  (click)="onBrandSelected(owner.ownerId)">
+                {{owner.ownerName}}
+              </li>
+            </ul>
+           
 
         </section>
         <section class="col-9" >

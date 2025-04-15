@@ -1,6 +1,6 @@
 export interface IPagination<T> {
     pageIndex: number;
     pageSize: number;
-    count: number;
+    totalCount: number;
     dataList: T;
 }

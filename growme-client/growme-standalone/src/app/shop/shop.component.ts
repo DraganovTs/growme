@@ -38,21 +38,22 @@ export class ShopComponent implements OnInit {
      this.getOwners();
   }
 
-   getProducts() {
+  getProducts() {
     this.shopService.getProducts().subscribe({
-        next: response => {
-           
-            this.products = response?.dataList 
-            this.shopParams.pageIndex = response?.pageIndex;
-            this.shopParams.pageSize = response?.pageSize;
-            this.totalCount= response?.count;
-          
-            
-
-        } ,
-        error: error => console.log(error)
-     });
-   }
+      next: response => {
+        console.log('Products API Response:', response);
+        this.products = response?.dataList || [];
+        this.totalCount = response?.totalCount || 0;  
+        this.shopParams.pageIndex = response?.pageIndex || 1;
+        this.shopParams.pageSize = response?.pageSize || 6;
+      },
+      error: error => {
+        console.log(error);
+        this.products = [];
+        this.totalCount = 0;
+      }
+    });
+  }
 
 
   getCategories() {
@@ -85,7 +86,7 @@ export class ShopComponent implements OnInit {
       }
     });
   }
-  
+
   onBrandSelected(ownerId: string) {
     const params = this.shopService.getShopParams();
     params.ownerId = ownerId;
