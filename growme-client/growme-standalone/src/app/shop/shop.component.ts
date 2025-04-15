@@ -5,7 +5,6 @@ import { CommonModule } from '@angular/common';
 import { PaginationModule } from 'ngx-bootstrap/pagination';
 import { ShopParams } from '../shared/model/shopparams';
 import { ProductItemComponent } from "./product-item/product-item.component";
-import { ImageService } from '../services/image-service';
 
 @Component({
   selector: 'app-shop',
@@ -31,7 +30,7 @@ export class ShopComponent implements OnInit {
     this.shopParams = this.shopService.getShopParams();
 
   }
-  
+
   ngOnInit(): void {
      this.getProducts();
      this.getCategories();
@@ -43,7 +42,7 @@ export class ShopComponent implements OnInit {
       next: response => {
         console.log('Products API Response:', response);
         this.products = response?.dataList || [];
-        this.totalCount = response?.totalCount || 0;  
+        this.totalCount = response?.totalCount || 0;
         this.shopParams.pageIndex = response?.pageIndex || 1;
         this.shopParams.pageSize = response?.pageSize || 6;
       },
@@ -73,10 +72,10 @@ export class ShopComponent implements OnInit {
         console.log('Raw owners API response:', response);
         console.log('Is array:', Array.isArray(response));
         console.log('Response type:', typeof response);
-        
+
         const ownersArray = Array.isArray(response) ? response : [];
         console.log('Processed owners array:', ownersArray);
-        
+
         this.owners = [{ownerId: '', ownerName: 'All'}, ...ownersArray];
         console.log('Final owners list:', this.owners);
       },
@@ -98,7 +97,7 @@ export class ShopComponent implements OnInit {
 
   onCategorySelected(categoryId: string)  {
     const params = this.shopService.getShopParams();
-    params.categoryId = categoryId;;
+    params.categoryId = categoryId;
       params.pageIndex=1;
       //if(params.pageSize == 0) params.pageSize=6;
       this.shopService.setShopParams(params);

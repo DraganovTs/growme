@@ -1,21 +1,64 @@
-<!-- product-item.component.html -->
-<div class="card h-100 shadow-sm">
+<div class="card h-100 shadow-sm" *ngIf="product">
+    <!-- Product Image with Hover Actions -->
     <div class="image position-relative" style="cursor: pointer;">
-      <!-- Debug info - now properly type-checked -->
-      <div class="alert alert-warning small p-1 mb-1" *ngIf="false">
-        <div>Original: {{ product?.imageUrl }}</div>
-        <div>Current: {{ imageUrl }}</div>
-      </div>
-  
-      <img [src]="imageUrl" [alt]="product?.name" class="product-image" />
-  
-      <div class="hover-overlay">
-        <button class="btn btn-primary">Add to Cart</button>
-      </div>
+        <img [src]="imageUrl" 
+             [alt]="product.name" 
+             class="img-fluid bg-success-subtle w-100 product-image">
+        
+        <!-- Hover Overlay Buttons -->
+        <div class="d-flex align-items-center justify-content-center hover-overlay">
+            <button class="btn btn-primary fa fa-shopping-cart me-2" 
+                    (click)="addItemToCart($event)"></button>
+            <button class="btn btn-primary" 
+                    (click)="openProductDetails($event)">View</button>
+        </div>
     </div>
-  
-    <div class="card-body">
-      <h5>{{ product?.name }}</h5>
-      <span>{{ product?.price | currency }}</span>
+
+    <!-- Product Basic Info -->
+    <div class="card-body d-flex flex-column">
+        <a href="#" class="text-decoration-none">
+            <h6 class="text-uppercase">{{ product.name }}</h6>
+        </a>
+        <span class="mb-2">{{ product.price | currency }}</span>
     </div>
-  </div>
+
+    <!-- Product Details Modal -->
+    <div class="modal fade show d-block bg-dark bg-opacity-50" 
+         *ngIf="showDetails"
+         [class.show]="showDetails">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{{ product.name }}</h5>
+                    <button type="button" class="btn-close" 
+                            (click)="closeProductDetails()"></button>
+                </div>
+                <div class="modal-body">
+                    <img [src]="imageUrl" 
+                         [alt]="product.name" 
+                         class="img-fluid w-100 mb-3">
+                    <p>{{ product.description }}</p>
+
+                    <!-- Quantity Selector -->
+                    <div class="d-flex align-items-center">
+                        <i (click)="decrementQuantity()" 
+                           class="fa fa-minus-circle text-warning mr-2"
+                           style="cursor: pointer; font-size: 2em;"></i>
+                        <span class="font-weight-bold mx-3" style="font-size: 1.5em;">
+                            {{ quantity }}
+                        </span>
+                        <i (click)="incrementQuantity()" 
+                           class="fa fa-plus-circle text-warning mx-2"
+                           style="cursor: pointer; font-size: 2em;"></i>
+                    </div>
+
+                    <!-- Add to Cart Button -->
+                    <button class="btn btn-dark mt-3 py-2 w-100" 
+                            (click)="addItemToCart()">
+                        <i class="fa fa-shopping-cart"></i> Add to Cart
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
