@@ -18,5 +18,4 @@ public interface ProductService {
     void deleteProduct(String productId);
     List<ProductResponseDTO> getProductsByCategory(UUID categoryId);
     List<ProductResponseDTO> getProductsByOwner(UUID ownerId);
-
 }

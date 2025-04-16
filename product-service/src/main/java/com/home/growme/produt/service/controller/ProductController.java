@@ -17,6 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.UUID;
 
 
 @Slf4j
@@ -46,6 +47,13 @@ public class ProductController {
     public ResponseEntity<ProductResponseListDTO> getProducts(ProductSpecParams request) {
         log.info("Fetching product list with params: {}", request);
         ProductResponseListDTO productResponseDTOList = productService.getAllProducts(request);
+        return ResponseEntity.ok(productResponseDTOList);
+    }
+
+    @GetMapping("/seller/{userId}")
+    public ResponseEntity<List<ProductResponseDTO>> getProductsByUser(@PathVariable String userId) {
+        log.info("Fetching product list for user with Id: {}", userId);
+        List<ProductResponseDTO> productResponseDTOList = productService.getProductsByOwner(UUID.fromString(userId));
         return ResponseEntity.ok(productResponseDTOList);
     }
 

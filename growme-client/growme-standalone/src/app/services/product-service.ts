@@ -35,7 +35,7 @@ export class ProductService {
         return this.http.delete<void>(`${this.apiUrl}/${id}`);
       }
 
-      getProductsBySeller(userId: string): Observable<IProduct[]> {
-        return this.http.get<IProduct[]>(`${this.apiUrl}/products/seller/${userId}`);
-      }
+     getProductsBySeller(userId: string): Observable<IProduct[]> {
+  return this.http.get<IProduct[]>(`${this.apiUrl}/seller/${userId}`);
+}
 }
