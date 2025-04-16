@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { HomeComponent } from './home/home.component';
 import { AuthCallbackComponent } from './auth/auth-callback/auth-callback.component';
 import { CompleteProfileComponent } from './core/complete-profile/complete-profile.component';
+import { SellerProductComponent } from './product/seller-product/seller-product.component';
 
 export const routes: Routes = [
     {path: '' , redirectTo: 'welcome', pathMatch: 'full'},
@@ -16,6 +17,11 @@ export const routes: Routes = [
         },
         { path: 'auth/callback', component: AuthCallbackComponent },
         { path: '**', redirectTo: '' },
+        { 
+            path: 'seller/products', 
+            component: SellerProductComponent,
+          },
+       
        
 
     

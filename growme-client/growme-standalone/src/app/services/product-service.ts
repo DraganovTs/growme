@@ -10,6 +10,7 @@ import { ProductCreateDTO, ProductUpdateDTO } from "../shared/model/product-crea
 })
 
 export class ProductService {
+ 
     private apiUrl = environment.apiUrl + 'products'
 
     constructor(private http: HttpClient){}
@@ -32,5 +33,9 @@ export class ProductService {
 
       deleteProduct(id: string): Observable<void> {
         return this.http.delete<void>(`${this.apiUrl}/${id}`);
+      }
+
+      getProductsBySeller(userId: string): Observable<IProduct[]> {
+        return this.http.get<IProduct[]>(`${this.apiUrl}/products/seller/${userId}`);
       }
 }

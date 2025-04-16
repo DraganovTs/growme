@@ -22,9 +22,15 @@
            [routerLinkActive]="'active'">About</a>
 
         <!-- Show only if user is a seller -->
-        <a *ngIf="isSeller" class="py-2 text-decoration-none text-dark hover-underline" 
-           routerLink="/products/add" 
-           [routerLinkActive]="'active'">Add Product</a>
+        <ng-container *ngIf="isSeller">
+            <a class="me-4 py-2 text-decoration-none text-dark hover-underline" 
+               routerLink="/seller/products" 
+               [routerLinkActive]="'active'">My Products</a>
+            
+            <a class="py-2 text-decoration-none text-dark hover-underline" 
+               routerLink="/products/add" 
+               [routerLinkActive]="'active'">Add Product</a>
+        </ng-container>
     </nav>
 
     <!-- Cart and User Actions -->
