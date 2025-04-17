@@ -18,15 +18,18 @@ import com.home.growme.produt.service.service.ProductService;
 import com.home.growme.produt.service.specification.ProductSpecParams;
 import com.home.growme.produt.service.specification.ProductSpecificationNameOwnerCategory;
 import com.home.growme.produt.service.util.ProductValidator;
+import jakarta.persistence.criteria.Predicate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -150,8 +153,32 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<ProductResponseDTO> getProductsByOwner(UUID ownerId) {
-        return List.of();
+    public ProductResponseListDTO getProductsByOwner(ProductSpecParams specParams) {
+        int pageIndex = Optional.ofNullable(specParams.getPageIndex()).orElse(1);
+        int pageSize = Optional.ofNullable(specParams.getPageSize()).orElse(defaultPageSize);
+
+        if (pageSize < 1) {
+            pageSize = defaultPageSize;
+        }
+
+        Pageable paging = PageRequest.of(pageIndex - 1, pageSize);
+
+        // Create specification that filters by ownerId
+        Specification<Product> spec = (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            if (specParams.getOwnerId() != null) {
+                predicates.add(criteriaBuilder.equal(
+                        root.get("owner").get("ownerId"),
+                        UUID.fromString(specParams.getOwnerId())
+                ));
+            }
+
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        };
+
+        Page<Product> productPage = productRepository.findAll(spec, paging);
+        return buildProductResponseListDTO(productPage, pageIndex, pageSize);
     }
 
     private ProductResponseListDTO buildProductResponseListDTO(Page<Product> productPage, int pageIndex, int pageSize) {

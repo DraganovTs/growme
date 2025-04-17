@@ -17,5 +17,5 @@ public interface ProductService {
     ProductResponseDTO updateProduct(String productId, ProductRequestDTO productRequestDTO);
     void deleteProduct(String productId);
     List<ProductResponseDTO> getProductsByCategory(UUID categoryId);
-    List<ProductResponseDTO> getProductsByOwner(UUID ownerId);
+    ProductResponseListDTO getProductsByOwner(ProductSpecParams specParams);
 }
