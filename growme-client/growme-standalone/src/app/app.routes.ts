@@ -5,24 +5,23 @@ import { CompleteProfileComponent } from './core/complete-profile/complete-profi
 import { SellerProductComponent } from './product/seller-product/seller-product.component';
 
 export const routes: Routes = [
-    {path: '' , redirectTo: 'welcome', pathMatch: 'full'},
-    {path: 'welcome', component: HomeComponent},
+    { path: '', redirectTo: 'welcome', pathMatch: 'full' },
+    { path: 'welcome', component: HomeComponent },
     { path: 'complete-profile', component: CompleteProfileComponent },
-
-    {path: 'shop'
-        ,loadChildren: () => import('./shop/shop.routes').then(r => r.SHOP_ROUTES)},
-        {
-            path: 'products',
-            loadChildren: () => import('./product/product.routes').then(r => r.PRODUCT_ROUTES)
-        },
-        { path: 'auth/callback', component: AuthCallbackComponent },
-        { path: '**', redirectTo: '' },
-        { 
-            path: 'seller/products', 
-            component: SellerProductComponent,
-          },
-       
-       
-
+    { path: 'auth/callback', component: AuthCallbackComponent },
     
+    { 
+        path: 'shop',
+        loadChildren: () => import('./shop/shop.routes').then(r => r.SHOP_ROUTES)
+    },
+    {
+        path: 'products',
+        loadChildren: () => import('./product/product.routes').then(r => r.PRODUCT_ROUTES)
+    },
+    { 
+        path: 'seller/products', 
+        component: SellerProductComponent 
+    },
+    
+    { path: '**', redirectTo: 'welcome' }
 ];

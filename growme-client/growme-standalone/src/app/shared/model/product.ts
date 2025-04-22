@@ -22,3 +22,11 @@ export interface ICategory{
     categoryId: string;
     categoryName: string;
 }
+
+export interface ProductResponseListDTO {
+    dataList: IProduct[];
+    totalCount: number;
+    pageIndex?: number;
+    pageSize?: number;
+    totalPages?: number;
+}

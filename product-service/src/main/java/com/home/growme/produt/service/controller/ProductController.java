@@ -50,17 +50,11 @@ public class ProductController {
         return ResponseEntity.ok(productResponseDTOList);
     }
 
-    @GetMapping("/seller/{userId}")
-    public ResponseEntity<ProductResponseListDTO> getProductsByOwner(
-            @PathVariable String userId) {
+    @GetMapping("/seller")
+    public ResponseEntity<ProductResponseListDTO> getProductsByOwner( @ModelAttribute ProductSpecParams specParams) {
 
-        log.info("Fetching product list for user with Id: {}", userId);
-        ProductSpecParams specParams = new ProductSpecParams();
-        specParams.setOwnerId(userId);
-
-
-        ProductResponseListDTO response = productService.getProductsByOwner(specParams);
-        return ResponseEntity.ok(response);
+        ProductResponseListDTO productResponseDTOList = productService.getProductsByOwner(specParams);
+        return ResponseEntity.ok(productResponseDTOList);
     }
 
     @PostMapping

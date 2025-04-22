@@ -1,11 +1,13 @@
-import { Routes, RouterModule } from "@angular/router";
-import { ProductFormComponent } from "./product-form/product-form.component";
-import { ProductListComponent } from "./product-list/product-list.component";
-
+import { Routes } from '@angular/router';
+import { ProductFormComponent } from './product-form/product-form.component';
 
 export const PRODUCT_ROUTES: Routes = [
-    { path: '', component: ProductListComponent }, 
-    { path: 'add', component: ProductFormComponent, data: { isEditMode: false } }, 
-    { path: 'edit/:id', component: ProductFormComponent, data: { isEditMode: true } } 
+    { 
+        path: 'add', 
+        component: ProductFormComponent 
+    },
+    { 
+        path: 'edit/:id', 
+        component: ProductFormComponent 
+    }
 ];
-

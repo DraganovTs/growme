@@ -1,9 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { ProductService } from '../../services/product-service';
 import { KeycloakService } from '../../services/keycloak.service';
-import { IProduct } from '../../shared/model/product';
+import { ICategory, IProduct } from '../../shared/model/product';
+import { SellerParams } from '../../shared/model/sellerparams';
+import { CategoryService } from '../../services/category-service';
 
 @Component({
   selector: 'app-seller-product',
@@ -13,18 +15,32 @@ import { IProduct } from '../../shared/model/product';
   styleUrls: ['./seller-product.component.scss']
 })
 export class SellerProductComponent implements OnInit {
-  products: IProduct[] = []; 
+  @ViewChild('search') searchTerm?: ElementRef;
+  products: IProduct[] = [];
+  categories: ICategory[] = [];
+  sellerParams: SellerParams;
+  totalCount = 0;
   isLoading = false;
   errorMessage = '';
+  
+  sortOptions = [
+    {name: 'Alphabetical', value: 'name'},
+    {name: 'Price: Low to high', value: 'priceAsc'},
+    {name: 'Price: High to low', value: 'priceDesc'}
+  ];
 
   constructor(
     private productService: ProductService,
     private keycloakService: KeycloakService,
-    private router: Router
-  ) { }
+    private router: Router,
+    private categoryService: CategoryService
+  ) {
+    this.sellerParams = new SellerParams();
+  }
 
   ngOnInit(): void {
     this.loadProducts();
+    this.loadCategories();
   }
 
   loadProducts(): void {
@@ -38,17 +54,59 @@ export class SellerProductComponent implements OnInit {
       return;
     }
 
-    this.productService.getProductsBySeller(userId).subscribe({
-      next: (data: IProduct[]) => {
-        this.products = data;
+    this.sellerParams.ownerId = userId; // Always filter by current user
+
+    this.productService.getProductsBySeller(this.sellerParams).subscribe({
+      next: (response) => {
+        this.products = response.dataList || [];
+        this.totalCount = response.totalCount || 0;
         this.isLoading = false;
       },
       error: (err) => {
         console.error('Error fetching products:', err);
-        this.errorMessage = 'Failed to load products. Please try again.';
+        this.errorMessage = 'Failed to load products';
         this.isLoading = false;
       }
     });
+  }
+
+  loadCategories(): void {
+    this.categoryService.getCategories().subscribe({
+      next: (response) => {
+        this.categories = [{categoryId: '', categoryName: 'All'}, ...response];
+      },
+      error: (err) => console.error('Error loading categories:', err)
+    });
+  }
+
+  onCategorySelected(categoryId: string): void {
+    this.sellerParams.categoryId = categoryId === '' ? undefined : categoryId;
+    this.sellerParams.pageIndex = 1;
+    this.loadProducts();
+  }
+
+  onSortSelected(event: any): void {
+    this.sellerParams.sort = event.target.value;
+    this.loadProducts();
+  }
+
+  onPageChanged(event: any): void {
+    if (this.sellerParams.pageIndex !== event.page) {
+      this.sellerParams.pageIndex = event.page;
+      this.loadProducts();
+    }
+  }
+
+  onSearch(): void {
+    this.sellerParams.search = this.searchTerm?.nativeElement.value;
+    this.sellerParams.pageIndex = 1;
+    this.loadProducts();
+  }
+
+  onReset(): void {
+    if (this.searchTerm) this.searchTerm.nativeElement.value = '';
+    this.sellerParams = new SellerParams();
+    this.loadProducts();
   }
 
   editProduct(productId: string): void {
@@ -57,17 +115,9 @@ export class SellerProductComponent implements OnInit {
 
   deleteProduct(productId: string): void {
     if (confirm('Are you sure you want to delete this product?')) {
-      this.isLoading = true;
       this.productService.deleteProduct(productId).subscribe({
-        next: () => {
-          this.products = this.products.filter(p => p.productId !== productId);
-          this.isLoading = false;
-        },
-        error: (err) => {
-          console.error('Error deleting product:', err);
-          this.errorMessage = 'Failed to delete product';
-          this.isLoading = false;
-        }
+        next: () => this.loadProducts(),
+        error: (err) => console.error('Error deleting product:', err)
       });
     }
   }
@@ -79,5 +129,9 @@ export class SellerProductComponent implements OnInit {
   handleImageError(event: Event): void {
     const imgElement = event.target as HTMLImageElement;
     imgElement.src = 'assets/images/default-product.png';
+  }
+
+  get totalPages(): number {
+    return Math.ceil(this.totalCount / this.sellerParams.pageSize);
   }
 }

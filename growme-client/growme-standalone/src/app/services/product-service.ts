@@ -1,9 +1,10 @@
 import { Injectable } from "@angular/core";
 import { environment } from "../environment/environments";
-import { HttpClient } from "@angular/common/http";
-import { IProduct } from "../shared/model/product";
+import { HttpClient, HttpParams } from "@angular/common/http";
+import { IProduct, ProductResponseListDTO } from "../shared/model/product";
 import { Observable } from "rxjs";
 import { ProductCreateDTO, ProductUpdateDTO } from "../shared/model/product-create";
+import { SellerParams } from "../shared/model/sellerparams";
 
 @Injectable({
     providedIn: 'root'
@@ -35,7 +36,15 @@ export class ProductService {
         return this.http.delete<void>(`${this.apiUrl}/${id}`);
       }
 
-     getProductsBySeller(userId: string): Observable<IProduct[]> {
-  return this.http.get<IProduct[]>(`${this.apiUrl}/seller/${userId}`);
-}
+      getProductsBySeller(params: SellerParams): Observable<ProductResponseListDTO> {
+        const httpParams = new HttpParams()
+          .set('categoryId', params.categoryId || '')
+          .set('ownerId', params.ownerId || '')
+          .set('sort', params.sort)
+          .set('pageIndex', params.pageIndex.toString())
+          .set('pageSize', params.pageSize.toString())
+          .set('search', params.search || '');
+      
+        return this.http.get<ProductResponseListDTO>(`${this.apiUrl}/seller`, { params: httpParams });
+      }
 }
