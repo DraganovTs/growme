@@ -56,7 +56,7 @@ export class SellerProductComponent implements OnInit {
       return;
     }
 
-    this.sellerParams.ownerId = userId; // Always filter by current user
+    this.sellerParams.ownerId = userId; 
 
     this.productService.getProductsBySeller(this.sellerParams).subscribe({
       next: (response) => {
@@ -83,13 +83,14 @@ export class SellerProductComponent implements OnInit {
 
   onCategorySelected(categoryId: string): void {
     this.sellerParams.categoryId = categoryId === '' ? undefined : categoryId;
-    this.sellerParams.pageIndex = 1;
-    this.loadProducts();
+    this.sellerParams.pageIndex = 1; 
+    this.loadProducts(); 
   }
 
   onSortSelected(event: any): void {
     this.sellerParams.sort = event.target.value;
-    this.loadProducts();
+    this.sellerParams.pageIndex = 1; 
+    this.loadProducts(); 
   }
 
   onPageChanged(event: any): void {

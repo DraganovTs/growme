@@ -1,5 +1,5 @@
 export class SellerParams {
-    categoryId?: string;
+    categoryId?: string = ``;
     ownerId?: string;
     sort = 'name';
     pageIndex = 1;
