@@ -6,6 +6,7 @@ import { KeycloakService } from '../../services/keycloak.service';
 import { ICategory, IProduct } from '../../shared/model/product';
 import { SellerParams } from '../../shared/model/sellerparams';
 import { CategoryService } from '../../services/category-service';
+import { ImageService } from '../../services/image-service';
 
 @Component({
   selector: 'app-seller-product',
@@ -33,7 +34,8 @@ export class SellerProductComponent implements OnInit {
     private productService: ProductService,
     private keycloakService: KeycloakService,
     private router: Router,
-    private categoryService: CategoryService
+    private categoryService: CategoryService,
+    private imageService: ImageService
   ) {
     this.sellerParams = new SellerParams();
   }
@@ -133,5 +135,12 @@ export class SellerProductComponent implements OnInit {
 
   get totalPages(): number {
     return Math.ceil(this.totalCount / this.sellerParams.pageSize);
+  }
+
+  getImageUrl(imageUrl: string | undefined): string {
+    if (!imageUrl) {
+      return this.imageService.getDefaultImageUrl();
+    }
+    return this.imageService.getImageUrl(imageUrl);
   }
 }
