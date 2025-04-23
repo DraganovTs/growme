@@ -1,1 +1,54 @@
-<p>home works!</p>
+<div class="container my-5">
+    <div class="row align-items-center mb-5">
+      <div class="col-md-6">
+        <h1 class="text-warning display-4 fw-bold">Grow-to-Order Marketplace</h1>
+        <p class="lead text-muted">
+          Support local growers and get the freshest produce — grown just for you!
+          Post a growing task or shop what's already available.
+        </p>
+        <div class="mt-4">
+          <a routerLink="/shop" class="btn btn-lg btn-primary me-3">
+            <i class="fa fa-shopping-basket"></i> Browse Products
+          </a>
+          <a routerLink="/tasks" class="btn btn-lg btn-outline-warning">
+            <i class="fa fa-leaf"></i> Post a Grow Task
+          </a>
+        </div>
+      </div>
+      <div class="col-md-6 text-center">
+        <img src="assets/img/farm-illustration.png" class="img-fluid rounded shadow" alt="Grow Illustration">
+      </div>
+    </div>
+  
+    <hr class="my-5" />
+  
+    <!-- Featured Categories or Actions -->
+    <h3 class="text-warning text-center mb-4">Start Your Journey</h3>
+    <div class="row text-center">
+      <div class="col-md-4 mb-4">
+        <div class="card shadow-sm border-0 h-100 p-3">
+          <i class="fa fa-user-plus fa-3x text-warning mb-3"></i>
+          <h5>Become a Grower</h5>
+          <p>Accept grow requests and earn money nurturing future produce.</p>
+          <a routerLink="/register" class="btn btn-outline-warning mt-2">Sign Up</a>
+        </div>
+      </div>
+      <div class="col-md-4 mb-4">
+        <div class="card shadow-sm border-0 h-100 p-3">
+          <i class="fa fa-tasks fa-3x text-warning mb-3"></i>
+          <h5>Create a Grow Task</h5>
+          <p>Looking for custom veggies, wine, or herbs? Post a task and get offers.</p>
+          <a routerLink="/tasks/create" class="btn btn-outline-warning mt-2">Create Task</a>
+        </div>
+      </div>
+      <div class="col-md-4 mb-4">
+        <div class="card shadow-sm border-0 h-100 p-3">
+          <i class="fa fa-shopping-cart fa-3x text-warning mb-3"></i>
+          <h5>Shop What’s Ready</h5>
+          <p>Check what's already grown and ready for purchase from nearby growers.</p>
+          <a routerLink="/shop" class="btn btn-outline-warning mt-2">Start Shopping</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  

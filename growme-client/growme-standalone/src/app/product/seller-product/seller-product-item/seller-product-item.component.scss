@@ -1,0 +1,48 @@
+.card {
+    transition: all 0.3s ease;
+    border: none;
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+  }
+  
+  .image {
+    height: 200px;
+    overflow: hidden;
+    
+    .product-image {
+      object-fit: cover;
+      height: 100%;
+      transition: all 0.3s ease;
+    }
+    
+    &:hover {
+      .product-image {
+        transform: scale(1.05);
+      }
+      
+      .hover-overlay {
+        opacity: 1;
+      }
+    }
+  }
+  
+  .hover-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    opacity: 0;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .badge {
+    font-size: 0.8rem;
+    padding: 0.35em 0.65em;
+  }
