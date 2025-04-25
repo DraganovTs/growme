@@ -4,7 +4,7 @@ server:
 keycloak:
   realm: grow-me
   adminClientId: admin-cli
-  adminClientSecret: ho7BxjeyvHGyoiZz3coeOSaLvqqtKKhG
+  adminClientSecret: RoJieZOMj83LPe0lllP2vO37xaXuKA75
   urls:
     auth: http://localhost:7080
 

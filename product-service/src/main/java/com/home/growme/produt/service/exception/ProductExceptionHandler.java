@@ -45,6 +45,11 @@ public class ProductExceptionHandler {
         return buildErrorResponse(exception, webRequest, HttpStatus.PAYLOAD_TOO_LARGE);
     }
 
+    @ExceptionHandler(OwnerAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponseDTO> handleOwnerAlreadyExistsException(MaxUploadSizeExceededException exception, WebRequest webRequest) {
+        return buildErrorResponse(exception, webRequest, HttpStatus.CONFLICT);
+    }
+
     private ResponseEntity<ErrorResponseDTO> buildErrorResponse(Exception exception, WebRequest webRequest, HttpStatus httpStatus) {
 
         ErrorResponseDTO errorResponseDTO = new ErrorResponseDTO(

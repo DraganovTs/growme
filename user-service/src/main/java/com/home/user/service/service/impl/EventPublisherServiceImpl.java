@@ -22,9 +22,9 @@ public class EventPublisherServiceImpl implements EventPublisherService {
     }
 
     @Override
-    public void publishRoleAssignment(String userId, String role) {
+    public void publishRoleAssignment(String userId, String role, String operationType) {
 
-        RoleAssignmentEvent event = new RoleAssignmentEvent(userId, role.toUpperCase());
+        RoleAssignmentEvent event = new RoleAssignmentEvent(userId, role.toUpperCase(),operationType);
 
         try {
             kafkaTemplate.send(ROLE_ASSIGNMENT, userId, event)

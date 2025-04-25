@@ -48,13 +48,20 @@ public class EventHandlerServiceImpl implements EventHandlerService {
         try {
             eventValidator.validateRoleAssignmentResult(result);
 
-            User user = userRepository.findById(UUID.fromString(result.getUserId()))
-                    .orElseThrow(() -> new UserNotFoundException(result.getUserId()));
+            if ("CREATE".equals(result.getOperationType())) {
+                if (!userRepository.existsById(UUID.fromString(result.getUserId()))) {
+                    User user = userRepository.findById(UUID.fromString(result.getUserId()))
+                            .orElseThrow(() -> new UserNotFoundException(result.getUserId()));
 
-
-            UserCreatedEvent userCreatedEvent = new UserCreatedEvent(result.getUserId(), user.getUsername());
-
-            eventPublisherService.publishUserCreated(userCreatedEvent);
+                    UserCreatedEvent event = new UserCreatedEvent(
+                            result.getUserId(),
+                            user.getUsername(),
+                            "CREATE"
+                    );
+                } else {
+                    log.warn("Skipping user creation - already exists: {}", result.getUserId());
+                }
+            }
 
         } catch (UserNotFoundException e) {
             log.error("User not found for role assignment: {}", result.getUserId(), e);

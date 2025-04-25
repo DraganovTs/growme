@@ -1,6 +1,7 @@
 package com.home.growme.produt.service.service.impl;
 
 import com.home.growme.common.module.events.UserCreatedEvent;
+import com.home.growme.produt.service.exception.OwnerAlreadyExistsException;
 import com.home.growme.produt.service.mapper.ProductMapper;
 import com.home.growme.produt.service.model.dto.OwnerDTO;
 import com.home.growme.produt.service.model.entity.Owner;
@@ -11,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 
@@ -36,6 +38,9 @@ public class OwnerServiceImpl implements OwnerService {
 
     @Override
     public void createOwner(UserCreatedEvent event) {
+        if (ownerRepository.existsById(UUID.fromString(event.getUserId()))) {
+            throw new OwnerAlreadyExistsException(event.getUserId());
+        }
         Owner owner = ProductMapper.mapUserCreatedEventToOwner(event);
         ownerRepository.save(owner);
     }
