@@ -143,8 +143,10 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public void deleteProduct(String productId) {
-
+    public void deleteProduct(String productId,String ownerId) {
+        productRepository.deleteById(UUID.fromString(productId));
+        log.info("Product deleted successfully: {}", productId);
+        productEventPublisher.publishProductDeletion();
     }
 
     @Override
@@ -163,7 +165,6 @@ public class ProductServiceImpl implements ProductService {
 
         Pageable paging = PageRequest.of(pageIndex - 1, pageSize);
 
-        // Create specification that filters by ownerId
         Specification<Product> spec = (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 

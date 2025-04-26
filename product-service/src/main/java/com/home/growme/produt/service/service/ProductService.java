@@ -15,7 +15,7 @@ public interface ProductService {
     //TODO implement
     ProductResponseDTO createProduct(ProductRequestDTO productRequestDTO);
     ProductResponseDTO updateProduct(String productId, ProductRequestDTO productRequestDTO);
-    void deleteProduct(String productId);
+    void deleteProduct(String productId, String ownerId);
     List<ProductResponseDTO> getProductsByCategory(UUID categoryId);
     ProductResponseListDTO getProductsByOwner(ProductSpecParams specParams);
 }

@@ -38,4 +38,7 @@ public class ProductEventPublisher {
     }
 
 
+    public void publishProductDeletion() {
+
+    }
 }

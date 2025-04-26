@@ -17,7 +17,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.UUID;
 
 
 @Slf4j
@@ -51,17 +50,17 @@ public class ProductController {
     }
 
     @GetMapping("/seller")
-    public ResponseEntity<ProductResponseListDTO> getProductsByOwner( @ModelAttribute ProductSpecParams specParams) {
+    public ResponseEntity<ProductResponseListDTO> getProductsByOwner(@ModelAttribute ProductSpecParams specParams) {
 
         ProductResponseListDTO productResponseDTOList = productService.getProductsByOwner(specParams);
         return ResponseEntity.ok(productResponseDTOList);
     }
 
     @PostMapping
-    public ResponseEntity<ProductResponseDTO>createProduct(@RequestBody ProductRequestDTO productRequestDTO){
+    public ResponseEntity<ProductResponseDTO> createProduct(@RequestBody ProductRequestDTO productRequestDTO) {
         log.info("Creating new product: {}", productRequestDTO);
         ProductResponseDTO responseDTO = productService.createProduct(productRequestDTO);
-       return ResponseEntity.ok(responseDTO);
+        return ResponseEntity.ok(responseDTO);
     }
 
 
@@ -71,14 +70,15 @@ public class ProductController {
             @Valid @RequestBody ProductRequestDTO productRequestDTO
     ) {
         log.info("Updating product with ID: {}", id);
-        ProductResponseDTO productResponseDTO = productService.updateProduct(id,productRequestDTO);
+        ProductResponseDTO productResponseDTO = productService.updateProduct(id, productRequestDTO);
         return ResponseEntity.ok(productResponseDTO);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable String id) {
-        log.info("Deleting product with ID: {}", id);
-        productService.deleteProduct(id);
+    @DeleteMapping("/{productId}/{userId}")
+    public ResponseEntity<Void> deleteProduct(@PathVariable String productId,
+                                              @PathVariable String userId) {
+        log.info("Deleting product with ID: {}", productId);
+        productService.deleteProduct(productId, userId);
         return ResponseEntity.noContent().build();
     }
 

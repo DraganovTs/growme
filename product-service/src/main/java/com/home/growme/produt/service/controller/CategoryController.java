@@ -33,4 +33,10 @@ public class CategoryController {
         return ResponseEntity.ok(categoryWhitProductsDTOList);
     }
 
+    @PostMapping
+    public ResponseEntity<CategoryDTO> createCategory(@RequestBody CategoryDTO categoryDTO) {
+        CategoryDTO createdCategoryDTO = categoryService.createCategory(categoryDTO);
+        return ResponseEntity.ok(createdCategoryDTO);
+    }
+
 }
