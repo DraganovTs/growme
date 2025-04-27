@@ -69,7 +69,7 @@ public class ProductController {
             @PathVariable String id,
             @Valid @RequestBody ProductRequestDTO productRequestDTO
     ) {
-        log.info("Updating product with ID: {}", id);
+        log.info("Updating product with ID: {} ", id);
         ProductResponseDTO productResponseDTO = productService.updateProduct(id, productRequestDTO);
         return ResponseEntity.ok(productResponseDTO);
     }
