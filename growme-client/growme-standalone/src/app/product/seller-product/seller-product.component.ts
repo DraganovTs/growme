@@ -147,13 +147,19 @@ export class SellerProductComponent implements OnInit {
 
 
   deleteProduct(productId: string): void {
-    if (confirm('Are you sure?')) {
+    if (confirm('Are you sure you want to delete this product?')) {
       const userId = this.keycloakService.getUserId();
       if (!userId) return;
-      
+  
       this.sellerService.deleteProduct({productId, userId}).subscribe({
-        next: () => this.loadProducts(),
-        error: (err) => console.error(err)
+        next: () => {
+          console.log('Product deleted successfully');
+          this.loadProducts(); // Refresh the list
+        },
+        error: (err) => {
+          console.error('Delete failed:', err);
+          // Optional: Show error to user
+        }
       });
     }
   }

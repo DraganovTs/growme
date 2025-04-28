@@ -146,7 +146,7 @@ public class ProductServiceImpl implements ProductService {
     public void deleteProduct(String productId,String ownerId) {
         productRepository.deleteById(UUID.fromString(productId));
         log.info("Product deleted successfully: {}", productId);
-        productEventPublisher.publishProductDeletion();
+        productEventPublisher.publishProductDeletion( productId, ownerId);
     }
 
     @Override

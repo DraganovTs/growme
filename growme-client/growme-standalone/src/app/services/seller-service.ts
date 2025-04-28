@@ -4,7 +4,7 @@ import { IPagination } from '../shared/model/pagination';
 import { IProduct } from '../shared/model/product';
 import { SellerParams } from '../shared/model/sellerparams';
 import { environment } from '../environment/environments';
-import { delay, Observable, of } from 'rxjs';
+import { catchError, delay, Observable, of, throwError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -55,12 +55,13 @@ export class SellerService {
     return this.sellerParams;
   }
 
-  deleteProduct(params: {productId: string, userId: string}): Observable<any> {
-    console.log(`${this.baseUrl}products/${params.productId}`, {
-      params: new HttpParams().set('userId', params.userId)
-    })
-    return this.http.delete(`${this.baseUrl}products/${params.productId}`, {
-      params: new HttpParams().set('userId', params.userId)
-    });
+  deleteProduct(params: {productId: string, userId: string}): Observable<void> {
+    const url = `${this.baseUrl}products/${params.productId}/${params.userId}`;
+    return this.http.delete<void>(url).pipe(
+      catchError(error => {
+        console.error('Delete failed:', error);
+        return throwError(() => error);
+      })
+    );
   }
 }
