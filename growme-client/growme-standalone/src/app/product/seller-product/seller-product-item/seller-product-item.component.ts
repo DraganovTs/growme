@@ -13,7 +13,7 @@ import { IProduct } from '../../../shared/model/product';
 export class SellerProductItemComponent {
   @Input() product!: IProduct;
   @Output() edit = new EventEmitter<string>();
-  @Output() delete = new EventEmitter<string>();
+  @Output() delete = new EventEmitter<string>(); 
 
   constructor(private imageService: ImageService) {}
 
@@ -30,7 +30,7 @@ export class SellerProductItemComponent {
   }
 
   deleteProduct(event: Event): void {
-    event.stopPropagation();
     this.delete.emit(this.product.productId);
+
   }
 }

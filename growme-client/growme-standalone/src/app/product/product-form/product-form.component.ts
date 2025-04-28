@@ -13,10 +13,10 @@ import { FilenamePipe } from './Filename.Pipe';
 
 @Component({
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule,FormsModule,FilenamePipe],
+  imports: [CommonModule, ReactiveFormsModule,FormsModule],
   selector: 'app-product-form',
   templateUrl: './product-form.component.html',
-  styleUrls: ['./product-form.component.css'],
+  styleUrls: ['./product-form.component.scss'],
 })
 export class ProductFormComponent implements OnInit {
   productForm!: FormGroup;

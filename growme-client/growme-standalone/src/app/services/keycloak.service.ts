@@ -175,7 +175,15 @@ export class KeycloakService {
   }
 
   getUserId(): string | null {
-    return this.keycloak?.tokenParsed?.sub || localStorage.getItem('userId') || null;
+    if (this.keycloak?.tokenParsed?.sub) {
+      return this.keycloak.tokenParsed.sub;
+    }
+
+    if (isPlatformBrowser(this.platformId)) {
+      return localStorage.getItem('userId');
+    }
+
+    return null;
   }
 
   getEmail(): string {

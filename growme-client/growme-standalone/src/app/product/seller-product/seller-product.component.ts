@@ -145,19 +145,15 @@ export class SellerProductComponent implements OnInit {
     this.router.navigate(['/seller/products/edit', productId]);
   }
 
+
   deleteProduct(productId: string): void {
     if (confirm('Are you sure?')) {
       const userId = this.keycloakService.getUserId();
-      console.log(userId)
-
-      if (!userId) {
-        console.error('User not authenticated');
-        return;
-      }
-  
-      this.sellerService.deleteProduct(productId, userId).subscribe({
+      if (!userId) return;
+      
+      this.sellerService.deleteProduct({productId, userId}).subscribe({
         next: () => this.loadProducts(),
-        error: (err) => console.error('Delete failed:', err)
+        error: (err) => console.error(err)
       });
     }
   }
