@@ -112,6 +112,18 @@ public class UserUpdateServiceImpl implements UserUpdateService {
         log.info("Deleted user with ID: {}", userId);
     }
 
+    @Override
+    public void deleteOwnedProduct(String userId, String productId) {
+        validator.validateIds(userId,productId);
+        UUID productUUID = UUID.fromString(productId);
+
+        User user = userRepository.findById(UUID.fromString(userId))
+                .orElseThrow(()-> new UserNotFoundException("User not found with ID: " + userId));
+
+        user.getOwnedProductIds().remove(productUUID);
+        log.info("Delete product {} to user {}", productId, userId);
+    }
+
 
     private void handleDataIntegrityViolation(DataIntegrityViolationException e, KeycloakUserDTO dto) {
         log.error("Data integrity violation while syncing user", e);

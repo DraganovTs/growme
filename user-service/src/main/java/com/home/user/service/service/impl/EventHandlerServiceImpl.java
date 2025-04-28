@@ -1,6 +1,7 @@
 package com.home.user.service.service.impl;
 
 import com.home.growme.common.module.events.ProductAssignedToUserEvent;
+import com.home.growme.common.module.events.ProductDeletionToUserEvent;
 import com.home.growme.common.module.events.RoleAssignmentResult;
 import com.home.growme.common.module.events.UserCreatedEvent;
 import com.home.user.service.exception.UserNotFoundException;
@@ -26,6 +27,8 @@ public class EventHandlerServiceImpl implements EventHandlerService {
 
     public static final String USER_ROLE_ASSIGNMENT_RESULT = "user.role.assignments.result";
     private static final String PRODUCT_ASSIGNMENT_TOPIC = "product.user.assignment";
+    private static final String PRODUCT_DELETION_TOPIC = "product.user.deletion";
+
 
     private final UserRepository userRepository;
     private final EventPublisherService eventPublisherService;
@@ -74,16 +77,32 @@ public class EventHandlerServiceImpl implements EventHandlerService {
 
     @Override
     @KafkaListener(topics = PRODUCT_ASSIGNMENT_TOPIC)
-    public void handleProductAssignment(ProductAssignedToUserEvent event,
-                                        @Header(KafkaHeaders.RECEIVED_TOPIC) String topic) {
+    public void handleProductAssignment(ProductAssignedToUserEvent event) {
         try {
-            log.debug("Processing product assignment from topic {}: {}", topic, event);
+            log.debug("Processing product assignment from event {}", event);
             eventValidator.validateProductAssignment(event);
 
             userUpdateService.addOwnedProduct(event.getUserId(), event.getProductId());
             log.info("Successfully processed product assignment for user {}", event.getUserId());
 
         } catch (Exception e) {
+            log.error("Failed to process product assignment", e);
+            throw e;
+        }
+    }
+
+    @Override
+    @KafkaListener(topics = PRODUCT_DELETION_TOPIC)
+    public void handleProductDeletion(ProductDeletionToUserEvent event) {
+
+        try {
+            log.debug("Processing product deletion from event {}", event);
+            eventValidator.validateProductDeletion(event);
+
+            userUpdateService.deleteOwnedProduct(event.getUserId(),event.getProductId());
+            log.info("Successfully processed product deletion for user {}", event.getUserId());
+
+        }catch (Exception e){
             log.error("Failed to process product assignment", e);
             throw e;
         }

@@ -11,4 +11,6 @@ public interface UserUpdateService {
     void addOwnedProduct(String userId, String productId);
     void markProfileAsCompleted(String userId);
     void deleteUser(UUID userId);
+
+    void deleteOwnedProduct(String userId, String productId);
 }
