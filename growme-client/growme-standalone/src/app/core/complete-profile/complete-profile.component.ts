@@ -79,9 +79,7 @@ export class CompleteProfileComponent {
     this.http.put(apiUrl, this.userProfile).subscribe({
       next: () => {
         console.log('✅ Profile updated successfully!');
-        
-        // 🔹 Call syncUserWithBackend() after profile update
-        this.syncUserWithBackend(); 
+      
   
         this.router.navigate(['/home']);
       },

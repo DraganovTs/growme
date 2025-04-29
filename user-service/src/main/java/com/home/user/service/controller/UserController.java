@@ -28,7 +28,7 @@ public class UserController {
     @PostMapping("/sync")
     public ResponseEntity<Void> syncUserFromKeycloak(@Valid @RequestBody KeycloakUserDTO request) {
         log.debug("Initiating user sync for Keycloak ID: {}", request.getUserId());
-//            userService.requestAccountCreation(request);
+            userService.requestAccountCreation(request);
             return ResponseEntity.accepted().build();
 
 

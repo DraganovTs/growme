@@ -14,15 +14,12 @@ public final class RoleAssignmentEvent extends Event {
 
     private final String userId;
     private final String roleName;
-    private final String operationType;
 
     @JsonCreator
     public RoleAssignmentEvent(
             @JsonProperty("userId") String userId,
-            @JsonProperty("roleName") String roleName,
-            @JsonProperty("operationType") String operationType) {
+            @JsonProperty("roleName") String roleName) {
         this.userId = userId;
         this.roleName = roleName;
-        this.operationType = operationType;
     }
 }

@@ -24,7 +24,7 @@ public class EventPublisherServiceImpl implements EventPublisherService {
     @Override
     public void publishRoleAssignment(String userId, String role, String operationType) {
 
-        RoleAssignmentEvent event = new RoleAssignmentEvent(userId, role.toUpperCase(),operationType);
+        RoleAssignmentEvent event = new RoleAssignmentEvent(userId, role.toUpperCase());
 
         try {
             kafkaTemplate.send(ROLE_ASSIGNMENT, userId, event)
@@ -44,10 +44,7 @@ public class EventPublisherServiceImpl implements EventPublisherService {
         }
     }
 
-    @Override
-    public void publishProductAssignment(String userId, String productId) {
 
-    }
 
     @Override
     public void publishUserCreated(UserCreatedEvent event) {
@@ -55,7 +52,6 @@ public class EventPublisherServiceImpl implements EventPublisherService {
             kafkaTemplate.send(USER_CREATE, event.getUserId(), event)
                     .thenAccept(result -> {
                         log.info("Role assignment result: {}", result);
-                        throw new EventPublishingException("Failed to publish user create assignment");
                     })
                     .exceptionally(ex -> {
                         log.error("Publish failed for event: {}", event, ex);

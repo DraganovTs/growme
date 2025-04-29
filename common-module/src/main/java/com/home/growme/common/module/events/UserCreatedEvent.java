@@ -11,15 +11,12 @@ public final class UserCreatedEvent extends Event {
 
     private final String userId;
     private final String userName;
-    private final String operationType;
 
     @JsonCreator
     public UserCreatedEvent(
             @JsonProperty("userId") String userId,
-            @JsonProperty("userName") String userName,
-            @JsonProperty("operationType") String operationType) {
+            @JsonProperty("userName") String userName) {
         this.userId = userId;
         this.userName = userName;
-        this.operationType = operationType;
     }
 }

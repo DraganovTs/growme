@@ -51,19 +51,15 @@ public class EventHandlerServiceImpl implements EventHandlerService {
         try {
             eventValidator.validateRoleAssignmentResult(result);
 
-            if ("CREATE".equals(result.getOperationType())) {
                 if (!userRepository.existsById(UUID.fromString(result.getUserId()))) {
                     User user = userRepository.findById(UUID.fromString(result.getUserId()))
                             .orElseThrow(() -> new UserNotFoundException(result.getUserId()));
 
                     UserCreatedEvent event = new UserCreatedEvent(
                             result.getUserId(),
-                            user.getUsername(),
-                            "CREATE"
-                    );
-                } else {
-                    log.warn("Skipping user creation - already exists: {}", result.getUserId());
-                }
+                            user.getUsername());
+
+                    eventPublisherService.publishUserCreated(event);
             }
 
         } catch (UserNotFoundException e) {
@@ -103,7 +99,7 @@ public class EventHandlerServiceImpl implements EventHandlerService {
             log.info("Successfully processed product deletion for user {}", event.getUserId());
 
         }catch (Exception e){
-            log.error("Failed to process product assignment", e);
+            log.error("Failed to process product deletion", e);
             throw e;
         }
     }

@@ -1,5 +1,6 @@
 package com.home.user.service.service.impl;
 
+import com.home.growme.common.module.events.UserCreatedEvent;
 import com.home.user.service.exception.*;
 import com.home.user.service.mapper.UserMapper;
 import com.home.user.service.model.dto.KeycloakUserDTO;
@@ -79,6 +80,8 @@ public class UserUpdateServiceImpl implements UserUpdateService {
         }
 
         User savedUser = userRepository.save(user);
+        UserCreatedEvent event = new UserCreatedEvent(userId.toString(), savedUser.getFirstName());
+        eventPublisherService.publishUserCreated(event);
         log.info("User updated successfully: {}", userId);
         return userMapper.mapUserToUserDTO(savedUser);
     }

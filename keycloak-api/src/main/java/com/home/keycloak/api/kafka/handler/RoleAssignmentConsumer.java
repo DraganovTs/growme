@@ -38,8 +38,7 @@ public class RoleAssignmentConsumer {
 
             RoleAssignmentResult assignmentResult = new RoleAssignmentResult("user.role.assignments.result",
                     event.getUserId(),
-                   true,
-                    event.getOperationType());
+                   true);
             kafkaTemplate.send("user.role.assignments.result",event.getUserId(),assignmentResult)
                     .thenAccept(result-> {
                         log.debug("Role assignment: {}", result);
