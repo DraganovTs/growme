@@ -35,6 +35,18 @@ services:
     networks:
       - grow-me
 
+
+  redis-cart:
+    image: redis:latest
+    container_name: cart-redis
+    ports:
+      - 6380:6379
+    command: ["redis-server","--appendonly","yes"]
+    volumes:
+      - redis-data:/data
+
+
+
   kafka-1:
     image: 'bitnami/kafka:latest'
     container_name: kafka-1
@@ -102,6 +114,7 @@ services:
       - grow-me
 
 volumes:
+  redis-data:
   kafka-1-data:
   kafka-2-data:
   kafka-3-data:
