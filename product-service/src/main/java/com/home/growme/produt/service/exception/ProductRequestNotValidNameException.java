@@ -1,7 +1,10 @@
 package com.home.growme.produt.service.exception;
 
-public class ProductRequestNotValidNameException extends RuntimeException{
+import com.home.growme.common.module.exceptions.BaseException;
+import org.springframework.http.HttpStatus;
+
+public class ProductRequestNotValidNameException extends BaseException {
     public ProductRequestNotValidNameException(String message) {
-        super(message);
+        super(message, "INVALID_PRODUCT_NAME", HttpStatus.BAD_REQUEST);
     }
 }

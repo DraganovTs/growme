@@ -2,7 +2,7 @@ package com.home.user.service.service.impl;
 
 import com.home.growme.common.module.events.RoleAssignmentEvent;
 import com.home.growme.common.module.events.UserCreatedEvent;
-import com.home.user.service.exception.EventPublishingException;
+import com.home.growme.common.module.exceptions.eventPublishing.EventPublishingException;
 import com.home.user.service.service.EventPublisherService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;

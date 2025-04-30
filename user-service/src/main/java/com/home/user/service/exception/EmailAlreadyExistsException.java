@@ -1,8 +1,10 @@
 package com.home.user.service.exception;
 
-public class EmailAlreadyExistsException extends DataConflictException {
+import com.home.growme.common.module.exceptions.BaseException;
+import org.springframework.http.HttpStatus;
 
-    public EmailAlreadyExistsException(String email) {
-        super("EMAIL_EXISTS", "Email already in use: " + email);
+public class EmailAlreadyExistsException extends BaseException {
+    public EmailAlreadyExistsException(String message) {
+        super(message, "EMAIL_ALREADY_EXISTS", HttpStatus.CONFLICT);
     }
 }

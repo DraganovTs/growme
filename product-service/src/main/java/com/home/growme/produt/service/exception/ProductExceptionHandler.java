@@ -1,5 +1,6 @@
 package com.home.growme.produt.service.exception;
 
+import com.home.growme.common.module.exceptions.BaseExceptionHandler;
 import com.home.growme.common.module.exceptions.ErrorResponseDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,55 +12,35 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import java.time.LocalDateTime;
 
 @ControllerAdvice
-public class ProductExceptionHandler {
+public class ProductExceptionHandler extends BaseExceptionHandler {
 
 
-    @ExceptionHandler(ProductNotFoundException.class)
-    public ResponseEntity<ErrorResponseDTO> handleProductNotFoundException(ProductNotFoundException exception, WebRequest webRequest) {
-        return buildErrorResponse(exception, webRequest, HttpStatus.NOT_FOUND);
+    @ExceptionHandler({
+            ProductNotFoundException.class,
+            CategoryNotFoundException.class,
+            OwnerNotFoundException.class
+    })
+    public ResponseEntity<ErrorResponseDTO> handleNotFoundExceptions(RuntimeException ex, WebRequest request) {
+        return buildErrorResponse(ex, request, HttpStatus.NOT_FOUND, "PRODUCT_NOT_FOUND");
     }
 
     @ExceptionHandler(FileStorageException.class)
-    public ResponseEntity<ErrorResponseDTO> handleFileStorageException(FileStorageException exception, WebRequest webRequest) {
-        return buildErrorResponse(exception, webRequest, HttpStatus.INSUFFICIENT_STORAGE);
-    }
-
-    @ExceptionHandler(CategoryNotFoundException.class)
-    public ResponseEntity<ErrorResponseDTO> handleProductNotFoundException(CategoryNotFoundException exception, WebRequest webRequest) {
-        return buildErrorResponse(exception, webRequest, HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler(OwnerNotFoundException.class)
-    public ResponseEntity<ErrorResponseDTO> handleProductNotFoundException(OwnerNotFoundException exception, WebRequest webRequest) {
-        return buildErrorResponse(exception, webRequest, HttpStatus.NOT_FOUND);
+    public ResponseEntity<ErrorResponseDTO> handleFileStorageException(FileStorageException ex, WebRequest request) {
+        return buildErrorResponse(ex, request, HttpStatus.INSUFFICIENT_STORAGE, "FILE_STORAGE_ERROR");
     }
 
     @ExceptionHandler(ProductRequestNotValidNameException.class)
-    public ResponseEntity<ErrorResponseDTO> handleProductNotFoundException(ProductRequestNotValidNameException exception, WebRequest webRequest) {
-        return buildErrorResponse(exception, webRequest, HttpStatus.NOT_FOUND);
+    public ResponseEntity<ErrorResponseDTO> handleInvalidName(ProductRequestNotValidNameException ex, WebRequest request) {
+        return buildErrorResponse(ex, request, HttpStatus.BAD_REQUEST, "INVALID_PRODUCT_NAME");
     }
 
-
     @ExceptionHandler(MaxUploadSizeExceededException.class)
-    public ResponseEntity<ErrorResponseDTO> handleMaxUploadSizeException(MaxUploadSizeExceededException exception, WebRequest webRequest) {
-        return buildErrorResponse(exception, webRequest, HttpStatus.PAYLOAD_TOO_LARGE);
+    public ResponseEntity<ErrorResponseDTO> handleMaxUploadSize(MaxUploadSizeExceededException ex, WebRequest request) {
+        return buildErrorResponse(ex, request, HttpStatus.PAYLOAD_TOO_LARGE, "FILE_TOO_LARGE");
     }
 
     @ExceptionHandler(OwnerAlreadyExistsException.class)
-    public ResponseEntity<ErrorResponseDTO> handleOwnerAlreadyExistsException(MaxUploadSizeExceededException exception, WebRequest webRequest) {
-        return buildErrorResponse(exception, webRequest, HttpStatus.CONFLICT);
+    public ResponseEntity<ErrorResponseDTO> handleOwnerExists(OwnerAlreadyExistsException ex, WebRequest request) {
+        return buildErrorResponse(ex, request, HttpStatus.CONFLICT, "OWNER_EXISTS");
     }
-
-    private ResponseEntity<ErrorResponseDTO> buildErrorResponse(Exception exception, WebRequest webRequest, HttpStatus httpStatus) {
-
-        ErrorResponseDTO errorResponseDTO = new ErrorResponseDTO(
-                webRequest.getDescription(false),
-                httpStatus,
-                exception.getMessage(),
-                LocalDateTime.now()
-        );
-        return new ResponseEntity<>(errorResponseDTO, httpStatus);
-    }
-
-
 }

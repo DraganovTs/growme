@@ -1,7 +1,10 @@
 package com.home.user.service.exception;
 
-public class UsernameAlreadyExistsException extends DataConflictException {
-    public UsernameAlreadyExistsException(String username) {
-        super("USERNAME_EXISTS", "Username already taken: " + username);
+import com.home.growme.common.module.exceptions.BaseException;
+import org.springframework.http.HttpStatus;
+
+public class UsernameAlreadyExistsException extends BaseException {
+    public UsernameAlreadyExistsException(String message) {
+        super(message, "USERNAME_ALREADY_EXISTS", HttpStatus.CONFLICT);
     }
 }

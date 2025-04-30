@@ -1,11 +1,14 @@
 package com.home.keycloak.api.exception;
 
-public class KeycloakUserNotFoundException extends RuntimeException {
+import com.home.growme.common.module.exceptions.BaseException;
+import org.springframework.http.HttpStatus;
+
+public class KeycloakUserNotFoundException extends BaseException {
     public KeycloakUserNotFoundException(String message) {
-        super(message);
+        super(message, "KEYCLOAK_USER_NOT_FOUND", HttpStatus.NOT_FOUND);
     }
 
     public KeycloakUserNotFoundException(String message, Throwable cause) {
-        super(message, cause);
+        super(message, "KEYCLOAK_USER_NOT_FOUND", HttpStatus.NOT_FOUND, cause);
     }
 }

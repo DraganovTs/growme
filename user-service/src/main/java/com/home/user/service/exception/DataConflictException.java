@@ -1,14 +1,10 @@
 package com.home.user.service.exception;
 
-public class DataConflictException extends RuntimeException {
-    private final String errorCode;
+import com.home.growme.common.module.exceptions.BaseException;
+import org.springframework.http.HttpStatus;
 
-    public DataConflictException(String errorCode, String message) {
-        super(message);
-        this.errorCode = errorCode;
-    }
-
-    public String getErrorCode() {
-        return errorCode;
+public class DataConflictException extends BaseException {
+    public DataConflictException(String message, String errorCode) {
+        super(message, errorCode, HttpStatus.CONFLICT);
     }
 }

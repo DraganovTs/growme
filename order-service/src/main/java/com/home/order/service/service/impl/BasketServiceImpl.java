@@ -31,7 +31,7 @@ public class BasketServiceImpl implements BasketService {
     public BasketData getBasketById(String id) {
 
         Basket basket = basketRepository.findById(id).orElseThrow(
-                () -> new BasketNotFoundException("Basket whit id {} not found")
+                () -> new BasketNotFoundException("Basket whit id: {} not found" + id)
         );
 
         return basketMapper.mapBasketToBasketData(basket);
