@@ -6,5 +6,6 @@ export const environment = {
     keycloakClientId: 'grow-me-client',
     userApi: 'http://localhost:8081/api/users',
     productApi: 'http://localhost:8087/api/products',
+    basketApi: 'http://localhost:8083/api/basket',
     pageSize:   6
 }
