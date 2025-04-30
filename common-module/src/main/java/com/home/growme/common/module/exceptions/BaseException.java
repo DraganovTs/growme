@@ -1,7 +1,9 @@
 package com.home.growme.common.module.exceptions;
 
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
+@Getter
 public abstract class BaseException extends RuntimeException {
     private final String errorCode;
     private final HttpStatus httpStatus;
@@ -18,11 +20,4 @@ public abstract class BaseException extends RuntimeException {
         this.httpStatus = httpStatus;
     }
 
-    public String getErrorCode() {
-        return errorCode;
-    }
-
-    public HttpStatus getHttpStatus() {
-        return httpStatus;
-    }
 }

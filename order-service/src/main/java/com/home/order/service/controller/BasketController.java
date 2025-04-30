@@ -1,7 +1,6 @@
 package com.home.order.service.controller;
 
 import com.home.order.service.model.dto.BasketData;
-import com.home.order.service.model.entity.Basket;
 import com.home.order.service.service.BasketService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;

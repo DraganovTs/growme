@@ -1,7 +1,6 @@
 package com.home.order.service.service;
 
 import com.home.order.service.model.dto.BasketData;
-import com.home.order.service.model.entity.Basket;
 
 public interface BasketService {
 

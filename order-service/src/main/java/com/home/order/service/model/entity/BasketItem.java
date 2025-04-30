@@ -20,7 +20,7 @@ public class BasketItem {
     private int unitsInStock;
     private String imageUrl;
     @NotNull
-    @DecimalMin(value = "0.0", inclusive = true)
+    @DecimalMin(value = "0.0")
     private BigDecimal price;
     @NotNull
     private String brandName;
