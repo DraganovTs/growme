@@ -13,9 +13,11 @@ import com.home.growme.common.module.exceptions.system.DatabaseConnectionExcepti
 import com.home.growme.common.module.exceptions.system.ExternalServiceIntegrationException;
 import com.home.growme.common.module.exceptions.system.FileSystemException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 
+@ControllerAdvice
 public class GlobalExceptionHandler extends BaseExceptionHandler{
 
     // Event Publishing
