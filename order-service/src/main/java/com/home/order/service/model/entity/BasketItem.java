@@ -1,6 +1,5 @@
-package com.home.order.service.model.dto;
+package com.home.order.service.model.entity;
 
-import jakarta.annotation.Nonnull;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;

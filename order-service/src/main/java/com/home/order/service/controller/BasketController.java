@@ -20,21 +20,20 @@ public class BasketController {
     }
 
     @PostMapping
-    public ResponseEntity<Basket> createBasket(@RequestBody BasketData basketData){
-        Basket basket = basketService.createBasket();
-        return ResponseEntity.ok(basket);
+    public ResponseEntity<BasketData> createBasket(@RequestBody BasketData basketData){
+        BasketData savedBasked = basketService.createBasket(basketData);
+        return ResponseEntity.ok(savedBasked);
     }
 
-    @GetMapping("/id")
-    public ResponseEntity<Basket> getBasketById(@PathVariable String id){
-        Basket basket = basketService.getBasketById(id);
-        if (basket != null){
+    @GetMapping("/{id}")
+    public ResponseEntity<BasketData> getBasketById(@PathVariable String id){
+        BasketData basket = basketService.getBasketById(id);
+
             return ResponseEntity.ok(basket);
-        }
-        return ResponseEntity.notFound().build();
+
     }
 
-    @DeleteMapping("/id")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteBasket(@PathVariable String id){
         basketService.deleteBasket(id);
         return ResponseEntity.noContent().build();

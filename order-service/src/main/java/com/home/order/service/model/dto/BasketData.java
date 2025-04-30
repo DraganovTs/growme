@@ -1,6 +1,6 @@
 package com.home.order.service.model.dto;
 
-import jakarta.annotation.Nonnull;
+import com.home.order.service.model.entity.BasketItem;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;

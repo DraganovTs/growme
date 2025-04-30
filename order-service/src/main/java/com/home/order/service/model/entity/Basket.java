@@ -1,6 +1,5 @@
 package com.home.order.service.model.entity;
 
-import com.home.order.service.model.dto.BasketItem;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.redis.core.RedisHash;

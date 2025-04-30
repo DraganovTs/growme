@@ -35,6 +35,11 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>com.home</groupId>
+            <artifactId>common-module</artifactId>
+        </dependency>
     </dependencies>
 
 

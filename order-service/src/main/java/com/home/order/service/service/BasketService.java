@@ -1,10 +1,11 @@
 package com.home.order.service.service;
 
+import com.home.order.service.model.dto.BasketData;
 import com.home.order.service.model.entity.Basket;
 
 public interface BasketService {
 
-    Basket createBasket();
-    Basket getBasketById(String id);
+    BasketData createBasket(BasketData basketData);
+    BasketData getBasketById(String id);
     void deleteBasket(String id);
 }
