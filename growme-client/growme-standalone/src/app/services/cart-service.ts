@@ -1,8 +1,11 @@
 import { Injectable } from "@angular/core";
-import { ICart, ICartTotals } from "../shared/model/cart";
-import { BehaviorSubject } from "rxjs";
+import { Cart, ICart, ICartItem, ICartTotals } from "../shared/model/cart";
+import { BehaviorSubject, map } from "rxjs";
 import { environment } from "../environment/environments";
 import { HttpClient } from "@angular/common/http";
+import e, { response } from "express";
+import { error } from "console";
+import { IProduct } from "../shared/model/product";
 
 @Injectable({
     providedIn: 'root'  
@@ -17,6 +20,122 @@ export class CartService {
 
     constructor(private http: HttpClient){}
 
+    createCart(): Cart {
+        const cart = new Cart();
+        localStorage.setItem("angular_cart_id",cart.id);
+        return cart;
+    }
 
-    
+    getCurrentCart(){
+        return this.cartSource.value;
+    }
+
+    private calculateTotals(){
+        const cart = this.getCurrentCart();
+        if(!cart) return;
+        const shipping = cart.shippingPrice;
+        const subtotal = cart.items.reduce((a,b) => (b.price*b.quantity) +a,0);
+        const total = shipping + shipping;
+        this.cartTotalsSource.next({shipping:shipping, total, subtotal});
+    }
+    //get cart from the backend
+    getCart(id: string){
+        return this.http.get<ICart>(this.basketUrl + "/" +id)
+        .pipe(
+            map((cart:ICart)=> {
+                this.cartSource.next(cart);
+                this.calculateTotals();
+            } )
+        );
+    }
+
+    setCart(cart:ICart){
+        return this.http.post<ICart>(this.basketUrl,cart)
+        .subscribe((response:ICart) => {
+            this.cartSource.next(response);
+            this.calculateTotals();
+        },
+    error=> {
+        console.log(error);
+    })
+    }
+
+    addItemToCart(product:IProduct, quantity=1){
+        const itemToAdd = this.mapProductToCartItem(product);
+        const cart = this.getCurrentCart() ?? this.createCart();
+        cart.items = this.addOrUpdateItem(cart.items, itemToAdd,quantity);
+        this.setCart(cart);
+    }
+
+    addOrUpdateItem(items: ICartItem[], item: ICartItem, quantity: number): import("../shared/model/cart").ICartItem[] {
+       const itemFound = items.find(i=> i.id == item.id);
+       if(itemFound){
+        itemFound.quantity += quantity;
+       }
+       else{
+        item.quantity = quantity;
+        items.push(item);
+       }
+       return items;
+
+       }
+
+    mapProductToCartItem(product: IProduct): ICartItem {
+        return{
+            id: product.productId,
+            name: product.name,
+            price: product.price,
+            quantity: 1,
+            image: product.imageUrl,
+            brandName: product.brand,
+            categoryName: product.categoryName
+            
+        }
+    }
+
+    icrementItemQuantity(item: ICartItem){
+        const cart = this.getCurrentCart();
+        if(cart){
+            const foundItemIndex = cart.items.findIndex(i=>i.id == item.id);
+            cart.items[foundItemIndex].quantity++;
+        }
+    }
+
+    decrementItemQuantity(item: ICartItem){
+        const cart = this.getCurrentCart();
+        if(cart){
+            const foundItemIndex = cart.items.findIndex(i=>i.id == item.id);
+           if(cart.items[foundItemIndex].quantity>1){
+            cart.items[foundItemIndex].quantity--;
+            this.setCart(cart);
+           }
+           else{
+            this.removeItemFromCart(item);
+           }
+        }
+    }
+
+    removeItemFromCart(item: ICartItem) {
+        const cart = this.getCurrentCart();
+        if(cart&&cart.items.some(i=>i.id == item.id)){
+            cart.items = cart.items.filter(i=>i.id != item.id);
+            if(cart.items.length>0){
+                this.setCart(cart);
+            }
+            else{
+                this.deleteCart(cart);
+            }
+        }
+    }
+
+    deleteCart(cart:ICart){
+        return this.http.delete(this.basketUrl + "/" + cart.id, {responseType: 'text'}).subscribe({
+            next:()=>{
+                this.cartSource.next(null);
+                this.cartTotalsSource.next(null);
+                localStorage.removeItem('angular_cart_id');
+            }
+        })
+    }
+
 }

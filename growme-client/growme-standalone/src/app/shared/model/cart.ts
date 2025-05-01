@@ -9,10 +9,11 @@ export interface ICart {
 
 
 export interface ICartItem {
-    productId: string;
+    id: string;
     name: string;
-    unitPrice: number;
+    price: number;
     quantity: number;
+    image: string;
     brandName: string;
     categoryName: string;
 }
