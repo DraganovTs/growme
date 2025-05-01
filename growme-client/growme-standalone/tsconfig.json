@@ -26,7 +26,7 @@
     "strictInputAccessModifiers": true,
     "strictTemplates": true
   },
-  "files": [],
+  // Removed the empty files array as it is not needed
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules"]
 }

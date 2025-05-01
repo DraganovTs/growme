@@ -26,6 +26,10 @@ export const routes: Routes = [
         path: 'about',
         loadComponent: () => import('./core/about/about.component').then(m => m.AboutComponent)
       },
+    {
+        path: 'cart',
+        loadComponent: () => import('./cart/cart.component').then(m => m.CartComponent)
+      },
       
     
     { path: '**', redirectTo: 'welcome' }
