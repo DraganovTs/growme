@@ -47,3 +47,28 @@
     color: #2ecc71 !important; /* Green theme */
     font-weight: bold;
 }
+
+a {
+    text-decoration: none;
+    color: #343a40;
+
+    &.active {
+        color: orange
+    }
+}
+
+.logo {
+    cursor: pointer;
+}
+
+.cart-no {
+    position: absolute;
+    min-height: 25px;
+    min-width: 25px;
+    border-radius: 50%;
+    background: rgb(255, 123, 0);
+    color: white;
+    text-align: center;
+    top: -12px;
+    right: 32px;
+}
