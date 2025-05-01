@@ -36,8 +36,9 @@
     <!-- Cart and User Actions -->
     <div class="d-flex align-items-center">
         <!-- Cart Icon -->
-        <a routerLink="/cart" class="position-relative me-4 text-decoration-none">
-            <i class="fa fa-shopping-cart fa-2x text-dark hover-scale"></i>
+        <a routerLink="/cart" class="position-relative">
+            <i class="fa fa-shopping-cart fa-2x me-5 text-dark"></i>
+            <!-- <div class="cart-no" *ngIf="(this.cart$ | async) as cart"> {{cart.items.length}} </div> -->
         </a>
     
         <!-- Authentication Actions -->

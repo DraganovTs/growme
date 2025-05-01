@@ -1,7 +1,8 @@
-import { Component, HostListener, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IProduct } from '../../shared/model/product';
 import { ImageService } from '../../services/image-service';
+import { CartService } from 'src/app/services/cart-service';
 
 @Component({
   selector: 'app-product-item',
@@ -16,7 +17,7 @@ export class ProductItemComponent {
   quantity = 1;
   imageLoaded = false;
   
-  constructor(private imageService: ImageService) {}
+  constructor(private imageService: ImageService, private cartService: CartService) {}
 
   get imageUrl(): string {
     if (!this.product?.imageUrl) {
@@ -53,7 +54,8 @@ export class ProductItemComponent {
     if (event) {
       event.stopPropagation();
     }
-    // Implement cart service logic
+    this.product&&this.cartService.addItemToCart(this.product);
+
     this.closeProductDetails();
     this.quantity = 1;
   }

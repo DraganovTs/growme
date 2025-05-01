@@ -42,9 +42,9 @@ public class UserUpdateServiceImpl implements UserUpdateService {
         validator.validateKeycloakUser(keycloakUserDTO);
         UUID userId = UUID.fromString(keycloakUserDTO.getUserId());
 
-        if (userRepository.existsById(userId)) {
-            throw new UserAlreadyExistException("User already exists with ID: " + userId);
-        }
+//        if (userRepository.existsById(userId)) {
+//            throw new UserAlreadyExistException("User already exists with ID: " + userId);
+//        }
 
         validator.checkForExistingCredentials(keycloakUserDTO.getEmail(), keycloakUserDTO.getUsername());
 
