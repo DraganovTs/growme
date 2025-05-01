@@ -3,8 +3,6 @@ import { Cart, ICart, ICartItem, ICartTotals } from "../shared/model/cart";
 import { BehaviorSubject, map } from "rxjs";
 import { environment } from "../environment/environments";
 import { HttpClient } from "@angular/common/http";
-import e, { response } from "express";
-import { error } from "console";
 import { IProduct } from "../shared/model/product";
 
 @Injectable({
@@ -85,6 +83,7 @@ export class CartService {
             id: product.productId,
             name: product.name,
             price: product.price,
+            description: product.description,
             quantity: 1,
             image: product.imageUrl,
             brandName: product.brand,
@@ -93,7 +92,7 @@ export class CartService {
         }
     }
 
-    icrementItemQuantity(item: ICartItem){
+    incrementItemQuantity(item: ICartItem){
         const cart = this.getCurrentCart();
         if(cart){
             const foundItemIndex = cart.items.findIndex(i=>i.id == item.id);
