@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ImageService } from 'src/app/services/image-service';
 import { ICartItem } from 'src/app/shared/model/cart';
 
@@ -10,7 +10,7 @@ import { ICartItem } from 'src/app/shared/model/cart';
   templateUrl: './cart-details.component.html',
   styleUrl: './cart-details.component.scss'
 })
-export class CartDetailsComponent {
+export class CartDetailsComponent implements OnInit {
   @Input() items: ICartItem[] = []
     @Output() increment: EventEmitter<ICartItem> = new EventEmitter<ICartItem>();
     @Output() decrement: EventEmitter<ICartItem>= new EventEmitter<ICartItem>();
@@ -21,12 +21,27 @@ export class CartDetailsComponent {
     
     constructor(private imageService: ImageService) {}
 
-    getImageUrl(imageUrl: string | undefined): string {
-      if (!imageUrl) {
-        return this.imageService.getDefaultImageUrl();
-      }
-      return this.imageService.getImageUrl(imageUrl);
+  ngOnInit(): void {
+     console.log('Cart items:', this.items);
+
+  }
+
+  getImageUrl(item: ICartItem): string {
+    if (!item?.imageUrl) {
+      console.warn('Missing imageUrl for item:', item);
+      return this.imageService.getDefaultImageUrl();
     }
+    
+    // Ensure the URL is properly encoded
+    try {
+      const url = this.imageService.getImageUrl(item.imageUrl);
+      console.log('Generated image URL:', url);
+      return url;
+    } catch (e) {
+      console.error('Error generating image URL:', e);
+      return this.imageService.getDefaultImageUrl();
+    }
+  }
 
     openProductDetails(item: ICartItem, event: Event): void {
       event.stopPropagation();
@@ -44,9 +59,15 @@ export class CartDetailsComponent {
       this.increment.emit(item);
    }
    decrementItemQuantity(item: ICartItem) {
-      this.decrement.emit(item);
-   }
+    if (item.quantity <= 1) return; 
+    this.decrement.emit(item);
+  }
    removeCartItem(item: ICartItem) {
       this.remove.emit(item);
    }
+
+   handleImageError(event: Event) {
+    const img = event.target as HTMLImageElement;
+    img.src = this.imageService.getDefaultImageUrl();
+  }
 }
