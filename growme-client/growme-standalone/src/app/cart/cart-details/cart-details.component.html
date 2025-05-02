@@ -24,7 +24,7 @@
                 <tr *ngFor="let item of items"  class="border-0">
                     <th scope="row">
                         <div class="p-0">
-                            <img src="{{'assets/images/products/'+ item.imageUrl}} " alt="{{item.name}}"
+                            <img [src]="getImageUrl(item)" alt="{{item.name}}"
                                 class="img-fluid" style="max-height: 50px;">
                             <div class="ml-3 d-inline-block align-middle">
                                  

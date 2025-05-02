@@ -89,7 +89,6 @@ export class CartService {
             productId: product.productId,
             name: product.name,
             unitPrice: product.price,
-            description: product.description,
             quantity: 1, 
             imageUrl: product.imageUrl , 
             brandName: product.brand ,

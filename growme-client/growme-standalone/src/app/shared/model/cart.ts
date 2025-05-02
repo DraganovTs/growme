@@ -13,7 +13,6 @@ export interface ICartItem {
     name: string;
     unitPrice: number;
     quantity: number;
-    description: string;
     imageUrl: string;
     brandName: string;
     categoryName: string;
