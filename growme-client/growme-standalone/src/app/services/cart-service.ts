@@ -32,7 +32,7 @@ export class CartService {
         const cart = this.getCurrentCart();
         if(!cart) return;
         const shipping = cart.shippingPrice;
-        const subtotal = cart.items.reduce((a,b) => (b.unitPrice*b.quantity) +a,0);
+        const subtotal = cart.items.reduce((a,b) => (b.price*b.quantity) +a,0);
         const total = subtotal + shipping;
         this.cartTotalsSource.next({shipping:shipping, total, subtotal});
       }
@@ -88,7 +88,8 @@ export class CartService {
         return {
             productId: product.productId,
             name: product.name,
-            unitPrice: product.price,
+            price: product.price,
+            unitsInStock: product.unitsInStock,
             quantity: 1, 
             imageUrl: product.imageUrl , 
             brandName: product.brand ,

@@ -14,6 +14,7 @@ import java.util.UUID;
 public class BasketItem {
     @NotNull
     private UUID productId;
+    private int quantity;
     @NotNull
     private String name;
     @Min(value = 0)

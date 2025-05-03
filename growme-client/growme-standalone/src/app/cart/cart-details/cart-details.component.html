@@ -36,7 +36,7 @@
                             </div>
                         </div>
                     </th>
-                    <td class="align-middle"><strong>{{item.unitPrice | currency}}</strong></td>
+                    <td class="align-middle"><strong>{{item.price | currency}}</strong></td>
                     <td class="align-middle">
                         <div class="d-flex align-items-center" 
                              >
@@ -50,7 +50,7 @@
                         </div>
                     </td>
                     <td class="align-middle">
-                        <strong>{{item.unitPrice*item.quantity | currency}}</strong></td>
+                        <strong>{{item.price*item.quantity | currency}}</strong></td>
                     <td class="align-middle text-center" *ngIf="isCart" >
                         <a class="text-danger">
                             <i  (click)="removeCartItem(item)"  class="fa fa-trash" style="font-size: 2em; cursor: pointer;"></i>

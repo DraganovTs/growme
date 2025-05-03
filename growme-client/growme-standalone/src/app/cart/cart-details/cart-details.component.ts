@@ -32,7 +32,6 @@ export class CartDetailsComponent implements OnInit {
       return this.imageService.getDefaultImageUrl();
     }
     
-    // Ensure the URL is properly encoded
     try {
       const url = this.imageService.getImageUrl(item.imageUrl);
       console.log('Generated image URL:', url);
@@ -43,28 +42,15 @@ export class CartDetailsComponent implements OnInit {
     }
   }
 
-    openProductDetails(item: ICartItem, event: Event): void {
-      event.stopPropagation();
-      this.selectedItem = item;
-      this.showDetails = true;
-      document.body.style.overflow = 'hidden';
-    }
-  
-    closeProductDetails(): void {
-      this.showDetails = false;
-      document.body.style.overflow = '';
-    }
-
-   incrementItemQuantity(item: ICartItem) {
-      this.increment.emit(item);
-   }
-   decrementItemQuantity(item: ICartItem) {
-    if (item.quantity <= 1) return; 
+  incrementItemQuantity(item: ICartItem) {
+    this.increment.emit(item);
+ }
+ decrementItemQuantity(item: ICartItem) {
     this.decrement.emit(item);
-  }
-   removeCartItem(item: ICartItem) {
-      this.remove.emit(item);
-   }
+ }
+ removeCartItem(item: ICartItem) {
+    this.remove.emit(item);
+ }
 
    handleImageError(event: Event) {
     const img = event.target as HTMLImageElement;

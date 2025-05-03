@@ -11,9 +11,10 @@ export interface ICart {
 export interface ICartItem {
     productId: string;
     name: string;
-    unitPrice: number;
+    unitsInStock: number;
     quantity: number;
     imageUrl: string;
+    price: number;
     brandName: string;
     categoryName: string;
 }
