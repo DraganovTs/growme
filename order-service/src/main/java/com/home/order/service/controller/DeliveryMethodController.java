@@ -1,6 +1,6 @@
 package com.home.order.service.controller;
 
-import com.home.order.service.model.entity.DeliveryMethod;
+import com.home.order.service.model.dto.DeliveryMethodDTO;
 import com.home.order.service.service.DeliveryMethodService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,8 +21,8 @@ public class DeliveryMethodController {
     }
 
     @GetMapping
-    public ResponseEntity<List<DeliveryMethod>> getAllDeliveryMethods() {
-        List<DeliveryMethod> deliveryMethods = deliveryMethodService.getAllDeliveryMethods();
+    public ResponseEntity<List<DeliveryMethodDTO>> getAllDeliveryMethods() {
+        List<DeliveryMethodDTO> deliveryMethods = deliveryMethodService.getAllDeliveryMethods();
         return ResponseEntity.ok(deliveryMethods);
     }
 }
