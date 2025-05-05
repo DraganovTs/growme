@@ -21,6 +21,7 @@
         <module>user-service</module>
         <module>api-gateway</module>
         <module>keycloak-api</module>
+        <module>payment-service</module>
     </modules>
 
     <properties>
@@ -35,6 +36,7 @@
         <spring.kafka.version>3.3.4</spring.kafka.version>
         <jedis.version>5.2.0</jedis.version>
         <spring.data.redis>3.4.5</spring.data.redis>
+        <stripe.java.version>29.1.0</stripe.java.version>
     </properties>
 
     <dependencyManagement>
@@ -130,6 +132,11 @@
                 <groupId>redis.clients</groupId>
                 <artifactId>jedis</artifactId>
                 <version>${jedis.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.stripe</groupId>
+                <artifactId>stripe-java</artifactId>
+                <version>${stripe.java.version}</version>
             </dependency>
 
             <dependency>
