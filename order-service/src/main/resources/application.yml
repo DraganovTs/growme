@@ -13,7 +13,7 @@ spring:
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
@@ -21,5 +21,8 @@ spring:
         generate_statistics: true
   sql:
     init:
-      mode: never
+      mode: always
+      platform: mysql
+      schema-locations: classpath:schema.sql
+      data-locations: classpath:data.sql
 
