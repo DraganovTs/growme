@@ -1,0 +1,132 @@
+[33m0ee321a[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m)[m Add delivery_methods database schema and initial seed data
+[33mc7f5f74[m delivery method
+[33mef143a4[m delivery method
+[33mce8390a[m delivery method controller
+[33m462f644[m missing styles
+[33mbfb252c[m cart item fix
+[33m180f8e0[m cart details
+[33m5c3bc43[m cart component
+[33mfb519a1[m add cart icon and numbre ritems
+[33m0c0ee12[m cart items
+[33mdc438be[m cart service
+[33mcd4cc70[m create cart service
+[33mafa509c[m Remove unused imports and enhance code annotations
+[33mda4a96f[m Refactor exception handling and introduce base exception classes
+[33me02ae3c[m Refactor exception handling and introduce base exception classes
+[33m3db30b8[m Introduce CORS, error handling, and data mapping improvements
+[33mbb5bb06[m Add Basket feature with Redis integration
+[33m88ac363[m Add Redis service configuration to docker-compose
+[33m9ce2e81[m Add Redis configuration for order service
+[33m6d9797b[m Add Redis integration and update dependencies
+[33mca40f98[m fix user created
+[33m5593cb8[m product delete from user
+[33mc5a1377[m product delete from user
+[33md4614f3[m delete product owned
+[33m3bf64f4[m category add manually or admin
+[33mf5cdc7c[m category add manually or admin
+[33m7ecc89b[m create and update user problem
+[33mbcdffdd[m get owner products back end
+[33m1e73869[m create about page
+[33m0737724[m complete home page
+[33m55e237c[m seller product item
+[33m8124a79[m image service import to properly see images of product
+[33mc861e50[m seller - product update
+[33m4108716[m get owner products back end
+[33m971cd80[m update product service
+[33m5ebb5ea[m seller product component
+[33m29a2819[m fix modal error size
+[33m5c48c7f[m fetch owners whit many product on top
+[33m977b335[m fix product exist number in page
+[33m54ba690[m refactor product service to get owners
+[33md9e90e8[m refactor product service to get owners
+[33m6b01ba6[m refactor validator
+[33mdd090a7[m remove imports
+[33m897f6e6[m refactor publisher and handler
+[33m8d32561[m refactor publisher and handler
+[33m0149869[m refactor publisher and handler
+[33mb2bc540[m refactor publisher and handler
+[33mab0e473[m update mapper
+[33m8d925a5[m refactor user service
+[33me09cbf2[m refactor user service
+[33m61d7a75[m refactor user publisher and handler
+[33m8baab6c[m refactor user service
+[33m94eec7c[m create product assignment HANDLER
+[33m86237a1[m create product assignment producer
+[33m4ac53cc[m fix all problems whit image display and names in db
+[33mce41e66[m fix add and show product images
+[33m130517d[m fix add and show product images
+[33m359970c[m fix image display
+[33maa6c090[m fix image display on products
+[33ma0d2c24[m update front end display and upload
+[33me264e69[m add kafka and create user in product service
+[33mc8e05b1[m refactor kafka consumer and producer add metrics in future
+[33mdc7de3b[m refactor kafka consumer and producer add metrics in future
+[33m9365b14[m refactor kafka consumer and producer add metrics in future
+[33m5234e7f[m update keycloak service for better register flow
+[33m70ef212[m refactor services to get common kafka config
+[33m407049f[m create kafka common config
+[33m8799bce[m app fix category id problem
+[33m01bc7ac[m image upload fix
+[33m66bc6f1[m product image upload problem
+[33m04e66be[m backend image service
+[33mc2d9e58[m enchanche front end add product
+[33m13550a7[m create and update product backend
+[33m9f56660[m create and update product backend
+[33m8dbea2d[m create add product front end part
+[33mc7f8d68[m complete assign multiple roles whit kafka and keycloak
+[33m7f4c618[m complete assign role whit kafka
+[33mdf0b825[m create docker kafka image whit KRaft
+[33m1086c88[m config and implement kafka consumer for keycloak service
+[33m7def44b[m config and implement kafka producer for user service
+[33mff81fc5[m Keycloak assign roles to user after registration refactor
+[33m3d00129[m Keycloak assign roles to user after registration complete
+[33m4b9e999[m Keycloak assign roles to user after registration
+[33m3971839[m refactor Keycloak UserService
+[33mc047952[m create keycloak admin api complete
+[33mf69d9a7[m create keycloak admin api
+[33mfae10ef[m create keycloak admin api
+[33mfa969da[m complete backend update user
+[33mc8e67f0[m complete front part of user profile update
+[33m2674612[m update docker
+[33m4b2545d[m update after registration
+[33mca8bb86[m update profile after registrate
+[33m6c6991e[m fix user registration
+[33mc5ce6a7[m user roles problem
+[33m787031a[m user roles problem
+[33m7211c49[m send user info to user service
+[33m7817b79[m fix front end login and register
+[33md7cc2b7[m secure frontend keycloak
+[33mfc28d1d[m cors config gateway
+[33m8ac7e92[m front end keycloak registration
+[33m07819b1[m front end keycloak secure
+[33m9ad1131[m api-gateway fix some errors
+[33m2cd8cb9[m api-gateway security config
+[33m79cd601[m api-gateway config
+[33mbefbff7[m keycloak config
+[33med16710[m create docker image for keycloak
+[33mb972c12[m create user flow
+[33m3235da5[m fix user entity
+[33m9d1e3db[m create user service and entities
+[33m44e1a53[m update product add and category service
+[33md5445d4[m update add product and add category service
+[33m68a8a46[m crate updete delete products front end
+[33m93fffa0[m order module
+[33m09aae6f[m search
+[33md9a4474[m get category and owner functions
+[33md1bcad4[m create product item component
+[33m478fb1e[m add cors config
+[33mda568fd[m fix UUID error in ID
+[33m812c4bc[m UUID error whit id
+[33m7cf9c11[m create
+[33m70a7eb8[m create product compoinent
+[33m5461d17[m init data for products
+[33m829ba2e[m product pagination
+[33mc34f26e[m create navbar
+[33ma395ec6[m init client app
+[33m077afb5[m product service  impl
+[33m30bec1a[m product service  impl
+[33m7028c74[m product service
+[33mc9ee020[m product service
+[33mcfddaa7[m create product service skeleton for api
+[33mec96d23[m create product service entities
+[33ma236526[m initial commit
