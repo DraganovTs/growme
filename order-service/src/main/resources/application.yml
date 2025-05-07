@@ -2,6 +2,8 @@ server:
   port: 8083
 
 spring:
+  application:
+    name: order-service
   data:
     redis:
       host: localhost
@@ -21,8 +23,28 @@ spring:
         generate_statistics: true
   sql:
     init:
-      mode: always
+      mode: never
       platform: mysql
       schema-locations: classpath:schema.sql
       data-locations: classpath:data.sql
 
+  kafka:
+    bootstrap-servers: localhost:9091,localhost:9092,localhost:9093
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        delivery.timeout.ms: 120000
+        request.timeout.ms: 30000
+        max.block.ms: 60000
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      group-id: order-service
+      properties:
+        spring.json.trusted.packages: "*"
+
+
+kafka:
+  topics:
+    payment-intent: payment.intent

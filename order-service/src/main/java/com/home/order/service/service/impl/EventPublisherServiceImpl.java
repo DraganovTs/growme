@@ -13,11 +13,12 @@ import java.math.BigDecimal;
 @Service
 public class EventPublisherServiceImpl implements EventPublisherService {
 
-    private final KafkaTemplate<String, Object> kafkaTemplate;
     private static final String PAYMENT_INTENT = "payment.intent";
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
     public EventPublisherServiceImpl(KafkaTemplate<String, Object> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
+
     }
 
 
@@ -26,6 +27,7 @@ public class EventPublisherServiceImpl implements EventPublisherService {
         PaymentIntentRequest request = new PaymentIntentRequest();
         request.setBasketId(basketId);
         request.setAmount(amount);
+        log.debug("Publishing payment intent for basketId: {} ........", basketId);
 
         try {
             kafkaTemplate.send(PAYMENT_INTENT,request)

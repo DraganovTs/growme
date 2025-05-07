@@ -37,10 +37,33 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Basket createOrUpdatePaymentIntent(String basketId) {
 
-        Basket basket = basketRepository.findById(basketId).orElseThrow(
-                ()-> new BasketNotFoundException("Basket whit id: {} not found" + basketId)
-        );
+//        Basket basket = basketRepository.findById(basketId).orElseThrow(
+//                ()-> new BasketNotFoundException("Basket whit id: {} not found" + basketId)
+//        );
 
+        Basket basket = new Basket(basketId);
+        basket.setItems(List.of(
+                new BasketItem(
+                        UUID.fromString("3dd0199d-6627-46e0-adb4-6308606e4cd7"),
+                        2,
+                        "asdasddas",
+                        11,
+                        "apple_1744301787397.jpg",
+                        new BigDecimal("31.00"),
+                        "asdsad",
+                        "asdasdasdsad"
+                ),
+                new BasketItem(
+                        UUID.fromString("958e18f0-bf1d-48d8-92f6-a45f57e3a630"),
+                        1,
+                        "taasdad",
+                        12,
+                        "rakia_1744221119435.jpg",
+                        new BigDecimal("12.00"),
+                        "1223",
+                        "ssadasda as das as"
+                )
+        ));
 
         List<ProductValidationResult> validationResults = productServiceClient
                 .validateBasketItems(basketMapper.mapBasketItemsToBasketItemsDTO(basket.getItems()))
