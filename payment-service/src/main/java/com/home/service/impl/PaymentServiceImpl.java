@@ -1,6 +1,6 @@
 package com.home.service.impl;
 
-import com.home.model.PaymentIntentRequest;
+import com.home.growme.common.module.dto.PaymentIntentRequest;
 import com.home.model.PaymentIntentResponse;
 import com.home.service.PaymentService;
 import com.stripe.Stripe;
@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class PaymentServiceImpl implements PaymentService {

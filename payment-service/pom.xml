@@ -24,6 +24,10 @@
             <groupId>com.stripe</groupId>
             <artifactId>stripe-java</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.home</groupId>
+            <artifactId>common-module</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

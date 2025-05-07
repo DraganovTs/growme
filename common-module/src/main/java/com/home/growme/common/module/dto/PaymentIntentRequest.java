@@ -1,4 +1,4 @@
-package com.home.model;
+package com.home.growme.common.module.dto;
 
 import lombok.Data;
 
