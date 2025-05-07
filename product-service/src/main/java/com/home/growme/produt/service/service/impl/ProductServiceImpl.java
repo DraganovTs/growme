@@ -1,5 +1,7 @@
 package com.home.growme.produt.service.service.impl;
 
+import com.home.growme.common.module.dto.BasketItemDTO;
+import com.home.growme.common.module.dto.ProductValidationResult;
 import com.home.growme.produt.service.exception.CategoryNotFoundException;
 import com.home.growme.produt.service.exception.OwnerNotFoundException;
 import com.home.growme.produt.service.exception.ProductNotFoundException;
@@ -182,6 +184,33 @@ public class ProductServiceImpl implements ProductService {
         return buildProductResponseListDTO(productPage, pageIndex, pageSize);
     }
 
+    @Override
+    public List<ProductValidationResult> validateProducts(List<BasketItemDTO> basketItems) {
+        return basketItems.stream()
+                .map(this::validateItem)
+                .collect(Collectors.toList());
+    }
+
+    private ProductValidationResult  validateItem(BasketItemDTO item) {
+        Optional<Product> productOptional = productRepository.findById(item.getProductId());
+
+        if (productOptional.isEmpty()){
+            return new ProductValidationResult(item.getProductId(),false,"Product not found");
+        }
+
+        Product product = productOptional.get();
+
+        if (product.getPrice().compareTo(item.getPrice()) != 0) {
+            return new ProductValidationResult(item.getProductId(), false, "Price mismatch");
+        }
+
+        if (product.getUnitsInStock() < item.getQuantity()) {
+            return new ProductValidationResult(item.getProductId(), false, "Insufficient stock");
+        }
+        return new ProductValidationResult(item.getProductId(), true, null);
+    }
+
+
     private ProductResponseListDTO buildProductResponseListDTO(Page<Product> productPage, int pageIndex, int pageSize) {
         if (productPage.isEmpty()) {
             return null;
@@ -201,21 +230,4 @@ public class ProductServiceImpl implements ProductService {
     }
 
 
-    private String sanitizeFilename(String name) {
-        // 1. Replace problematic characters with underscore
-        String sanitized = name.replaceAll("[^a-zA-Z0-9._-]", "_");
-
-        // 2. Remove consecutive underscores
-        sanitized = sanitized.replaceAll("_{2,}", "_");
-
-        // 3. Remove leading/trailing underscores
-        sanitized = sanitized.replaceAll("^_+|_+$", "");
-
-        // 4. Ensure not empty
-        if (sanitized.isEmpty()) {
-            return "file_" + System.currentTimeMillis();
-        }
-
-        return sanitized;
-    }
 }

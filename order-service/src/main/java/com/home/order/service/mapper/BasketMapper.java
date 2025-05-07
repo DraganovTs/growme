@@ -1,7 +1,7 @@
 package com.home.order.service.mapper;
 
 import com.home.order.service.model.dto.BasketData;
-import com.home.order.service.model.dto.BasketItemDTO;
+import com.home.growme.common.module.dto.BasketItemDTO;
 import com.home.order.service.model.entity.Basket;
 import com.home.order.service.model.entity.BasketItem;
 import org.springframework.stereotype.Component;

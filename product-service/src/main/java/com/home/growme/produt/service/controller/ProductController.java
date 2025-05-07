@@ -1,6 +1,9 @@
 package com.home.growme.produt.service.controller;
 
+import com.home.growme.common.module.dto.BasketItemDTO;
+import com.home.growme.common.module.dto.ProductValidationResult;
 import com.home.growme.produt.service.model.dto.*;
+import com.home.growme.produt.service.model.entity.Product;
 import com.home.growme.produt.service.service.ImageService;
 import com.home.growme.produt.service.service.ProductService;
 import com.home.growme.produt.service.specification.ProductSpecParams;
@@ -81,6 +84,12 @@ public class ProductController {
     ) {
         productService.deleteProduct(productId, userId);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/validate")
+    public ResponseEntity<List<ProductValidationResult>> validateProducts(@RequestBody List<BasketItemDTO> basketItems){
+        List<ProductValidationResult> results = productService.validateProducts(basketItems);
+        return ResponseEntity.ok(results);
     }
 
     @PostMapping("/upload-image")

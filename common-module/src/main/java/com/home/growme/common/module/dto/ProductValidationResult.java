@@ -1,4 +1,4 @@
-package com.home.order.service.model.dto;
+package com.home.growme.common.module.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

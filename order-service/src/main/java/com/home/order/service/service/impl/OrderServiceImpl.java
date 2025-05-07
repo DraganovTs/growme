@@ -4,14 +4,19 @@ import com.home.order.service.exception.BasketNotFoundException;
 import com.home.order.service.exception.InvalidProductException;
 import com.home.order.service.feign.ProductServiceClient;
 import com.home.order.service.mapper.BasketMapper;
-import com.home.order.service.model.dto.ProductValidationResult;
+import com.home.growme.common.module.dto.ProductValidationResult;
 import com.home.order.service.model.entity.Basket;
+import com.home.order.service.model.entity.BasketItem;
 import com.home.order.service.repository.BasketRepository;
 import com.home.order.service.service.OrderService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
+@Slf4j
 @Service
 public class OrderServiceImpl implements OrderService {
 
@@ -32,14 +37,17 @@ public class OrderServiceImpl implements OrderService {
                 ()-> new BasketNotFoundException("Basket whit id: {} not found" + basketId)
         );
 
+
         List<ProductValidationResult> validationResults = productServiceClient
                 .validateBasketItems(basketMapper.mapBasketItemsToBasketItemsDTO(basket.getItems()))
                 .getBody();
 
         if (validationResults == null || validationResults.stream().anyMatch(r->!r.isValid())){
             throw new InvalidProductException("Invalid items in basket");
+        } else {
+            validationResults.forEach(r->log.info("Product: {} is valid", r.getProductId()));
         }
 
-        return null;
+        return basket;
     }
 }
