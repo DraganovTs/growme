@@ -37,6 +37,7 @@
         <jedis.version>5.2.0</jedis.version>
         <spring.data.redis>3.4.5</spring.data.redis>
         <stripe.java.version>29.1.0</stripe.java.version>
+        <spring.cloud.starter.openfeign.version>4.2.1</spring.cloud.starter.openfeign.version>
     </properties>
 
     <dependencyManagement>
@@ -138,6 +139,13 @@
                 <artifactId>stripe-java</artifactId>
                 <version>${stripe.java.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-starter-openfeign</artifactId>
+                <version>${spring-cloud-starter-gateway.version}</version>
+            </dependency>
+
 
             <dependency>
                 <groupId>com.home</groupId>

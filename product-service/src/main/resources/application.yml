@@ -1,6 +1,7 @@
 server:
   port: 8087
 
+
 spring:
   datasource:
     url: jdbc:mysql://localhost:3306/growmeproducts?createDatabaseIfNotExist=true
@@ -33,6 +34,8 @@ spring:
       group-id: product-service
       properties:
         spring.json.trusted.packages: "*"
+  application:
+    name: product-service
 
 pagination:
   page:
