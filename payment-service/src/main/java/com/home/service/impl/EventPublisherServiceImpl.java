@@ -7,12 +7,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import static com.home.growme.common.module.config.kafka.topic.KafkaTopics.PAYMENT_INTENT_RESPONSE;
+
 @Slf4j
 @Service
 public class EventPublisherServiceImpl implements EventPublisherService {
 
     private final KafkaTemplate<String,Object> kafkaTemplate;
-    private static final String PAYMENT_INTENT_RESPONSE = "payment.intent.response";
 
     public EventPublisherServiceImpl(KafkaTemplate<String, Object> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;

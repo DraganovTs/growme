@@ -44,7 +44,3 @@ spring:
       properties:
         spring.json.trusted.packages: "*"
 
-
-kafka:
-  topics:
-    payment-intent: payment.intent

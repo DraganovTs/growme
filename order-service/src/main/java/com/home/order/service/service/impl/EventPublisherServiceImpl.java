@@ -9,11 +9,12 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 
+import static com.home.growme.common.module.config.kafka.topic.KafkaTopics.PAYMENT_INTENT_REQUEST;
+
 @Slf4j
 @Service
 public class EventPublisherServiceImpl implements EventPublisherService {
 
-    private static final String PAYMENT_INTENT_REQUEST = "payment.intent.request";
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
     public EventPublisherServiceImpl(KafkaTemplate<String, Object> kafkaTemplate) {

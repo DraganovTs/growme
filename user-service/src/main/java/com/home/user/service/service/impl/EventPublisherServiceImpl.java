@@ -8,13 +8,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import static com.home.growme.common.module.config.kafka.topic.KafkaTopics.ROLE_ASSIGNMENT;
+import static com.home.growme.common.module.config.kafka.topic.KafkaTopics.USER_CREATE;
+
 @Slf4j
 @Service
 public class EventPublisherServiceImpl implements EventPublisherService {
 
     private final KafkaTemplate<String, Object> kafkaTemplate;
-    private static final String ROLE_ASSIGNMENT = "user.role.assignments";
-    public static final String USER_CREATE = "user.created";
+
 
 
     public EventPublisherServiceImpl(KafkaTemplate<String, Object> kafkaTemplate) {

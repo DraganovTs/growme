@@ -46,6 +46,3 @@ app:
   upload:
     dir: uploads
 
-kafka:
-  topics:
-    user-created: user.created

@@ -36,7 +36,3 @@ logging:
     org.springframework.security: DEBUG
     org.keycloak: DEBUG
 
-kafka:
-  topics:
-    role-assignment: user.role.assignments
-    role-assignment-result: user.role.assignments.result

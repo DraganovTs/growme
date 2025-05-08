@@ -8,11 +8,12 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import static com.home.growme.common.module.config.kafka.topic.KafkaTopics.USER_CREATE;
+
 @Slf4j
 @Service
 public class UserCreatedEventHandler {
 
-    public static final String USER_CREATE = "user.created";
     private final OwnerService ownerService;
 
     public UserCreatedEventHandler(OwnerService ownerService) {

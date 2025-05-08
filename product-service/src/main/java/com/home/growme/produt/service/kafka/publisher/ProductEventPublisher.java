@@ -6,12 +6,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import static com.home.growme.common.module.config.kafka.topic.KafkaTopics.PRODUCT_ASSIGNMENT_TOPIC;
+import static com.home.growme.common.module.config.kafka.topic.KafkaTopics.PRODUCT_DELETION_TOPIC;
+
 @Slf4j
 @Service
 public class ProductEventPublisher {
 
-    private static final String PRODUCT_ASSIGNMENT_TOPIC = "product.user.assignment";
-    private static final String PRODUCT_DELETION_TOPIC = "product.user.deletion";
     private final KafkaTemplate<String,Object> kafkaTemplate;
 
     public ProductEventPublisher(KafkaTemplate<String, Object> kafkaTemplate) {

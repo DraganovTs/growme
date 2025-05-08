@@ -20,14 +20,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
+import static com.home.growme.common.module.config.kafka.topic.KafkaTopics.*;
+
 @Slf4j
 @Service
 @Transactional
 public class EventHandlerServiceImpl implements EventHandlerService {
-
-    public static final String USER_ROLE_ASSIGNMENT_RESULT = "user.role.assignments.result";
-    private static final String PRODUCT_ASSIGNMENT_TOPIC = "product.user.assignment";
-    private static final String PRODUCT_DELETION_TOPIC = "product.user.deletion";
 
 
     private final UserRepository userRepository;

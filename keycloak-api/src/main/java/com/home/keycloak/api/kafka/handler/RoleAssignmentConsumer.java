@@ -9,6 +9,9 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import static com.home.growme.common.module.config.kafka.topic.KafkaTopics.ROLE_ASSIGNMENT;
+import static com.home.growme.common.module.config.kafka.topic.KafkaTopics.USER_ROLE_ASSIGNMENT_RESULT;
+
 @Service
 @Slf4j
 public class RoleAssignmentConsumer {
@@ -16,10 +19,8 @@ public class RoleAssignmentConsumer {
     private final KeycloakRoleService keycloakRoleService;
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
-    @Value("${kafka.topics.role-assignment}")
-    public static final String ROLE_ASSIGNMENT = "user.role.assignments";
-    @Value("${kafka.topics.role-assignment-result}")
-    public static final String USER_ROLE_ASSIGNMENT_RESULT = "user.role.assignments.result";
+
+
 
     public RoleAssignmentConsumer(KeycloakRoleService keycloakRoleService, KafkaTemplate<String, Object> kafkaTemplate) {
         this.keycloakRoleService = keycloakRoleService;
@@ -39,7 +40,7 @@ public class RoleAssignmentConsumer {
             RoleAssignmentResult assignmentResult = new RoleAssignmentResult("user.role.assignments.result",
                     event.getUserId(),
                    true);
-            kafkaTemplate.send("user.role.assignments.result",event.getUserId(),assignmentResult)
+            kafkaTemplate.send(USER_ROLE_ASSIGNMENT_RESULT,event.getUserId(),assignmentResult)
                     .thenAccept(result-> {
                         log.debug("Role assignment: {}", result);
                         // TODO: Add success metrics

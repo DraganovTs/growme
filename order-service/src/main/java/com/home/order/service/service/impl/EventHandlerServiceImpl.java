@@ -6,12 +6,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
+import static com.home.growme.common.module.config.kafka.topic.KafkaTopics.PAYMENT_INTENT_RESPONSE;
+
 @Slf4j
 @Service
 public class EventHandlerServiceImpl implements EventHandlerService {
 
 
-    private static final String PAYMENT_INTENT_RESPONSE = "payment.intent.response";
 
 
     @Override
