@@ -5,6 +5,8 @@ public class KafkaTopics {
     //PAYMENT
     public static final String PAYMENT_INTENT_REQUEST = "payment.intent.request";
     public static final String PAYMENT_INTENT_RESPONSE = "payment.intent.response";
+    public static final String PAYMENT_INTENT_UPDATE = "payment.intent.update";
+
 
 
     //USER REGISTRATION
