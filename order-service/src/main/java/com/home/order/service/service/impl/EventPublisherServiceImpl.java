@@ -48,4 +48,9 @@ public class EventPublisherServiceImpl implements EventPublisherService {
         }
 
     }
+
+    @Override
+    public void sendUpdatePaymentIntent(String basketId, BigDecimal amount) {
+        PaymentIntentUpadateRequest request =
+    }
 }
