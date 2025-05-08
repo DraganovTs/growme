@@ -1,7 +1,7 @@
 package com.home.service;
 
 import com.home.growme.common.module.dto.PaymentIntentRequest;
-import com.home.model.PaymentIntentResponse;
+import com.home.growme.common.module.dto.PaymentIntentResponse;
 import com.stripe.exception.StripeException;
 
 public interface PaymentService {

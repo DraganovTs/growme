@@ -1,7 +1,7 @@
 package com.home.service.impl;
 
 import com.home.growme.common.module.dto.PaymentIntentRequest;
-import com.home.model.PaymentIntentResponse;
+import com.home.growme.common.module.dto.PaymentIntentResponse;
 import com.home.service.PaymentService;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
@@ -20,7 +20,8 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public PaymentIntentResponse createOrUpdatePaymentIntent(PaymentIntentRequest request) throws StripeException {
 
-        Stripe.apiKey = "";
+
+        Stripe.apiKey = System.getenv("StripePrivateKey");
         PaymentIntent intent;
         List<String> paymentTypes = new ArrayList<>();
         paymentTypes.add("card");

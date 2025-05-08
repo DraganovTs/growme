@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 @Service
 public class EventPublisherServiceImpl implements EventPublisherService {
 
-    private static final String PAYMENT_INTENT = "payment.intent";
+    private static final String PAYMENT_INTENT_REQUEST = "payment.intent.request";
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
     public EventPublisherServiceImpl(KafkaTemplate<String, Object> kafkaTemplate) {
@@ -30,7 +30,7 @@ public class EventPublisherServiceImpl implements EventPublisherService {
         log.debug("Publishing payment intent for basketId: {} ........", basketId);
 
         try {
-            kafkaTemplate.send(PAYMENT_INTENT,request)
+            kafkaTemplate.send(PAYMENT_INTENT_REQUEST,request)
                     .thenAccept(result -> {
                         log.debug("Publishing payment intent for basketId: {} successful", basketId);
                         //TODO: Add metrics
