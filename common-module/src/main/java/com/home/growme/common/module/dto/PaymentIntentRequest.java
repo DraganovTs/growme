@@ -15,4 +15,5 @@ public class PaymentIntentRequest {
     private UUID userId;
     private String correlationId;
     private boolean isCreateOperation;
+    private String paymentIntentId;
 }
