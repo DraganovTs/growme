@@ -19,3 +19,4 @@ spring:
       group-id: payment-service
       properties:
         spring.json.trusted.packages: "*"
+        spring.json.value.default.type: "com.home.growme.common.module.events.PaymentIntentRequestEvent"

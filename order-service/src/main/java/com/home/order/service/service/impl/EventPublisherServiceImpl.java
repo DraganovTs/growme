@@ -61,15 +61,11 @@ public class EventPublisherServiceImpl implements EventPublisherService {
                 .awaitResponse(correlationId)
                 .orTimeout(paymentProperties.getResponseTimeout().toMillis(), TimeUnit.MILLISECONDS);
 
-        String topic = isCreate ? PAYMENT_INTENT_REQUEST : PAYMENT_INTENT_UPDATE;
-
         try {
             String payload = objectMapper.writeValueAsString(event);
-            kafkaTemplate.send(topic, payload)
-                    .thenAccept(result -> log.debug("Published {} intent for basket {} [Correlation: {}]",
-                            isCreate ? "create" : "update",
-                            basketId,
-                            correlationId))
+            kafkaTemplate.send(PAYMENT_INTENT_EVENTS, payload)
+                    .thenAccept(result -> log.debug("Published payment intent for basket {} [Correlation: {}]",
+                            basketId, correlationId))
                     .exceptionally(ex -> {
                         log.error("Publish failed for basket {} [Correlation: {}]", basketId, correlationId, ex);
                         correlationService.completeExceptionally(correlationId,

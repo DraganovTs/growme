@@ -7,16 +7,15 @@ import lombok.Getter;
 import lombok.ToString;
 
 import java.math.BigDecimal;
-import java.util.UUID;
 
 @Getter
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 public class PaymentIntentRequestEvent extends Event {
+    private final String correlationId;
     private final String basketId;
     private final BigDecimal amount;
-    private final String correlationId;
-    private final boolean isCreateOperation;
+    private final boolean createOperation;
     private final String paymentIntentId;
 
 
@@ -26,11 +25,11 @@ public class PaymentIntentRequestEvent extends Event {
             @JsonProperty("basketId") String basketId,
             @JsonProperty("amount") BigDecimal amount,
             @JsonProperty("createOperation") boolean createOperation,
-            @JsonProperty(value = "paymentIntentId", required = false) String paymentIntentId) {
+            @JsonProperty(value = "paymentIntentId") String paymentIntentId) {
         this.correlationId = correlationId;
         this.basketId = basketId;
         this.amount = amount;
-        this.isCreateOperation = createOperation;
+        this.createOperation = createOperation;
         this.paymentIntentId = paymentIntentId;
     }
 }
