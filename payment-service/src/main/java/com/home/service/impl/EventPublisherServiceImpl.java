@@ -1,7 +1,7 @@
 package com.home.service.impl;
 
 import com.home.growme.common.module.exceptions.eventPublishing.EventPublishingException;
-import com.home.growme.common.module.dto.PaymentIntentResponse;
+import com.home.growme.common.module.events.PaymentIntentResponseEvent;
 import com.home.service.EventPublisherService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -20,7 +20,7 @@ public class EventPublisherServiceImpl implements EventPublisherService {
     }
 
     @Override
-    public void publishPaymentIntentResponse(PaymentIntentResponse response) {
+    public void publishPaymentIntentResponse(PaymentIntentResponseEvent response) {
 
         try {
             kafkaTemplate.send(PAYMENT_INTENT_RESPONSE, response)

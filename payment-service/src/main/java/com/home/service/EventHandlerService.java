@@ -1,8 +1,8 @@
 package com.home.service;
 
-import com.home.growme.common.module.dto.PaymentIntentRequest;
+import com.home.growme.common.module.events.PaymentIntentRequestEvent;
 
 public interface EventHandlerService {
 
-    void handleEvent(PaymentIntentRequest request);
+    void handleEvent(PaymentIntentRequestEvent request);
 }

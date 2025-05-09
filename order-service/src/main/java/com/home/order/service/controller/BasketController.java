@@ -19,8 +19,8 @@ public class BasketController {
     }
 
     @PostMapping
-    public ResponseEntity<BasketData> createBasket(@RequestBody BasketData basketData){
-        BasketData savedBasked = basketService.createBasket(basketData);
+    public ResponseEntity<BasketData> createOrUpdateBasket(@RequestBody BasketData basketData){
+        BasketData savedBasked = basketService.createOrUpdateBasket(basketData);
         return ResponseEntity.ok(savedBasked);
     }
 

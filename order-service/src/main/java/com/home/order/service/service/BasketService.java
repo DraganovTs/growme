@@ -4,7 +4,7 @@ import com.home.order.service.model.dto.BasketData;
 
 public interface BasketService {
 
-    BasketData createBasket(BasketData basketData);
+    BasketData createOrUpdateBasket(BasketData basketData);
     BasketData getBasketById(String id);
     void deleteBasket(String id);
 }

@@ -12,17 +12,19 @@ import java.util.stream.Collectors;
 @Component
 public class BasketMapper {
 
-    public Basket mapBasketDataToBasket(BasketData basketData) {
-        Basket basket = new Basket(basketData.getId());
+    public Basket mapBasketDataToBasket(Basket basket,BasketData basketData) {
         basket.setItems(basketData.getItems());
+        basket.setDeliveryMethodId(basketData.getDeliveryMethodId());
+        basket.setShippingPrice(basketData.getShippingPrice());
         return basket;
     }
 
     public BasketData mapBasketToBasketData(Basket save) {
-
         BasketData basketData = new BasketData();
         basketData.setId(save.getId());
         basketData.setItems(save.getItems());
+        basketData.setShippingPrice(save.getShippingPrice());
+        basketData.setDeliveryMethodId(save.getDeliveryMethodId());
         return basketData;
     }
 

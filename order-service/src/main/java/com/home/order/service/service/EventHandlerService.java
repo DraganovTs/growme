@@ -1,11 +1,10 @@
 package com.home.order.service.service;
 
-import com.home.growme.common.module.dto.PaymentFailureEvent;
-import com.home.growme.common.module.dto.PaymentIntentResponse;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 
 public interface EventHandlerService {
 
-    void handlePaymentIntentResponse(PaymentIntentResponse response);
+    void handlePaymentIntentResponse(ConsumerRecord<String, String> record);
 
-    void handlePaymentFailure(PaymentFailureEvent event);
+    void handlePaymentFailure(ConsumerRecord<String, String> record);
 }

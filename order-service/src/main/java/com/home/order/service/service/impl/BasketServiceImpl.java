@@ -9,6 +9,8 @@ import com.home.order.service.service.BasketService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Slf4j
 @Service
 public class BasketServiceImpl implements BasketService {
@@ -22,8 +24,22 @@ public class BasketServiceImpl implements BasketService {
     }
 
     @Override
-    public BasketData createBasket(BasketData basketData) {
-        Basket basket = basketMapper.mapBasketDataToBasket(basketData);
+    public BasketData createOrUpdateBasket(BasketData basketData) {
+
+        Optional<Basket> basketOptional = basketRepository.findById(basketData.getId());
+        Basket basket= null;
+        if (basketOptional.isPresent()){
+            System.out.println("basket is present");
+            basket = basketOptional.get();
+        }else {
+            System.out.println("basket is not present");
+            basket = new Basket(basketData.getId());
+        }
+
+        basket = basketMapper.mapBasketDataToBasket(basket, basketData);
+        basketRepository.save(basket);
+
+
         return basketMapper.mapBasketToBasketData(basketRepository.save(basket));
     }
 

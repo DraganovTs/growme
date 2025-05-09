@@ -1,6 +1,6 @@
 package com.home.order.service.service.impl;
 
-import com.home.growme.common.module.dto.PaymentIntentResponse;
+import com.home.growme.common.module.events.PaymentIntentResponseEvent;
 import com.home.order.service.exception.BasketNotFoundException;
 import com.home.order.service.exception.DeliveryMethodNotFoundException;
 import com.home.order.service.exception.InvalidProductException;
@@ -53,12 +53,12 @@ public class OrderServiceImpl implements OrderService {
 
 
         try {
-            CompletableFuture<PaymentIntentResponse> paymentFuture =
+            CompletableFuture<PaymentIntentResponseEvent> paymentFuture =
                     isEmptyString(basket.getPaymentIntentId())
                             ? eventPublisherService.sendCreatePaymentIntent(basketId, amount)
                             : eventPublisherService.sendUpdatePaymentIntent(basketId, amount);
 
-            PaymentIntentResponse response = paymentFuture.join();
+            PaymentIntentResponseEvent response = paymentFuture.join();
 
             basket.setPaymentIntentId(response.getPaymentIntentId());
             basket.setClientSecret(response.getClientSecret());

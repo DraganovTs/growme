@@ -1,62 +1,69 @@
 package com.home.service.impl;
 
-import com.home.growme.common.module.dto.PaymentIntentRequest;
-import com.home.growme.common.module.dto.PaymentIntentResponse;
+import com.home.growme.common.module.events.PaymentIntentRequestEvent;
+import com.home.growme.common.module.events.PaymentIntentResponseEvent;
 import com.home.service.PaymentService;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.PaymentIntent;
 import com.stripe.param.PaymentIntentCreateParams;
 import com.stripe.param.PaymentIntentUpdateParams;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
 
+@Slf4j
 @Service
 public class PaymentServiceImpl implements PaymentService {
 
 
     @Override
-    public PaymentIntentResponse createOrUpdatePaymentIntent(PaymentIntentRequest request) throws StripeException {
+    public PaymentIntentResponseEvent createOrUpdatePaymentIntent(PaymentIntentRequestEvent request) throws StripeException {
+        log.debug("Processing payment intent request: {}", request);
 
+        try {
+            List<String> paymentTypes = List.of("card");
+            PaymentIntent intent = request.isCreateOperation()
+                    ? createNewPaymentIntent(request, paymentTypes)
+                    : updateExistingPaymentIntent(request);
 
-        Stripe.apiKey = System.getenv("StripePrivateKey");
-        PaymentIntent intent;
-        List<String> paymentTypes = List.of("card");
+            return buildPaymentResponse(intent, request.getCorrelationId());
 
-        if (request.isCreateOperation()) {
-            intent = createNewPaymentIntent(request, paymentTypes);
-        } else {
-            intent = updateExistingPaymentIntent(request);
+        } catch (StripeException e) {
+            log.error("Stripe operation failed for request: {}", request, e);
+            throw e;
         }
 
-        return buildPaymentResponse(intent);
-
     }
 
-    private PaymentIntentResponse buildPaymentResponse(PaymentIntent intent) {
-        return PaymentIntentResponse.builder()
-                .paymentIntentId(intent.getId())
-                .clientSecret(intent.getClientSecret())
-                .status(intent.getStatus())
-                .amount(BigDecimal.valueOf(intent.getAmount()).divide(BigDecimal.valueOf(100)))
-                .currency(intent.getCurrency())
+    private PaymentIntentResponseEvent buildPaymentResponse(PaymentIntent intent, String correlationId) {
+        return new PaymentIntentResponseEvent(
+                correlationId,
+                intent.getId(),
+                intent.getClientSecret(),
+                intent.getStatus()
+        );
+    }
+
+
+    private PaymentIntent createNewPaymentIntent(PaymentIntentRequestEvent request, List<String> paymentTypes)
+            throws StripeException {
+
+        PaymentIntentCreateParams createParams = PaymentIntentCreateParams.builder()
+                .setAmount(convertToCents(request.getAmount()))
+                .setCurrency("usd")
+                .addAllPaymentMethodType(paymentTypes)
+                .putMetadata("correlationId", request.getCorrelationId())
+                .putMetadata("basketId", request.getBasketId())
                 .build();
-    }
-    private PaymentIntent createNewPaymentIntent(PaymentIntentRequest request, List<String> paymentTypes) throws StripeException {
 
-            PaymentIntentCreateParams createParams = PaymentIntentCreateParams.builder()
-                    .setAmount(request.getAmount().multiply(BigDecimal.valueOf(100)).longValue())
-                    .setCurrency("usd")
-                    .addAllPaymentMethodType(paymentTypes)
-                    .putMetadata("basketId", request.getBasketId())
-                    .build();
-
-            return PaymentIntent.create(createParams);
+        log.debug("Creating new payment intent for basket: {}", request.getBasketId());
+        return PaymentIntent.create(createParams);
     }
 
-    private PaymentIntent updateExistingPaymentIntent(PaymentIntentRequest request) throws StripeException {
+    private PaymentIntent updateExistingPaymentIntent(PaymentIntentRequestEvent request) throws StripeException {
         PaymentIntent intent = PaymentIntent.retrieve(request.getPaymentIntentId());
 
         PaymentIntentUpdateParams updateParams = PaymentIntentUpdateParams.builder()
@@ -64,6 +71,10 @@ public class PaymentServiceImpl implements PaymentService {
                 .build();
 
         return intent.update(updateParams);
+    }
+
+    private long convertToCents(BigDecimal amount) {
+        return amount.multiply(BigDecimal.valueOf(100)).longValue();
     }
 
 }

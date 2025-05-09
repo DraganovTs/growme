@@ -1,7 +1,9 @@
 package com.home.order.service.service.impl;
 
-import com.home.growme.common.module.dto.PaymentIntentRequest;
-import com.home.growme.common.module.dto.PaymentIntentResponse;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.home.growme.common.module.events.PaymentIntentRequestEvent;
+import com.home.growme.common.module.events.PaymentIntentResponseEvent;
 import com.home.growme.common.module.exceptions.eventPublishing.EventPublishingException;
 import com.home.order.service.config.PaymentProperties;
 import com.home.order.service.service.CorrelationService;
@@ -24,71 +26,64 @@ public class EventPublisherServiceImpl implements EventPublisherService {
     private final KafkaTemplate<String, Object> kafkaTemplate;
     private final CorrelationService correlationService;
     private final PaymentProperties paymentProperties;
+    private final ObjectMapper objectMapper;
 
-
-    public EventPublisherServiceImpl(KafkaTemplate<String, Object> kafkaTemplate, CorrelationService correlationService,
-                                     PaymentProperties paymentProperties) {
+    public EventPublisherServiceImpl(KafkaTemplate<String, Object> kafkaTemplate, CorrelationService correlationService, PaymentProperties paymentProperties, ObjectMapper objectMapper) {
         this.kafkaTemplate = kafkaTemplate;
         this.correlationService = correlationService;
         this.paymentProperties = paymentProperties;
+        this.objectMapper = objectMapper;
     }
 
+    @Override
+    public CompletableFuture<PaymentIntentResponseEvent> sendCreatePaymentIntent(String basketId, BigDecimal amount) {
+        return sendPaymentIntentEvent(basketId, amount, true);
+    }
 
     @Override
-    public CompletableFuture<PaymentIntentResponse> sendCreatePaymentIntent(String basketId, BigDecimal amount) {
-        return sendPaymentIntentEvent(basketId, amount, true);    }
-
-    @Override
-    public CompletableFuture<PaymentIntentResponse> sendUpdatePaymentIntent(String basketId, BigDecimal amount) {
+    public CompletableFuture<PaymentIntentResponseEvent> sendUpdatePaymentIntent(String basketId, BigDecimal amount) {
         return sendPaymentIntentEvent(basketId, amount, false);
     }
 
-    private CompletableFuture<PaymentIntentResponse> sendPaymentIntentEvent(String basketId, BigDecimal amount,
-                                                                            boolean isCreate) {
+    private CompletableFuture<PaymentIntentResponseEvent> sendPaymentIntentEvent(
+            String basketId, BigDecimal amount, boolean isCreate) {
 
         String correlationId = correlationService.createCorrelation(basketId);
-        String operationType = isCreate ? "create" : "update";
+        PaymentIntentRequestEvent event = new PaymentIntentRequestEvent(
+                correlationId,
+                basketId,
+                amount,
+                isCreate,
+                isCreate ? null : correlationService.getPaymentIntentId(basketId)
+        );
 
-        PaymentIntentRequest request = PaymentIntentRequest.builder()
-                .basketId(basketId)
-                .amount(amount)
-                .correlationId(correlationId)
-                .isCreateOperation(isCreate)
-                .build();
-
-        CompletableFuture<PaymentIntentResponse> responseFuture = correlationService.awaitResponse(correlationId)
+        CompletableFuture<PaymentIntentResponseEvent> responseFuture = correlationService
+                .awaitResponse(correlationId)
                 .orTimeout(paymentProperties.getResponseTimeout().toMillis(), TimeUnit.MILLISECONDS);
 
         String topic = isCreate ? PAYMENT_INTENT_REQUEST : PAYMENT_INTENT_UPDATE;
 
-        kafkaTemplate.send(topic, request)
-                .thenAccept(result -> {
-                    log.debug("Payment intent {} published for basketId: {}", operationType, basketId);
-                    //TODO add metrics
-                })
-                .exceptionally(ex -> {
-                    log.error("Failed to publish payment intent {} for basket: {}", operationType, basketId, ex);
-                    correlationService.completeExceptionally(correlationId,
-                            new EventPublishingException("Failed to publish payment intent event"));
-                    //TODO add metrics
-                    return null;
-                });
+        try {
+            String payload = objectMapper.writeValueAsString(event);
+            kafkaTemplate.send(topic, payload)
+                    .thenAccept(result -> log.debug("Published {} intent for basket {} [Correlation: {}]",
+                            isCreate ? "create" : "update",
+                            basketId,
+                            correlationId))
+                    .exceptionally(ex -> {
+                        log.error("Publish failed for basket {} [Correlation: {}]", basketId, correlationId, ex);
+                        correlationService.completeExceptionally(correlationId,
+                                new EventPublishingException("Failed to publish payment intent event"));
+                        return null;
+                    });
+        } catch (JsonProcessingException e) {
+            log.error("Serialization failed for basket {} [Correlation: {}]", basketId, correlationId, e);
+            correlationService.completeExceptionally(correlationId,
+                    new EventPublishingException("Failed to serialize payment intent event"));
+        }
 
         return responseFuture;
     }
 
 
-    @Override
-    public CompletableFuture<Void> publishPaymentIntentResponse(PaymentIntentResponse response) {
-        return kafkaTemplate.send(PAYMENT_INTENT_RESPONSE, response)
-                .thenAccept(result -> {
-                    log.debug("Published payment intent response for PaymentIntentId: {}", response.getPaymentIntentId());
-                    //TODO add metrics
-                })
-                .exceptionally(ex -> {
-                    log.error("Publish failed for payment intent response: {}", response.getPaymentIntentId(), ex);
-                    //TODO add metrics
-                    throw new EventPublishingException("Failed to publish payment intent response", ex);
-                });
-    }
 }

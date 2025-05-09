@@ -1,7 +1,7 @@
 package com.home.service.impl;
 
-import com.home.growme.common.module.dto.PaymentIntentRequest;
-import com.home.growme.common.module.dto.PaymentIntentResponse;
+import com.home.growme.common.module.events.PaymentIntentRequestEvent;
+import com.home.growme.common.module.events.PaymentIntentResponseEvent;
 import com.home.service.EventHandlerService;
 import com.home.service.EventPublisherService;
 import com.stripe.exception.StripeException;
@@ -26,11 +26,11 @@ public class EventHandlerServiceImpl implements EventHandlerService {
 
     @Override
     @KafkaListener(topics = PAYMENT_INTENT_REQUEST)
-    public void handleEvent(PaymentIntentRequest request) {
+    public void handleEvent(PaymentIntentRequestEvent request) {
         log.info("Payment intent created/updated successfully");
 
         try {
-            PaymentIntentResponse paymentIntent = paymentService.createOrUpdatePaymentIntent(request);
+            PaymentIntentResponseEvent paymentIntent = paymentService.createOrUpdatePaymentIntent(request);
             log.info("Payment intent created/updated successfully");
             eventPublisherService.publishPaymentIntentResponse(paymentIntent);
         } catch (StripeException e) {

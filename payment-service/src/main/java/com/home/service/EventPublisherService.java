@@ -1,8 +1,8 @@
 package com.home.service;
 
-import com.home.growme.common.module.dto.PaymentIntentResponse;
+import com.home.growme.common.module.events.PaymentIntentResponseEvent;
 
 public interface EventPublisherService {
 
-    void  publishPaymentIntentResponse (PaymentIntentResponse response);
+    void  publishPaymentIntentResponse (PaymentIntentResponseEvent response);
 }
