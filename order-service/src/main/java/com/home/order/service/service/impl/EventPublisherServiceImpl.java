@@ -63,7 +63,7 @@ public class EventPublisherServiceImpl implements EventPublisherService {
 
         try {
             String payload = objectMapper.writeValueAsString(event);
-            kafkaTemplate.send(PAYMENT_INTENT_EVENTS, payload)
+            kafkaTemplate.send(PAYMENT_INTENT_REQUESTS, payload)
                     .thenAccept(result -> log.debug("Published payment intent for basket {} [Correlation: {}]",
                             basketId, correlationId))
                     .exceptionally(ex -> {

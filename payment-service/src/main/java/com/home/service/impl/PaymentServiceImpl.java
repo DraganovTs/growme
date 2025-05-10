@@ -9,6 +9,7 @@ import com.stripe.model.PaymentIntent;
 import com.stripe.param.PaymentIntentCreateParams;
 import com.stripe.param.PaymentIntentUpdateParams;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -19,8 +20,17 @@ import java.util.List;
 public class PaymentServiceImpl implements PaymentService {
 
 
+    private final Environment environment;
+
+    public PaymentServiceImpl(Environment environment) {
+        this.environment = environment;
+    }
+
     @Override
     public PaymentIntentResponseEvent createOrUpdatePaymentIntent(PaymentIntentRequestEvent request) throws StripeException {
+        Stripe.apiKey = System.getenv("StripePrivateKey");
+
+
         log.debug("Processing payment intent request: {}", request);
 
         try {

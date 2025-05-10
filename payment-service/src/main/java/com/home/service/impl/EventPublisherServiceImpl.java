@@ -7,13 +7,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
-import static com.home.growme.common.module.config.kafka.topic.KafkaTopics.PAYMENT_INTENT_RESPONSE;
+import static com.home.growme.common.module.config.kafka.topic.KafkaTopics.PAYMENT_INTENT_RESPONSES;
 
 @Slf4j
 @Service
 public class EventPublisherServiceImpl implements EventPublisherService {
-
-    private final KafkaTemplate<String,Object> kafkaTemplate;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
     public EventPublisherServiceImpl(KafkaTemplate<String, Object> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
@@ -21,22 +20,16 @@ public class EventPublisherServiceImpl implements EventPublisherService {
 
     @Override
     public void publishPaymentIntentResponse(PaymentIntentResponseEvent response) {
-
         try {
-            kafkaTemplate.send(PAYMENT_INTENT_RESPONSE, response)
-                    .thenAccept( result -> {
-                        log.debug("Published payment intent request for PaymentIntentId: {}", response.getPaymentIntentId());
-                        // TODO: Add success metrics
-                    })
-                    .exceptionally( ex-> {
-                        log.error("Publish failed for event: {}", response, ex);
-                        throw new EventPublishingException("Failed to publish payment intent request");
-
+            kafkaTemplate.send(PAYMENT_INTENT_RESPONSES, response)
+                    .thenAccept(result -> log.debug("Published payment response for {}", response.getPaymentIntentId()))
+                    .exceptionally(ex -> {
+                        log.error("Failed to publish payment response", ex);
+                        throw new EventPublishingException("Failed to publish payment response", ex);
                     });
-        }catch (Exception e) {
-            log.error("Critical publish failure payment intent request for PaymentIntentId {}: {}", response.getPaymentIntentId(), e.getMessage());
-            // TODO: Add dead letter queue handling
-            throw new EventPublishingException("Critical publishing failure");
+        } catch (Exception e) {
+            log.error("Critical publish failure", e);
+            throw new EventPublishingException("Critical publishing failure", e);
         }
     }
 }

@@ -1,8 +1,8 @@
 package com.home.service;
 
-import com.home.growme.common.module.events.PaymentIntentRequestEvent;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 
 public interface EventHandlerService {
 
-    void handleEvent(PaymentIntentRequestEvent request);
+    void handlePaymentRequest(ConsumerRecord<String, String> record);
 }

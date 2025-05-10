@@ -3,9 +3,9 @@ package com.home.growme.common.module.config.kafka.topic;
 public class KafkaTopics {
 
     //PAYMENT
-    public static final String PAYMENT_INTENT_EVENTS = "payment.intent.events";
-    public static final String PAYMENT_INTENT_RESPONSE = "payment.intent.response";
-    public static final String PAYMENT_FAILURE_EVENTS = "payment.failure.event";
+    public static final String PAYMENT_INTENT_REQUESTS = "payment.intent.requests";
+    public static final String PAYMENT_INTENT_RESPONSES = "payment.intent.responses";
+    public static final String PAYMENT_FAILURES = "payment.failures";
 
 
 

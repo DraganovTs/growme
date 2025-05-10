@@ -12,8 +12,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
-import static com.home.growme.common.module.config.kafka.topic.KafkaTopics.PAYMENT_FAILURE_EVENTS;
-import static com.home.growme.common.module.config.kafka.topic.KafkaTopics.PAYMENT_INTENT_RESPONSE;
+import static com.home.growme.common.module.config.kafka.topic.KafkaTopics.*;
 
 @Slf4j
 @Service
@@ -28,34 +27,27 @@ public class EventHandlerServiceImpl implements EventHandlerService {
     }
 
     @Override
-    @KafkaListener(topics = PAYMENT_INTENT_RESPONSE)
-    public void handlePaymentIntentResponse(ConsumerRecord<String, String> record) {
+    @KafkaListener(topics = PAYMENT_INTENT_RESPONSES)
+    public void handlePaymentResponse(ConsumerRecord<String, Object> record) {
         try {
-            PaymentIntentResponseEvent response = objectMapper.readValue(
-                    record.value(),
-                    PaymentIntentResponseEvent.class
-            );
+            PaymentIntentResponseEvent response = objectMapper.convertValue(record.value(), PaymentIntentResponseEvent.class);
 
             if (response.getCorrelationId() == null) {
-                log.error("Null correlation ID in payment response. Topic: {}, Partition: {}, Offset: {}",
-                        record.topic(), record.partition(), record.offset());
-                return;
+                throw new IllegalArgumentException("Missing correlation ID in payment response");
             }
 
             log.info("Processing payment response [Correlation: {}]", response.getCorrelationId());
             correlationService.completeResponse(response.getCorrelationId(), response);
 
-        } catch (JsonProcessingException e) {
-            log.error("JSON parsing failed [Topic: {}, Partition: {}, Offset: {}] - {}",
-                    record.topic(), record.partition(), record.offset(), record.value(), e);
         } catch (Exception e) {
-            log.error("Unexpected error processing payment response [Topic: {}, Partition: {}, Offset: {}]",
+            log.error("Failed to process payment response [Topic: {}, Partition: {}, Offset: {}]",
                     record.topic(), record.partition(), record.offset(), e);
         }
     }
 
+
     @Override
-    @KafkaListener(topics = PAYMENT_FAILURE_EVENTS)
+    @KafkaListener(topics = PAYMENT_FAILURES)
     public void handlePaymentFailure(ConsumerRecord<String, String> record) {
         try {
             PaymentFailureEvent event = objectMapper.readValue(
