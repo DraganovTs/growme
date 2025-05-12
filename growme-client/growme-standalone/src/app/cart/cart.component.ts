@@ -4,11 +4,12 @@ import { Observable } from 'rxjs';
 import { CartService } from '../services/cart-service';
 import { ICart, ICartTotals, ICartItem } from '../shared/model/cart';
 import { CartDetailsComponent } from "./cart-details/cart-details.component";
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-cart',
   standalone: true,
-  imports: [CommonModule, CartDetailsComponent],
+  imports: [CommonModule, CartDetailsComponent,RouterLink],
   templateUrl: './cart.component.html',
   styleUrl: './cart.component.scss'
 })
