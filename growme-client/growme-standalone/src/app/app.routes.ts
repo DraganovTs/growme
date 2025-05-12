@@ -32,7 +32,7 @@ export const routes: Routes = [
       },
       {
           path: 'checkout',
-          loadComponent: () => import('./check-out/check-out.component').then(m => m.CheckOutComponent)
+          loadComponent: () => import('./check-out/check-out.component').then(m => m.CheckoutComponent)
         },
       
     

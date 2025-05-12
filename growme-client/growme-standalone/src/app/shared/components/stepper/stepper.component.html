@@ -1,1 +1,18 @@
-<p>stepper works!</p>
+<div class="container">
+    <ul class="nav nav-pills nav-justified">
+        <li class="nav-item" *ngFor="let step of steps; let i = index">
+            <div class="d-grid">
+                <button 
+                (click)="onClick(i)"
+                [class.active] = "selectedIndex === i"
+                [disabled]="true"    
+                class="nav-link py-3 text-uppercase font-weight-bold btn-block">
+                {{step.label}} 
+            </button>
+            </div>
+        </li>
+    </ul>
+    <div *ngIf="selected">
+        <ng-container [ngTemplateOutlet]="selected?.content ?? null"></ng-container>
+    </div>
+</div>

@@ -9,7 +9,7 @@ import { IOrder, IOrderToCreate } from '../shared/model/order';
   providedIn: 'root'
 })
 export class CheckoutService {
-  baseUrl = environment.apiUrl;
+  baseUrl = environment.orderApi;
   constructor(private httpClient: HttpClient){
 
   }
@@ -22,7 +22,7 @@ export class CheckoutService {
   getDeliveryMethods() {
 
     return this.httpClient.get<IDeliveryMethod[]>(
-      this.baseUrl + 'deliveryMethods').pipe(
+      this.baseUrl +'deliverymethods').pipe(
         map(dm => {
           console.log(dm);
           return dm.sort((a, b) => b.price - a.price)

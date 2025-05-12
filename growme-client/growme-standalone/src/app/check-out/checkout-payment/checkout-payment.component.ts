@@ -38,7 +38,7 @@ export class CheckoutPaymentComponent {
   
   
   constructor(private cartService: CartService, private checkoutService: CheckoutService,
-    private toastrService: ToastrService, private router: Router){
+    private router: Router){
   
     }
     async ngOnInit() {
@@ -90,15 +90,12 @@ export class CheckoutPaymentComponent {
             this.cartService.deleteCart(cart!);
             const navigationExtras: NavigationExtras = {state:createOrder};
             this.router.navigate(['checkout/success'],navigationExtras);
-            this.toastrService.success("Payment was successfull");
         }
         else{
-          this.toastrService.error(paymentResult!.error.message);
         }
       }
       catch(error: any){
         console.log(error);
-        this.toastrService.error(error.message);
       }
       finally{
   
