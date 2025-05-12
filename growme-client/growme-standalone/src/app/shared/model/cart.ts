@@ -4,6 +4,9 @@ export interface ICart {
     id: string;
     items: ICartItem[];
     shippingPrice: number;
+    deliveryMethodId?: number;
+    clientSecret?: string;
+    paymentIntentId?: string;
 }
 
 
@@ -23,6 +26,7 @@ export class Cart implements ICart {
     id: string;
     items: ICartItem[] = [];
     shippingPrice = 0;
+    deliveryMethodId=0;
 
     constructor() {
         this.id = createId();

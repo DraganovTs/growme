@@ -4,6 +4,7 @@ import { BehaviorSubject, map } from "rxjs";
 import { environment } from "../environment/environments";
 import { HttpClient } from "@angular/common/http";
 import { IProduct } from "../shared/model/product";
+import { IDeliveryMethod } from "../shared/model/delivery";
 
 @Injectable({
     providedIn: 'root'  
@@ -15,6 +16,7 @@ export class CartService {
     private cartTotalsSource = new BehaviorSubject<ICartTotals | null>(null);
     cartTotals$ = this.cartTotalsSource.asObservable();
     basketUrl = environment.basketApi;
+    orderUrl = environment.orderApi;
 
     constructor(private http: HttpClient){}
 
@@ -147,5 +149,24 @@ export class CartService {
    
         })
      }
+
+     setShippingPrice(deliveryMethod : IDeliveryMethod){
+      const cart = this.getCurrentCart();
+      if(cart){
+        cart.deliveryMethodId = deliveryMethod.deliveryMethodId;
+        cart.shippingPrice = deliveryMethod.price;
+        this.setCart(cart);
+      }
+  
+    }
+  
+    createPaymentIntent(){
+      console.log(this.getCurrentCart()?.id);
+      return this.http.post<ICart>(this.orderUrl+"/"+this.getCurrentCart()?.id, {})
+      .pipe(map(cart => {
+        this.cartSource.next(cart);
+        console.log(cart);
+      }))
+    }
 
 }

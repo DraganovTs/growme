@@ -1,0 +1,17 @@
+<div class="form-group">
+    <label>{{label}}</label>
+    <input
+        [type]="type"
+        [formControl]="control"
+        [placeholder]="label"
+        class="form-control"
+        [ngClass]="{'is-invalid': control.invalid, 'is-valid': control.valid}" 
+    />
+
+    <div *ngIf="control.invalid" class="invalid-feedback">
+        <span *ngIf="control.errors?.['required']">Please enter your {{label}}</span>
+        <span *ngIf="control.errors?.['minlength']">Minimum length required</span>
+        <span *ngIf="control.errors?.['maxlength']">Maximum length exceeded</span>
+        <span *ngIf="control.errors?.['pattern']">Invalid format</span>
+    </div>
+</div>
