@@ -1,6 +1,7 @@
 package com.home.growme.produt.service.controller;
 
 import com.home.growme.common.module.dto.BasketItemDTO;
+import com.home.growme.common.module.dto.ProductInfo;
 import com.home.growme.common.module.dto.ProductValidationResult;
 import com.home.growme.produt.service.model.dto.*;
 import com.home.growme.produt.service.model.entity.Product;
@@ -90,6 +91,12 @@ public class ProductController {
     public ResponseEntity<List<ProductValidationResult>> validateProducts(@RequestBody List<BasketItemDTO> basketItems){
         List<ProductValidationResult> results = productService.validateProducts(basketItems);
         return ResponseEntity.ok(results);
+    }
+
+    @GetMapping("productinfo/{productId}")
+    public ResponseEntity<ProductInfo>getProductInfo(@PathVariable String productId){
+        ProductInfo productInfo = productService.getProductInfo(productId);
+        return ResponseEntity.ok(productInfo);
     }
 
     @PostMapping("/upload-image")

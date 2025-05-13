@@ -1,6 +1,7 @@
 package com.home.growme.produt.service.service;
 
 import com.home.growme.common.module.dto.BasketItemDTO;
+import com.home.growme.common.module.dto.ProductInfo;
 import com.home.growme.common.module.dto.ProductValidationResult;
 import com.home.growme.produt.service.model.dto.ProductRequestDTO;
 import com.home.growme.produt.service.model.dto.ProductResponseDTO;
@@ -21,4 +22,6 @@ public interface ProductService {
     ProductResponseListDTO getProductsByOwner(ProductSpecParams specParams);
 
     List<ProductValidationResult> validateProducts(List<BasketItemDTO> basketItems);
+
+    ProductInfo getProductInfo(String productId);
 }

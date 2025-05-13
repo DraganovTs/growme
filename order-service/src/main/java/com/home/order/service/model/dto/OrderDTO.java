@@ -11,4 +11,6 @@ public class OrderDTO {
     private int deliveryMethodId;
     @JsonProperty("shipToAddress")
     private AddressDTO shipToAddress;
+    @JsonProperty("userEmail")
+    private String userEmail;
 }

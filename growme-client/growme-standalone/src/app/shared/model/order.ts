@@ -11,6 +11,7 @@ export interface IOrderToCreate {
     basketId: string;
     deliveryMethodId: number;
     shipToAddress: IAddress;
+    userEmail: string;
 }
 
 export interface IOrderReturned {

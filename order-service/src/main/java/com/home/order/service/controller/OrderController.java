@@ -30,9 +30,9 @@ public class OrderController {
     }
 
     @PostMapping
-    public ResponseEntity<Order> createOrUpdateOrder(@RequestBody OrderDTO orderDTO, String userEmail){
+    public ResponseEntity<Order> createOrUpdateOrder(@RequestBody OrderDTO orderDTO){
         System.out.println("********");
-        Order order = orderService.createOrUpdateOrder(userEmail,orderDTO);
+        Order order = orderService.createOrUpdateOrder(orderDTO);
         return ResponseEntity.ok(order);
     }
 

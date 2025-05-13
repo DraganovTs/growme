@@ -1,5 +1,6 @@
 package com.home.growme.produt.service.mapper;
 
+import com.home.growme.common.module.dto.ProductInfo;
 import com.home.growme.common.module.events.UserCreatedEvent;
 import com.home.growme.produt.service.model.dto.OwnerDTO;
 import com.home.growme.produt.service.model.dto.ProductRequestDTO;
@@ -11,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.UUID;
 
 
@@ -26,6 +28,8 @@ public class ProductMapper {
                 .products(new ArrayList<>())
                 .build();
     }
+
+
 
     public ProductResponseDTO mapProductToProductResponseDTO(Product product) {
         if (product == null) {

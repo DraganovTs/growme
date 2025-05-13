@@ -1,6 +1,7 @@
 package com.home.growme.produt.service.service.impl;
 
 import com.home.growme.common.module.dto.BasketItemDTO;
+import com.home.growme.common.module.dto.ProductInfo;
 import com.home.growme.common.module.dto.ProductValidationResult;
 import com.home.growme.produt.service.exception.CategoryNotFoundException;
 import com.home.growme.produt.service.exception.OwnerNotFoundException;
@@ -189,6 +190,19 @@ public class ProductServiceImpl implements ProductService {
         return basketItems.stream()
                 .map(this::validateItem)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public ProductInfo getProductInfo(String productId) {
+        Product product = productRepository.findById(UUID.fromString(productId))
+                .orElseThrow(() -> new ProductNotFoundException("Продукт с ID " + productId + " не е намерен"));
+
+        return ProductInfo.builder()
+                .id(product.getProductId().toString())
+                .name(product.getName())
+                .imageUrl(product.getImageUrl())
+                .price(product.getPrice())
+                .build();
     }
 
     private ProductValidationResult  validateItem(BasketItemDTO item) {

@@ -12,6 +12,7 @@ import { IOrderToCreate, IAddress } from 'src/app/shared/model/order';
 import { CdkStepperModule } from '@angular/cdk/stepper';
 import { CommonModule, NgIf } from '@angular/common';
 import { TextInputComponent } from 'src/app/shared/components/text-input/text-input.component';
+import { KeycloakService } from 'src/app/services/keycloak.service';
 
 @Component({
   selector: 'app-checkout-payment',
@@ -38,7 +39,7 @@ export class CheckoutPaymentComponent {
   
   
   constructor(private cartService: CartService, private checkoutService: CheckoutService,
-    private router: Router){
+    private router: Router, private keycloakService: KeycloakService) {
   
     }
     async ngAfterViewInit() {
@@ -100,7 +101,7 @@ export class CheckoutPaymentComponent {
             this.cartService.deleteCart(cart!);
             const navigationExtras: NavigationExtras = {state:createOrder};
             this.router.navigate(['checkout/success'],navigationExtras);
-        }
+          }
         else{
         }
       }
@@ -150,9 +151,11 @@ export class CheckoutPaymentComponent {
       return {
           basketId: cart.id,
           deliveryMethodId: deliveryMethodId, 
-          shipToAddress: shipAddress
-      };
+          shipToAddress: shipAddress,
+          userEmail: this.keycloakService.getEmail()
   }
   
   
+}
+
 }

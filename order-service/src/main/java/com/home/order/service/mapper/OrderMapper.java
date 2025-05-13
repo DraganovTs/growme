@@ -1,7 +1,7 @@
 package com.home.order.service.mapper;
 
 import com.home.order.service.feign.ProductServiceClient;
-import com.home.order.service.model.dto.ProductInfo;
+import com.home.growme.common.module.dto.ProductInfo;
 import com.home.order.service.model.entity.BasketItem;
 import com.home.order.service.model.entity.OrderItem;
 import com.home.order.service.model.entity.ProductItemOrdered;
@@ -38,18 +38,18 @@ public class OrderMapper {
         try {
             ProductInfo product = productServiceClient.getProductInfo(basketItem.getProductId().toString());
 
-            if (product == null || product.getUnitPrice() == null) {
+            if (product == null || product.getPrice() == null) {
                 throw new IllegalStateException("Invalid product data");
             }
 
             return new OrderItem(
                     new ProductItemOrdered(
                             UUID.fromString(product.getId()),
-                            product.getTitle(),
+                            product.getName(),
                             product.getImageUrl()
                     ),
                     basketItem.getQuantity(),
-                    product.getUnitPrice()
+                    product.getPrice()
             );
         } catch (Exception e) {
             System.err.printf("Failed to process product %s: %s%n",

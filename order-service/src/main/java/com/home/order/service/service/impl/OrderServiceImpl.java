@@ -78,7 +78,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Order createOrUpdateOrder(String userEmail, OrderDTO orderDTO) {
+    public Order createOrUpdateOrder( OrderDTO orderDTO) {
         Basket basket = getBasket(orderDTO.getBasketId());
         Address address = extractAddress(orderDTO);
         DeliveryMethod deliveryMethod = getDeliveryMethod(orderDTO.getDeliveryMethodId());
@@ -88,7 +88,7 @@ public class OrderServiceImpl implements OrderService {
             throw new IllegalStateException("Order cannot be modified as it is already paid.");
         }
 
-        return saveNewOrder(userEmail, basket, address, deliveryMethod);
+        return saveNewOrder(orderDTO.getUserEmail(), basket, address, deliveryMethod);
     }
 
     private Order saveNewOrder(String userEmail, Basket basket, Address address, DeliveryMethod deliveryMethod) {
