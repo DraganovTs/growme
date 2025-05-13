@@ -6,17 +6,18 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.Objects;
+import java.util.UUID;
 
 @Embeddable
 @NoArgsConstructor
 @Getter
 public class ProductItemOrdered {
-    private long productItemId;
+    private UUID productItemId;
     private String productName;
     private String imageUrl;
 
 
-    public ProductItemOrdered(long productItemId, @Nonnull String productName, @Nonnull String imageUrl) {
+    public ProductItemOrdered(UUID productItemId, @Nonnull String productName, @Nonnull String imageUrl) {
         this.productItemId = productItemId;
         this.productName = Objects.requireNonNull(productName);
         this.imageUrl = Objects.requireNonNull(imageUrl);

@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Entity
 @Table(name = "order_items")
 @Getter
@@ -22,7 +24,7 @@ public class OrderItem {
     private ProductItemOrdered itemOrdered;
 
     private int quantity ;
-    private double price;
+    private BigDecimal price;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JsonIgnore
@@ -30,7 +32,7 @@ public class OrderItem {
     private Order order;
 
 
-    public OrderItem(ProductItemOrdered itemOrdered , int quantity,  double price) {
+    public OrderItem(ProductItemOrdered itemOrdered , int quantity,  BigDecimal price) {
         this.price = price;
         this.quantity = quantity;
         this.itemOrdered = itemOrdered;

@@ -174,6 +174,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private double calculateSubTotal(List<OrderItem> orderItems) {
-        return orderItems.stream().mapToDouble(OrderItem::getPrice).sum();
+        return orderItems.stream()
+                .mapToDouble(item -> item.getPrice() * item.getQuantity())
+                .sum();
     }
 }
