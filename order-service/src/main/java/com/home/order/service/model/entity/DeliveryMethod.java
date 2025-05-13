@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -38,6 +39,15 @@ public class DeliveryMethod {
     @DecimalMin(value = "0.0", inclusive = false)
     @Column(name = "price", nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "deliveryMethod", fetch = FetchType.LAZY)
+    private Set<Order> orders;
+
+    public DeliveryMethod(String shortName, String deliveryTime, String description, BigDecimal price) {
+        this.shortName = shortName;
+        this.deliveryTime = deliveryTime;
+        this.description = description;
+        this.price = price;
+    }
 
 
 }
