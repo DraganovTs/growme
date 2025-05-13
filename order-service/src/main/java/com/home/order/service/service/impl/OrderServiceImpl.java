@@ -93,7 +93,7 @@ public class OrderServiceImpl implements OrderService {
 
     private Order saveNewOrder(String userEmail, Basket basket, Address address, DeliveryMethod deliveryMethod) {
         List<OrderItem> orderItems = mapOrderItems(basket);
-        double subTotal = calculateSubTotal(orderItems);
+        BigDecimal subTotal = calculateSubTotal(orderItems);
 
         Order order = Order.builder()
                 .buyerEmail(userEmail)
@@ -110,7 +110,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private List<OrderItem> mapOrderItems(Basket basket) {
-        return orderMapper.mapBasketItemsToOrderItems(basket.getItems(), this::getProduct);
+        return orderMapper.mapBasketItemsToOrderItems(basket.getItems());
     }
 
     private DeliveryMethod getDeliveryMethod(int deliveryMethodId) {
@@ -173,9 +173,13 @@ public class OrderServiceImpl implements OrderService {
         return amount;
     }
 
-    private double calculateSubTotal(List<OrderItem> orderItems) {
-        return orderItems.stream()
-                .mapToDouble(item -> item.getPrice() * item.getQuantity())
-                .sum();
+private BigDecimal calculateSubTotal(List<OrderItem> orderItems) {
+    if (orderItems == null) {
+        return BigDecimal.ZERO;
     }
+    
+    return orderItems.stream()
+            .map(item -> item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+}
 }

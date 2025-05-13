@@ -39,11 +39,11 @@ public class Order {
     @Column(name = "status", nullable = false)
     private OrderStatus status;
     @Column(name = "sub_total", nullable = false)
-    private double subTotal;
+    private BigDecimal subTotal;
     private String paymentIntentId;
 
     public Order(String buyerEmail, Address shipToAddress, List<OrderItem> orderItems, DeliveryMethod deliveryMethod,
-                 double subTotal, String paymentIntentId) {
+                 BigDecimal subTotal, String paymentIntentId) {
         this.buyerEmail = buyerEmail;
         this.shipToAddress = shipToAddress;
         this.orderItems = orderItems;
@@ -57,9 +57,14 @@ public class Order {
     @JsonInclude
     @Transient
     public BigDecimal getTotal() {
-        if (deliveryMethod == null) {
-            return BigDecimal.valueOf(subTotal);
+        if (subTotal == null) {
+            return BigDecimal.ZERO;
         }
-        return BigDecimal.valueOf(subTotal).add(deliveryMethod.getPrice());
+        
+        if (deliveryMethod == null) {
+            return subTotal;
+        }
+        
+        return subTotal.add(deliveryMethod.getPrice() != null ? deliveryMethod.getPrice() : BigDecimal.ZERO);
     }
 }
