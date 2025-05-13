@@ -16,7 +16,7 @@ export class CheckoutService {
 
   createOrder(order: IOrderToCreate){
     console.log(order);
-    return this.httpClient.post<IOrder>(this.baseUrl + 'order', order)
+    return this.httpClient.post<IOrder>(this.baseUrl + 'orders', order)
   }
 
   getDeliveryMethods() {

@@ -22,17 +22,20 @@ export class CheckoutDeliveryComponent {
   }
 
   ngOnInit(): void {
+    console.log('Initializing CheckoutDeliveryComponent');
     if (!this.checkoutForm) {
       console.error('checkoutForm is missing in CheckoutDeliveryComponent');
       return;
     }
   
+    console.log('Fetching delivery methods...');
     this.checkoutService.getDeliveryMethods().subscribe(
       (dm: IDeliveryMethod[]) => {
+        console.log('Received delivery methods:', dm);
         this.deliveryMethods = dm;
       },
       error => {
-        console.log(error);
+        console.error('Error fetching delivery methods:', error);
       }
     );
   }

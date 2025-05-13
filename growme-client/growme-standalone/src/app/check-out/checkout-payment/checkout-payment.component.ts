@@ -41,35 +41,45 @@ export class CheckoutPaymentComponent {
     private router: Router){
   
     }
-    async ngOnInit() {
-      await loadStripe('pk_test_51QPpkMCAxyEgI7poxZ60BjB26DcLX3bq8cFdvB4UDTviUXTchBC6xSwUzqfTYDlUDJ0BZ5P2DqQmtuWLgQJzWuXY00CD7Q8ndH')
-      .then(stripe => {
-        this.stripe = stripe;
-        const elements = stripe?.elements();
-        if(elements){
-          this.cardNumber = elements.create('cardNumber');
-          this.cardNumber.mount(this.cardNumberElement?.nativeElement)
-          this.cardNumber.on('change', event => {
-            this.cardNumberComplete = event.complete;
-            if(event.error) this.cardNumberErrors = event.error.message;
-          })
-  
-          this.cardExpiry = elements.create('cardExpiry');
-          this.cardExpiry.mount(this.cardExpiryElement?.nativeElement);
-          this.cardExpiry.on('change', event => {
-            this.cardExpiryComplete = event.complete;
-            if(event.error) this.cardExpiryErrors = event.error.message;
-          })
-  
-          this.cardCvc = elements.create('cardCvc');
-          this.cardCvc.mount(this.cardCvcElement?.nativeElement);
-          this.cardCvc.on('change', event => {
-            this.cardCvcComplete = event.complete;
-            if(event.error) this.cardCvcErrors = event.error.message;
-          })
-        }
-      })
+    async ngAfterViewInit() {
+      await this.loadStripeElements();
     }
+  
+    private async loadStripeElements() {
+      const stripe = await loadStripe('pk_test_51QPpkMCAxyEgI7poxZ60BjB26DcLX3bq8cFdvB4UDTviUXTchBC6xSwUzqfTYDlUDJ0BZ5P2DqQmtuWLgQJzWuXY00CD7Q8ndH');
+      if (!stripe) throw new Error('Stripe failed to load');
+  
+      this.stripe = stripe;
+      const elements = stripe.elements();
+  
+      this.setupCardElement(elements, 'cardNumber', 'cardNumberElement', (event) => {
+        this.cardNumberComplete = event.complete;
+        this.cardNumberErrors = event.error?.message;
+      });
+  
+      this.setupCardElement(elements, 'cardExpiry', 'cardExpiryElement', (event) => {
+        this.cardExpiryComplete = event.complete;
+        this.cardExpiryErrors = event.error?.message;
+      });
+  
+      this.setupCardElement(elements, 'cardCvc', 'cardCvcElement', (event) => {
+        this.cardCvcComplete = event.complete;
+        this.cardCvcErrors = event.error?.message;
+      });
+    }
+  
+    private setupCardElement(
+      elements: any,
+      elementType: 'cardNumber' | 'cardExpiry' | 'cardCvc',
+      elementRef: 'cardNumberElement' | 'cardExpiryElement' | 'cardCvcElement',
+      onChange: (event: any) => void
+    ) {
+      const element = elements.create(elementType);
+      element.mount(this[elementRef]?.nativeElement);
+      element.on('change', onChange);
+      this[elementType] = element;
+    }
+  
   
     get paymentFormComplete(){
       return this.checkoutForm?.get('paymentForm')?.valid

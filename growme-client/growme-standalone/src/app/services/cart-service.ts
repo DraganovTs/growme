@@ -162,7 +162,7 @@ export class CartService {
   
     createPaymentIntent(){
       console.log(this.getCurrentCart()?.id);
-      return this.http.post<ICart>(this.orderUrl+this.getCurrentCart()?.id, {})
+      return this.http.post<ICart>(this.orderUrl+"orders/"+this.getCurrentCart()?.id, {})
       .pipe(map(cart => {
         this.cartSource.next(cart);
         console.log(cart);
