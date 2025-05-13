@@ -1,13 +1,12 @@
 package com.home.order.service.controller;
 
+import com.home.order.service.model.dto.OrderDTO;
 import com.home.order.service.model.entity.Basket;
+import com.home.order.service.model.entity.Order;
 import com.home.order.service.service.OrderService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(value = "/api/orders", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -28,6 +27,13 @@ public class OrderController {
         }
         return ResponseEntity.ok(basket);
 
+    }
+
+    @PostMapping
+    public ResponseEntity<Order> createOrUpdateOrder(@RequestBody OrderDTO orderDTO, String userEmail){
+        System.out.println("********");
+        Order order = orderService.createOrUpdateOrder(userEmail,orderDTO);
+        return ResponseEntity.ok(order);
     }
 
 
