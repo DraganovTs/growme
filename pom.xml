@@ -39,6 +39,7 @@
         <spring.data.redis>3.4.5</spring.data.redis>
         <stripe.java.version>29.1.0</stripe.java.version>
         <spring.cloud.starter.openfeign.version>4.2.1</spring.cloud.starter.openfeign.version>
+        <sendgrid.java.vesion>4.10.3</sendgrid.java.vesion>
     </properties>
 
     <dependencyManagement>
@@ -135,6 +136,7 @@
                 <artifactId>jedis</artifactId>
                 <version>${jedis.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>com.stripe</groupId>
                 <artifactId>stripe-java</artifactId>
@@ -147,6 +149,11 @@
                 <version>${spring-cloud-starter-gateway.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>com.sendgrid</groupId>
+                <artifactId>sendgrid-java</artifactId>
+                <version>${sendgrid.java.vesion}</version>
+            </dependency>
 
             <dependency>
                 <groupId>com.home</groupId>
