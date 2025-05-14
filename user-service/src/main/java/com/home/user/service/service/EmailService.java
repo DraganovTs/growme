@@ -3,7 +3,7 @@ package com.home.user.service.service;
 
 public interface EmailService {
 
-    void sendProductAddForSellConfirmation(String userEmail);
+    void sendProductAddForSellConfirmation(String email);
 
     void sendAccountDeletionConfirmation(String email);
 

@@ -19,4 +19,8 @@ public class KafkaTopics {
     public static final String PRODUCT_ASSIGNMENT_TOPIC = "product.user.assignment";
     public static final String PRODUCT_DELETION_TOPIC = "product.user.deletion";
 
+
+    //MAIL
+    public static final String EMAIL_SEND_TOPIC = "email.send";
+
 }
