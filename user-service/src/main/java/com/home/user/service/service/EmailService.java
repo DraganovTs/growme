@@ -1,6 +1,5 @@
 package com.home.user.service.service;
 
-import com.home.user.service.model.dto.UserDTO;
 
 public interface EmailService {
 

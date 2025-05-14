@@ -40,9 +40,13 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
 
-    public OrderServiceImpl(BasketRepository basketRepository, DeliveryMethodRepository deliveryMethodRepository,
-                            ProductServiceClient productServiceClient, BasketMapper basketMapper,
-                            EventPublisherService eventPublisherService, OrderRepository orderRepository, OrderMapper orderMapper) {
+    public OrderServiceImpl(BasketRepository basketRepository,
+                            DeliveryMethodRepository deliveryMethodRepository,
+                            ProductServiceClient productServiceClient,
+                            BasketMapper basketMapper,
+                            EventPublisherService eventPublisherService,
+                            OrderRepository orderRepository,
+                            OrderMapper orderMapper) {
         this.basketRepository = basketRepository;
         this.deliveryMethodRepository = deliveryMethodRepository;
         this.productServiceClient = productServiceClient;
@@ -55,52 +59,103 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public Basket createOrUpdatePaymentIntent(String basketId) {
-
-        Basket basket = validateAndPrepareBasket(basketId);
-        BigDecimal amount = calculateTotalAmount(basket);
-
+        Basket basket = fetchValidatedBasket(basketId);
+        BigDecimal totalAmount = calculateTotalAmount(basket);
 
         try {
-            CompletableFuture<PaymentIntentResponseEvent> paymentFuture =
-                    isEmptyString(basket.getPaymentIntentId())
-                            ? eventPublisherService.sendCreatePaymentIntent(basketId, amount)
-                            : eventPublisherService.sendUpdatePaymentIntent(basketId, amount);
-
-            PaymentIntentResponseEvent response = paymentFuture.join();
+            PaymentIntentResponseEvent response = isNullOrEmpty(basket.getPaymentIntentId())
+                    ? eventPublisherService.sendCreatePaymentIntent(basketId, totalAmount).join()
+                    : eventPublisherService.sendUpdatePaymentIntent(basketId, totalAmount).join();
 
             basket.setPaymentIntentId(response.getPaymentIntentId());
             basket.setClientSecret(response.getClientSecret());
-            return basketRepository.save(basket);
 
+            return basketRepository.save(basket);
         } catch (CompletionException e) {
             throw new PaymentProcessingException("Failed to process payment intent");
         }
     }
 
     @Override
-    public Order createOrUpdateOrder( OrderDTO orderDTO) {
-        Basket basket = getBasket(orderDTO.getBasketId());
-        Address address = extractAddress(orderDTO);
-        DeliveryMethod deliveryMethod = getDeliveryMethod(orderDTO.getDeliveryMethodId());
+    @Transactional
+    public Order createOrUpdateOrder(OrderDTO orderDTO) {
+        Basket basket = fetchBasket(orderDTO.getBasketId());
+        Address address = mapToAddress(orderDTO);
+        DeliveryMethod deliveryMethod = fetchDeliveryMethod(orderDTO.getDeliveryMethodId());
 
         Order existingOrder = orderRepository.findByPaymentIntentId(basket.getPaymentIntentId());
-        if (existingOrder != null && "succeeded".equals(existingOrder.getPaymentIntentId())) {
-            throw new IllegalStateException("Order cannot be modified as it is already paid.");
+        if (existingOrder != null && "succeeded".equalsIgnoreCase(existingOrder.getPaymentIntentId())) {
+            throw new IllegalStateException("Order already paid and cannot be modified.");
         }
 
-        return saveNewOrder(orderDTO.getUserEmail(), basket, address, deliveryMethod);
+        return persistNewOrder(orderDTO.getUserEmail(), basket, address, deliveryMethod);
     }
 
-    private Order saveNewOrder(String userEmail, Basket basket, Address address, DeliveryMethod deliveryMethod) {
-        List<OrderItem> orderItems = mapOrderItems(basket);
-        BigDecimal subTotal = calculateSubTotal(orderItems);
+    private Basket fetchValidatedBasket(String basketId) {
+        Basket basket = fetchBasket(basketId);
+        validateBasketItems(basket);
+        return basket;
+    }
+
+    private Basket fetchBasket(String basketId) {
+        return basketRepository.findById(basketId)
+                .orElseThrow(() -> new BasketNotFoundException("Basket not found: " + basketId));
+    }
+
+
+    private void validateBasketItems(Basket basket) {
+        var validationResults = productServiceClient
+                .validateBasketItems(basketMapper.mapBasketItemsToBasketItemsDTO(basket.getItems()))
+                .getBody();
+
+        if (validationResults == null || validationResults.stream().anyMatch(r -> !r.isValid())) {
+            throw new InvalidProductException("Invalid items in basket");
+        }
+
+        validationResults.forEach(r -> log.debug("Validated product: {}", r.getProductId()));
+    }
+
+    private BigDecimal calculateTotalAmount(Basket basket) {
+        BigDecimal itemTotal = basket.getItems().stream()
+                .map(item -> item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        if (basket.getDeliveryMethodId() != null) {
+            DeliveryMethod method = fetchDeliveryMethod(basket.getDeliveryMethodId());
+            itemTotal = itemTotal.add(method.getPrice());
+        }
+
+        return itemTotal;
+    }
+
+    private DeliveryMethod fetchDeliveryMethod(int id) {
+        return deliveryMethodRepository.findById(id)
+                .orElseThrow(() -> new DeliveryMethodNotFoundException("Delivery method not found: " + id));
+    }
+
+
+    private Address mapToAddress(OrderDTO dto) {
+        var addr = dto.getShipToAddress();
+        return new Address(
+                addr.getFirstName(),
+                addr.getLastName(),
+                addr.getCity(),
+                addr.getState(),
+                addr.getStreet(),
+                addr.getZipCode()
+        );
+    }
+
+    private Order persistNewOrder(String email, Basket basket, Address address, DeliveryMethod method) {
+        List<OrderItem> items = orderMapper.mapBasketItemsToOrderItems(basket.getItems());
+        BigDecimal subtotal = calculateSubTotal(items);
 
         Order order = Order.builder()
-                .buyerEmail(userEmail)
-                .deliveryMethod(deliveryMethod)
-                .orderItems(orderItems)
+                .buyerEmail(email)
+                .deliveryMethod(method)
+                .orderItems(items)
                 .shipToAddress(address)
-                .subTotal(subTotal)
+                .subTotal(subtotal)
                 .status(OrderStatus.PENDING)
                 .paymentIntentId(basket.getPaymentIntentId())
                 .orderDate(Instant.now())
@@ -109,77 +164,17 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository.save(order);
     }
 
-    private List<OrderItem> mapOrderItems(Basket basket) {
-        return orderMapper.mapBasketItemsToOrderItems(basket.getItems());
+    private BigDecimal calculateSubTotal(List<OrderItem> items) {
+        return items == null ? BigDecimal.ZERO :
+                items.stream()
+                        .map(i -> i.getPrice().multiply(BigDecimal.valueOf(i.getQuantity())))
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    private DeliveryMethod getDeliveryMethod(int deliveryMethodId) {
-        return deliveryMethodRepository.findById(deliveryMethodId)
-                .orElseThrow(()-> new DeliveryMethodNotFoundException("Delivery method not found with ID: " + deliveryMethodId));
+
+    private boolean isNullOrEmpty(String str) {
+        return str == null || str.trim().isEmpty();
     }
 
-    private Address extractAddress(OrderDTO orderDTO) {
-        return new Address(
-                orderDTO.getShipToAddress().getFirstName(),
-                orderDTO.getShipToAddress().getLastName(),
-                orderDTO.getShipToAddress().getCity(),
-                orderDTO.getShipToAddress().getState(),
-                orderDTO.getShipToAddress().getStreet(),
-                orderDTO.getShipToAddress().getZipCode()
-        );
-    }
 
-    private Basket getBasket(String basketId) {
-        return basketRepository.findById(basketId)
-                .orElseThrow(()->new BasketNotFoundException("Basket not found with ID: " + basketId));
-    }
-
-    private boolean isEmptyString(String paymentIntentId) {
-            return paymentIntentId == null || paymentIntentId.isEmpty();
-    }
-
-    private Basket validateAndPrepareBasket(String basketId) {
-        Basket basket = basketRepository.findById(basketId)
-                .orElseThrow(() -> new BasketNotFoundException("Basket not found: " + basketId));
-
-        validateProducts(basket);
-        return basket;
-    }
-
-    private void validateProducts(Basket basket) {
-        List<ProductValidationResult> validationResults = productServiceClient
-                .validateBasketItems(basketMapper.mapBasketItemsToBasketItemsDTO(basket.getItems()))
-                .getBody();
-
-        if (validationResults == null || validationResults.stream().anyMatch(r -> !r.isValid())) {
-            throw new InvalidProductException("Invalid items in basket");
-        }
-
-        validationResults.forEach(r -> log.debug("Product validated: {}", r.getProductId()));
-    }
-
-    private BigDecimal calculateTotalAmount(Basket basket) {
-        BigDecimal amount = basket.getItems().stream()
-                .map(item -> item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        if (basket.getDeliveryMethodId() != null) {
-            DeliveryMethod deliveryMethod = deliveryMethodRepository.findById(basket.getDeliveryMethodId())
-                    .orElseThrow(() -> new DeliveryMethodNotFoundException(
-                            "Delivery method not found: " + basket.getDeliveryMethodId()));
-            amount = amount.add(deliveryMethod.getPrice());
-        }
-
-        return amount;
-    }
-
-private BigDecimal calculateSubTotal(List<OrderItem> orderItems) {
-    if (orderItems == null) {
-        return BigDecimal.ZERO;
-    }
-    
-    return orderItems.stream()
-            .map(item -> item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
-            .reduce(BigDecimal.ZERO, BigDecimal::add);
-}
 }
