@@ -10,8 +10,8 @@ spring:
       port: 6380
   datasource:
     url: jdbc:mysql://localhost:3306/growmeorders?createDatabaseIfNotExist=true
-    username: root
-    password: password12345
+    username: ${SQL_DB_USERNAME}
+    password: ${SQL_DB_PASSWORD}
   jpa:
     show-sql: true
     hibernate:

@@ -3,10 +3,12 @@ server:
 
 
 spring:
+  application:
+    name: product-service
   datasource:
     url: jdbc:mysql://localhost:3306/growmeproducts?createDatabaseIfNotExist=true
-    username: root
-    password: password12345
+    username: ${SQL_DB_USERNAME}
+    password: ${SQL_DB_PASSWORD}
   jpa:
     show-sql: true
     hibernate:
@@ -34,8 +36,7 @@ spring:
       group-id: product-service
       properties:
         spring.json.trusted.packages: "*"
-  application:
-    name: product-service
+
 
 pagination:
   page:
