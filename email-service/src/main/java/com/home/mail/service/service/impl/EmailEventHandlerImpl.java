@@ -27,10 +27,10 @@ public class EmailEventHandlerImpl implements EmailEventHandler {
                     log.info("ACCOUNT_DELETION_CONFIRMATION");
                     break;
                 case ACCOUNT_COMPLETION_CONFIRMATION:
-                    log.info("ACCOUNT_DELETION_CONFIRMATION");
+                    log.info("ACCOUNT_COMPLETION_CONFIRMATION");
                     break;
                     case ACCOUNT_UPDATE_CONFIRMATION:
-                    log.info("ACCOUNT_DELETION_CONFIRMATION");
+                    log.info("ACCOUNT_UPDATE_CONFIRMATION");
                     break;
             }
         } catch (Exception e){
