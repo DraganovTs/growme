@@ -32,8 +32,9 @@ spring:
     consumer:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-      group-id: email-service
+      group-id: email-service-group
       properties:
+        spring.json.value.default.type: com.home.growme.common.module.events.EmailRequestEvent
         spring.json.trusted.packages: "*"
 
 sendgrid:

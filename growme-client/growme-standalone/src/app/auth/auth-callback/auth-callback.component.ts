@@ -27,7 +27,7 @@ export class AuthCallbackComponent {
         this.http.post<any>('http://localhost:7080/realms/grow-me/protocol/openid-connect/token',
           new URLSearchParams({
             client_id: 'grow-me-client',
-            client_secret: 'YS8RI2mJMexWH6ooujvN1SO0KxYOx1pg',  
+            client_secret: 'NcIbcO44ILFnN87H2EFyD9BK5hx4zfkb',  
             grant_type: 'authorization_code',
             code: code,
             redirect_uri: 'http://localhost:4200/auth/callback',  
