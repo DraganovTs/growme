@@ -1,8 +1,8 @@
-package com.home.mail.service.service.impl;
+package com.home.mail.service.impl;
 
 import com.home.growme.common.module.events.EmailRequestEvent;
-import com.home.mail.service.exception.EmailProcessingException;
-import com.home.mail.service.service.EmailEventHandler;
+import com.home.mail.exception.EmailProcessingException;
+import com.home.mail.service.EmailEventHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;

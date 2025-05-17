@@ -1,4 +1,4 @@
-package com.home.mail.service.service;
+package com.home.mail.service;
 
 public interface EmailSenderService {
     void sendProductAddConfirmation(String email);

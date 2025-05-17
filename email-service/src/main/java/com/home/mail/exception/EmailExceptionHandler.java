@@ -1,4 +1,4 @@
-package com.home.mail.service.exception;
+package com.home.mail.exception;
 
 import com.home.growme.common.module.exceptions.BaseExceptionHandler;
 import com.home.growme.common.module.exceptions.ErrorResponseDTO;

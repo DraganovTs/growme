@@ -1,4 +1,4 @@
-package com.home.mail.service.service;
+package com.home.mail.service;
 
 import com.home.growme.common.module.events.EmailRequestEvent;
 
