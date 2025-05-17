@@ -1,6 +1,6 @@
-package com.home.mail.repository;
+package com.home.mail.service.repository;
 
-import com.home.mail.model.EmailRecord;
+import com.home.mail.service.model.EmailRecord;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

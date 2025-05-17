@@ -1,4 +1,4 @@
-package com.home.mail.exception;
+package com.home.mail.service.exception;
 
 import com.home.growme.common.module.exceptions.BaseExceptionHandler;
 import com.home.growme.common.module.exceptions.ErrorResponseDTO;
@@ -17,5 +17,12 @@ public class EmailExceptionHandler extends BaseExceptionHandler {
     public ResponseEntity<ErrorResponseDTO> handleEmailProcessingException(EmailProcessingException ex , WebRequest request){
         log.warn("Email receive error: {}", ex.getMessage());
         return buildErrorResponse(ex,request, HttpStatus.INTERNAL_SERVER_ERROR,"EMAIL_RECEIVE_ERROR");
+    }
+
+
+    @ExceptionHandler(EmailSendingException.class)
+    public ResponseEntity<ErrorResponseDTO> handleEmailProcessingException(EmailSendingException ex , WebRequest request){
+        log.warn("Email sending error: {}", ex.getMessage());
+        return buildErrorResponse(ex,request, HttpStatus.INTERNAL_SERVER_ERROR,"EMAIL_SENDING_ERROR");
     }
 }

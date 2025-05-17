@@ -1,6 +1,6 @@
-package com.home.mail.service.impl;
+package com.home.mail.service.service.impl;
 
-import com.home.mail.service.EmailTemplateService;
+import com.home.mail.service.service.EmailTemplateService;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
