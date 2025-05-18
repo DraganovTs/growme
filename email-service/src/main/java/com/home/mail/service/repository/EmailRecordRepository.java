@@ -15,5 +15,5 @@ public interface EmailRecordRepository extends JpaRepository<EmailRecord, UUID> 
 
     @Modifying
     @Query("DELETE FROM EmailRecord e WHERE e.sentAt < :cutoffDate")
-    void deleteOlderThan(@Param("cutoffDate") Instant cutoffDate);
+    int deleteOlderThan(@Param("cutoffDate") Instant cutoffDate);
 }
