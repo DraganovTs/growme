@@ -25,6 +25,7 @@ public class ProductMapper {
         return Owner.builder()
                 .ownerId(UUID.fromString(event.getUserId()))
                 .ownerName(event.getUserName())
+                .ownerEmail(event.getUserEmail())
                 .products(new ArrayList<>())
                 .build();
     }

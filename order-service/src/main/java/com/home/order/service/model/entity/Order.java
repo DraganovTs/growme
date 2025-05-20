@@ -41,6 +41,9 @@ public class Order {
     @Column(name = "sub_total", nullable = false)
     private BigDecimal subTotal;
     private String paymentIntentId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id")
+    private Owner owner;
 
     public Order(String buyerEmail, Address shipToAddress, List<OrderItem> orderItems, DeliveryMethod deliveryMethod,
                  BigDecimal subTotal, String paymentIntentId) {

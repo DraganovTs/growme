@@ -40,6 +40,12 @@ public class OrderExceptionHandler extends BaseExceptionHandler {
         return buildErrorResponse(ex, request, HttpStatus.NOT_FOUND, "DELIVERY_METHOD_NOT_FOUND");
     }
 
+    @ExceptionHandler(OwnerNotFoundException.class)
+    public ResponseEntity<ErrorResponseDTO> handleBasketNotFound(OwnerNotFoundException ex, WebRequest request) {
+        log.warn("Owner not found: {}", ex.getMessage());
+        return buildErrorResponse(ex, request, HttpStatus.NOT_FOUND, "OWNER_NOT_FOUND");
+    }
+
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDTO> handleGenericException(Exception ex, WebRequest request) {

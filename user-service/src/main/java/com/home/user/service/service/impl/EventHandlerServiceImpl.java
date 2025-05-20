@@ -53,7 +53,8 @@ public class EventHandlerServiceImpl implements EventHandlerService {
 
                     UserCreatedEvent event = new UserCreatedEvent(
                             result.getUserId(),
-                            user.getUsername());
+                            user.getUsername(),
+                            user.getEmail());
 
                     eventPublisherService.publishUserCreated(event);
             }

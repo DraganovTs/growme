@@ -1,7 +1,6 @@
-package com.home.growme.produt.service.model.entity;
+package com.home.order.service.model.entity;
 
 
-import com.home.growme.produt.service.model.dto.OwnerDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -25,14 +24,5 @@ public class Owner {
     @Column(name = "owner_email")
     private String ownerEmail;
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Product> products;
-
-    @PrePersist
-    public void generateId() {
-        if (ownerId == null) {
-            ownerId = UUID.randomUUID();
-        }
-    }
-
-
+    private List<Order> orders;
 }

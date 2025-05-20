@@ -80,7 +80,7 @@ public class UserUpdateServiceImpl implements UserUpdateService {
         }
 
         User savedUser = userRepository.save(user);
-        UserCreatedEvent event = new UserCreatedEvent(userId.toString(), savedUser.getFirstName());
+        UserCreatedEvent event = new UserCreatedEvent(userId.toString(), savedUser.getFirstName(), savedUser.getEmail());
         eventPublisherService.publishUserCreated(event);
         log.info("User updated successfully: {}", userId);
         return userMapper.mapUserToUserDTO(savedUser);

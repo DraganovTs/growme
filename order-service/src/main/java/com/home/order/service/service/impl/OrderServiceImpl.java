@@ -19,6 +19,7 @@ import com.home.order.service.repository.DeliveryMethodRepository;
 import com.home.order.service.repository.OrderRepository;
 import com.home.order.service.service.EventPublisherService;
 import com.home.order.service.service.OrderService;
+import com.home.order.service.service.OwnerService;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -40,6 +41,7 @@ public class OrderServiceImpl implements OrderService {
     private final EventPublisherService eventPublisherService;
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
+    private final OwnerService ownerService;
 
     public OrderServiceImpl(BasketRepository basketRepository,
                             DeliveryMethodRepository deliveryMethodRepository,
@@ -47,7 +49,7 @@ public class OrderServiceImpl implements OrderService {
                             BasketMapper basketMapper,
                             EventPublisherService eventPublisherService,
                             OrderRepository orderRepository,
-                            OrderMapper orderMapper) {
+                            OrderMapper orderMapper, OwnerService ownerService) {
         this.basketRepository = basketRepository;
         this.deliveryMethodRepository = deliveryMethodRepository;
         this.productServiceClient = productServiceClient;
@@ -55,6 +57,7 @@ public class OrderServiceImpl implements OrderService {
         this.eventPublisherService = eventPublisherService;
         this.orderRepository = orderRepository;
         this.orderMapper = orderMapper;
+        this.ownerService = ownerService;
     }
 
     @Override
@@ -175,6 +178,7 @@ public class OrderServiceImpl implements OrderService {
     private Order persistNewOrder(String email, Basket basket, Address address, DeliveryMethod method) {
         List<OrderItem> items = orderMapper.mapBasketItemsToOrderItems(basket.getItems());
         BigDecimal subtotal = calculateSubTotal(items);
+        Owner owner = ownerService.findOwnerByEmail(email);
 
         Order order = Order.builder()
                 .buyerEmail(email)
@@ -185,6 +189,7 @@ public class OrderServiceImpl implements OrderService {
                 .status(OrderStatus.PENDING)
                 .paymentIntentId(basket.getPaymentIntentId())
                 .orderDate(Instant.now())
+                .owner(owner)
                 .build();
 
         return orderRepository.save(order);
