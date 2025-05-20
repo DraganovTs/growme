@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
-import static com.home.growme.common.module.config.kafka.topic.KafkaTopics.PAYMENT_INTENT_RESPONSES;
+import static com.home.growme.common.module.config.kafka.topic.KafkaTopics.PAYMENT_INTENT_RESPONSES_TOPIC;
 
 @Slf4j
 @Service
@@ -21,7 +21,7 @@ public class EventPublisherServiceImpl implements EventPublisherService {
     @Override
     public void publishPaymentIntentResponse(PaymentIntentResponseEvent response) {
         try {
-            kafkaTemplate.send(PAYMENT_INTENT_RESPONSES, response)
+            kafkaTemplate.send(PAYMENT_INTENT_RESPONSES_TOPIC, response)
                     .thenAccept(result -> log.debug("Published payment response for {}", response.getPaymentIntentId()))
                     .exceptionally(ex -> {
                         log.error("Failed to publish payment response", ex);

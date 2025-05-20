@@ -13,8 +13,6 @@ import com.home.user.service.service.UserUpdateService;
 import com.home.user.service.util.EventValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.support.KafkaHeaders;
-import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,7 +42,7 @@ public class EventHandlerServiceImpl implements EventHandlerService {
 
 
     @Override
-    @KafkaListener(topics = USER_ROLE_ASSIGNMENT_RESULT)
+    @KafkaListener(topics = USER_ROLE_ASSIGNMENT_RESULT_TOPIC)
     public void handleRoleAssignmentResult(RoleAssignmentResult result) {
         try {
             eventValidator.validateRoleAssignmentResult(result);

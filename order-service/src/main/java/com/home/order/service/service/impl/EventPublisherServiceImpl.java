@@ -2,6 +2,7 @@ package com.home.order.service.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.home.growme.common.module.events.OrderCompletedEvent;
 import com.home.growme.common.module.events.PaymentIntentRequestEvent;
 import com.home.growme.common.module.events.PaymentIntentResponseEvent;
 import com.home.growme.common.module.exceptions.eventPublishing.EventPublishingException;
@@ -45,6 +46,27 @@ public class EventPublisherServiceImpl implements EventPublisherService {
         return sendPaymentIntentEvent(basketId, amount, false);
     }
 
+    @Override
+    public void publishCompletedOrder(OrderCompletedEvent event) {
+        try {
+            kafkaTemplate.send(ORDER_COMPLETED_TOPIC, event)
+                    .thenAccept(result -> {
+                        log.debug("Published order completed event for order {}", event.getOrderId());
+                        // TODO: Add success metrics
+                    }).exceptionally(ex -> {
+                        log.error("Publish failed for event: {}", event, ex);
+                        // TODO: Add error metrics
+                        throw new EventPublishingException("Failed to publish role assignment");
+
+                    });
+        } catch (Exception e) {
+            log.error("Critical publish failure for order {}: {}", event.getOrderId(), e.getMessage());
+            // TODO: Add dead letter queue handling
+            throw new EventPublishingException("Critical publishing failure");
+
+        }
+    }
+
     private CompletableFuture<PaymentIntentResponseEvent> sendPaymentIntentEvent(
             String basketId, BigDecimal amount, boolean isCreate) {
 
@@ -63,7 +85,7 @@ public class EventPublisherServiceImpl implements EventPublisherService {
 
         try {
             String payload = objectMapper.writeValueAsString(event);
-            kafkaTemplate.send(PAYMENT_INTENT_REQUESTS, payload)
+            kafkaTemplate.send(PAYMENT_INTENT_REQUESTS_TOPIC, payload)
                     .thenAccept(result -> log.debug("Published payment intent for basket {} [Correlation: {}]",
                             basketId, correlationId))
                     .exceptionally(ex -> {

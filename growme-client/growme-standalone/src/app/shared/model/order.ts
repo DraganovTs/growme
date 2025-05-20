@@ -35,7 +35,7 @@ export interface IOrder {
 }
 
 export interface IOrderItem{
-    productId: number;
+    productId: string;
     productName: string;
     imageUrl: string;
     price: number;

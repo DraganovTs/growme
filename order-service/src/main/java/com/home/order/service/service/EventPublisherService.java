@@ -1,6 +1,7 @@
 package com.home.order.service.service;
 
 
+import com.home.growme.common.module.events.OrderCompletedEvent;
 import com.home.growme.common.module.events.PaymentIntentResponseEvent;
 
 import java.math.BigDecimal;
@@ -13,4 +14,5 @@ public interface EventPublisherService {
 
    CompletableFuture<PaymentIntentResponseEvent> sendUpdatePaymentIntent(String basketId, BigDecimal amount);
 
+    void publishCompletedOrder(OrderCompletedEvent event);
 }

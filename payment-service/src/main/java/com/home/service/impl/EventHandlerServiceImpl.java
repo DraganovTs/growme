@@ -12,7 +12,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
-import static com.home.growme.common.module.config.kafka.topic.KafkaTopics.PAYMENT_INTENT_REQUESTS;
+import static com.home.growme.common.module.config.kafka.topic.KafkaTopics.PAYMENT_INTENT_REQUESTS_TOPIC;
 
 
 @Slf4j
@@ -30,7 +30,7 @@ public class EventHandlerServiceImpl implements EventHandlerService {
     }
 
     @Override
-    @KafkaListener(topics = PAYMENT_INTENT_REQUESTS)
+    @KafkaListener(topics = PAYMENT_INTENT_REQUESTS_TOPIC)
     public void handlePaymentRequest(ConsumerRecord<String, String> record) {
         try {
             PaymentIntentRequestEvent request = objectMapper.readValue(

@@ -15,7 +15,7 @@ import java.util.List;
 @ToString
 @NoArgsConstructor
 public class OrderCompletedEvent {
-    private String orderId;
+    private Integer orderId;
     private String buyerEmail;
     private List<OrderItemDTO> items;
     private BigDecimal totalAmount;
@@ -23,7 +23,7 @@ public class OrderCompletedEvent {
 
     @JsonCreator
     public OrderCompletedEvent(
-            @JsonProperty("orderId") String orderId,
+            @JsonProperty("orderId") Integer orderId,
             @JsonProperty("buyerEmail") String buyerEmail,
             @JsonProperty("items") List<OrderItemDTO> items,
             @JsonProperty("totalAmount") BigDecimal totalAmount,

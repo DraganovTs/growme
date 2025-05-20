@@ -27,7 +27,7 @@ public class EventHandlerServiceImpl implements EventHandlerService {
     }
 
     @Override
-    @KafkaListener(topics = PAYMENT_INTENT_RESPONSES)
+    @KafkaListener(topics = PAYMENT_INTENT_RESPONSES_TOPIC)
     public void handlePaymentResponse(ConsumerRecord<String, Object> record) {
         try {
             PaymentIntentResponseEvent response = objectMapper.convertValue(record.value(), PaymentIntentResponseEvent.class);
@@ -47,7 +47,7 @@ public class EventHandlerServiceImpl implements EventHandlerService {
 
 
     @Override
-    @KafkaListener(topics = PAYMENT_FAILURES)
+    @KafkaListener(topics = PAYMENT_FAILURES_TOPIC)
     public void handlePaymentFailure(ConsumerRecord<String, String> record) {
         try {
             PaymentFailureEvent event = objectMapper.readValue(

@@ -1,5 +1,7 @@
 package com.home.order.service.service.impl;
 
+import com.home.growme.common.module.dto.OrderItemDTO;
+import com.home.growme.common.module.events.OrderCompletedEvent;
 import com.home.growme.common.module.events.PaymentIntentResponseEvent;
 import com.home.order.service.exception.BasketNotFoundException;
 import com.home.order.service.exception.DeliveryMethodNotFoundException;
@@ -24,7 +26,6 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 
 
@@ -88,7 +89,32 @@ public class OrderServiceImpl implements OrderService {
             throw new IllegalStateException("Order already paid and cannot be modified.");
         }
 
-        return persistNewOrder(orderDTO.getUserEmail(), basket, address, deliveryMethod);
+        Order order = persistNewOrder(orderDTO.getUserEmail(), basket, address, deliveryMethod);
+
+        publishOrderCompletedEvent(order);
+
+        return order;
+    }
+
+    private void publishOrderCompletedEvent(Order order) {
+        List<OrderItemDTO> itemDTOS = order.getOrderItems().stream()
+                .map(item -> new OrderItemDTO(
+                    item.getOrderItemId().toString(),
+                        item.getQuantity(),
+                        item.getPrice()
+                )).toList();
+
+        BigDecimal totalAmount = order.getSubTotal().add(order.getDeliveryMethod().getPrice());
+
+        OrderCompletedEvent event = new OrderCompletedEvent(
+                order.getOrderId(),
+                order.getBuyerEmail(),
+                itemDTOS,
+                totalAmount,
+                order.getOrderDate()
+        );
+
+        eventPublisherService.publishCompletedOrder(event);
     }
 
     private Basket fetchValidatedBasket(String basketId) {

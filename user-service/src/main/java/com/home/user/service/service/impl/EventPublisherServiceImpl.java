@@ -29,7 +29,7 @@ public class EventPublisherServiceImpl implements EventPublisherService {
         RoleAssignmentEvent event = new RoleAssignmentEvent(userId, role.toUpperCase());
 
         try {
-            kafkaTemplate.send(ROLE_ASSIGNMENT, userId, event)
+            kafkaTemplate.send(ROLE_ASSIGNMENT_TOPIC, userId, event)
                     .thenAccept(result -> {
                         log.debug("Published role assignment for user {}", userId);
                         // TODO: Add success metrics
@@ -51,7 +51,7 @@ public class EventPublisherServiceImpl implements EventPublisherService {
     @Override
     public void publishUserCreated(UserCreatedEvent event) {
         try {
-            kafkaTemplate.send(USER_CREATE, event.getUserId(), event)
+            kafkaTemplate.send(USER_CREATE_TOPIC, event.getUserId(), event)
                     .thenAccept(result -> {
                         log.info("Role assignment result: {}", result);
                     })
