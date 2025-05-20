@@ -6,7 +6,6 @@ import com.home.growme.common.module.dto.ProductValidationResult;
 import com.home.growme.produt.service.exception.CategoryNotFoundException;
 import com.home.growme.produt.service.exception.OwnerNotFoundException;
 import com.home.growme.produt.service.exception.ProductNotFoundException;
-import com.home.growme.produt.service.kafka.publisher.ProductEventPublisher;
 import com.home.growme.produt.service.mapper.ProductMapper;
 import com.home.growme.produt.service.model.dto.ProductRequestDTO;
 import com.home.growme.produt.service.model.dto.ProductResponseDTO;
@@ -17,6 +16,7 @@ import com.home.growme.produt.service.model.entity.Product;
 import com.home.growme.produt.service.repository.CategoryRepository;
 import com.home.growme.produt.service.repository.OwnerRepository;
 import com.home.growme.produt.service.repository.ProductRepository;
+import com.home.growme.produt.service.service.EventPublisherService;
 import com.home.growme.produt.service.service.ProductService;
 import com.home.growme.produt.service.specification.ProductSpecParams;
 import com.home.growme.produt.service.specification.ProductSpecificationNameOwnerCategory;
@@ -49,19 +49,19 @@ public class ProductServiceImpl implements ProductService {
     private final ProductSpecificationNameOwnerCategory productSpecification;
     private final CategoryRepository categoryRepository;
     private final OwnerRepository ownerRepository;
-    private final ProductEventPublisher productEventPublisher;
+    private final EventPublisherService eventPublisherService;
     private final ProductValidator productValidator;
 
     public ProductServiceImpl(ProductRepository productRepository, ProductMapper productMapper,
                               ProductSpecificationNameOwnerCategory productSpecification,
                               CategoryRepository categoryRepository, OwnerRepository ownerRepository,
-                              ProductEventPublisher productEventPublisher, ProductValidator productValidator) {
+                              EventPublisherService eventPublisherService, ProductValidator productValidator) {
         this.productRepository = productRepository;
         this.productMapper = productMapper;
         this.productSpecification = productSpecification;
         this.categoryRepository = categoryRepository;
         this.ownerRepository = ownerRepository;
-        this.productEventPublisher = productEventPublisher;
+        this.eventPublisherService = eventPublisherService;
         this.productValidator = productValidator;
     }
 
@@ -115,7 +115,7 @@ public class ProductServiceImpl implements ProductService {
 
         productRepository.save(product);
 
-        productEventPublisher.publishProductAssignment(
+        eventPublisherService.publishProductAssignment(
                 productRequestDTO.getOwnerId().toString(),
                 product.getProductId().toString());
 
@@ -149,7 +149,7 @@ public class ProductServiceImpl implements ProductService {
     public void deleteProduct(String productId,String ownerId) {
         productRepository.deleteById(UUID.fromString(productId));
         log.info("Product deleted successfully: {}", productId);
-        productEventPublisher.publishProductDeletion( productId, ownerId);
+        eventPublisherService.publishProductDeletion( productId, ownerId);
     }
 
     @Override

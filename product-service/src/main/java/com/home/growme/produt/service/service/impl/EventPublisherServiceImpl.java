@@ -1,7 +1,8 @@
-package com.home.growme.produt.service.kafka.publisher;
+package com.home.growme.produt.service.service.impl;
 
 import com.home.growme.common.module.events.ProductAssignedToUserEvent;
 import com.home.growme.common.module.events.ProductDeletionToUserEvent;
+import com.home.growme.produt.service.service.EventPublisherService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -11,16 +12,17 @@ import static com.home.growme.common.module.config.kafka.topic.KafkaTopics.PRODU
 
 @Slf4j
 @Service
-public class ProductEventPublisher {
+public class EventPublisherServiceImpl implements EventPublisherService {
 
     private final KafkaTemplate<String,Object> kafkaTemplate;
 
-    public ProductEventPublisher(KafkaTemplate<String, Object> kafkaTemplate) {
+    public EventPublisherServiceImpl(KafkaTemplate<String, Object> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    public void publishProductAssignment(String userId, String productId) {
 
+    @Override
+    public void publishProductAssignment(String userId, String productId) {
         ProductAssignedToUserEvent event = new ProductAssignedToUserEvent(userId, productId);
 
         try {
@@ -40,9 +42,9 @@ public class ProductEventPublisher {
         }
     }
 
-
+    @Override
     public void publishProductDeletion(String productId, String ownerId) {
-         ProductDeletionToUserEvent event = new ProductDeletionToUserEvent(ownerId,productId);
+        ProductDeletionToUserEvent event = new ProductDeletionToUserEvent(ownerId,productId);
 
         try {
             kafkaTemplate.send(PRODUCT_DELETION_TOPIC,event)
