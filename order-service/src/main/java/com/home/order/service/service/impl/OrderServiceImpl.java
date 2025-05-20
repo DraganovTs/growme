@@ -111,6 +111,7 @@ public class OrderServiceImpl implements OrderService {
 
         OrderCompletedEvent event = new OrderCompletedEvent(
                 order.getOrderId(),
+                order.getOwner().getOwnerId().toString(),
                 order.getBuyerEmail(),
                 itemDTOS,
                 totalAmount,

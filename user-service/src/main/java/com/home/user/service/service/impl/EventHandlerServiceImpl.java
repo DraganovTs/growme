@@ -1,9 +1,6 @@
 package com.home.user.service.service.impl;
 
-import com.home.growme.common.module.events.ProductAssignedToUserEvent;
-import com.home.growme.common.module.events.ProductDeletionToUserEvent;
-import com.home.growme.common.module.events.RoleAssignmentResult;
-import com.home.growme.common.module.events.UserCreatedEvent;
+import com.home.growme.common.module.events.*;
 import com.home.user.service.exception.UserNotFoundException;
 import com.home.user.service.model.entity.User;
 import com.home.user.service.repository.UserRepository;
@@ -97,6 +94,23 @@ public class EventHandlerServiceImpl implements EventHandlerService {
 
         }catch (Exception e){
             log.error("Failed to process product deletion", e);
+            throw e;
+        }
+    }
+
+    @Override
+    @KafkaListener(topics = ORDER_COMPLETED_TOPIC)
+    public void orderCompleted(OrderCompletedEvent event) {
+
+        try {
+            log.debug("Processing order completed from event {}", event);
+            eventValidator.validateOrderCompleted(event);
+
+            userUpdateService.addOwnerOrder(event.getOrderUserId(),event.getOrderId());
+            log.info("Successfully added order: {} for user {}",event.getOrderId(), event.getOrderUserId());
+
+        }catch (Exception e){
+            log.error("Failed to process add order", e);
             throw e;
         }
     }

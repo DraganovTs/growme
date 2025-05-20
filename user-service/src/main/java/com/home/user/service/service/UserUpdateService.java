@@ -13,4 +13,6 @@ public interface UserUpdateService {
     void deleteUser(UUID userId);
 
     void deleteOwnedProduct(String userId, String productId);
+
+    void addOwnerOrder(String orderUserId, Integer orderId);
 }

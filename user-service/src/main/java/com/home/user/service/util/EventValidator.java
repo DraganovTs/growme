@@ -1,5 +1,6 @@
 package com.home.user.service.util;
 
+import com.home.growme.common.module.events.OrderCompletedEvent;
 import com.home.growme.common.module.events.ProductAssignedToUserEvent;
 import com.home.growme.common.module.events.ProductDeletionToUserEvent;
 import com.home.growme.common.module.events.RoleAssignmentResult;
@@ -38,6 +39,18 @@ public class EventValidator {
         }
         if (event.getProductId() == null || event.getProductId().isEmpty()) {
             throw new IllegalArgumentException("Product ID is required");
+        }
+    }
+
+    public void validateOrderCompleted(OrderCompletedEvent event) {
+        if (event == null){
+            throw new IllegalArgumentException("Order completed event cannot be null");
+        }
+        if (event.getOrderUserId() == null || event.getOrderUserId().isEmpty()){
+            throw new IllegalArgumentException("User ID is required in order assignment");
+        }
+        if (event.getOrderId() == null){
+            throw new IllegalArgumentException("Order ID is required");
         }
     }
 }

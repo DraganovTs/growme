@@ -58,8 +58,6 @@ public class UserUpdateServiceImpl implements UserUpdateService {
     }
 
 
-
-
     @Override
     public UserDTO updateUser(UUID userId, UserDTO userDTO) {
         User user = userRepository.findById(userId)
@@ -117,14 +115,24 @@ public class UserUpdateServiceImpl implements UserUpdateService {
 
     @Override
     public void deleteOwnedProduct(String userId, String productId) {
-        validator.validateIds(userId,productId);
+        validator.validateIds(userId, productId);
         UUID productUUID = UUID.fromString(productId);
 
         User user = userRepository.findById(UUID.fromString(userId))
-                .orElseThrow(()-> new UserNotFoundException("User not found with ID: " + userId));
+                .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
 
         user.getOwnedProductIds().remove(productUUID);
         log.info("Delete product {} to user {}", productId, userId);
+    }
+
+    @Override
+    public void addOwnerOrder(String orderUserId, Integer orderId) {
+        User user = userRepository.findById(UUID.fromString(orderUserId))
+                .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + orderUserId));
+
+        //TODO lets orders have UUID
+        user.getPurchasedOrderIds().add(UUID.randomUUID());
+        userRepository.save(user);
     }
 
 
