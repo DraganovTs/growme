@@ -5,6 +5,7 @@ import com.home.growme.common.module.events.UserCreatedEvent;
 import com.home.growme.produt.service.exception.OwnerAlreadyExistsException;
 import com.home.growme.produt.service.service.EventHandlerService;
 import com.home.growme.produt.service.service.OwnerService;
+import com.home.growme.produt.service.util.EventValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
@@ -18,22 +19,24 @@ import static com.home.growme.common.module.config.kafka.topic.KafkaTopics.USER_
 public class EventHandlerServiceImpl implements EventHandlerService {
 
     private final OwnerService ownerService;
+    private final EventValidator eventValidator;
 
-    public EventHandlerServiceImpl(OwnerService ownerService) {
+    public EventHandlerServiceImpl(OwnerService ownerService, EventValidator eventValidator) {
         this.ownerService = ownerService;
+        this.eventValidator = eventValidator;
     }
 
 
     @Override
     @KafkaListener(topics = USER_CREATE_TOPIC)
-    public void handleUserCreatedEvent(UserCreatedEvent userCreatedEvent) {
-        //TODO add event validator
-        log.info("Processing user event: {}", userCreatedEvent);
+    public void handleUserCreatedEvent(UserCreatedEvent event) {
+        eventValidator.validateUserCreatedEvent(event);
+        log.info("Processing user event: {}", event);
         try {
-            ownerService.createOwner(userCreatedEvent);
-            log.info("Owner created for user: {}", userCreatedEvent.getUserId());
+            ownerService.createOwner(event);
+            log.info("Owner created for user: {}", event.getUserId());
         } catch (OwnerAlreadyExistsException e) {
-            log.warn("Owner already exists: {}", userCreatedEvent.getUserId());
+            log.warn("Owner already exists: {}", event.getUserId());
         }
 
     }
@@ -41,7 +44,7 @@ public class EventHandlerServiceImpl implements EventHandlerService {
     @Override
     @KafkaListener(topics = ORDER_COMPLETED_TOPIC)
     public void OrderCompletedEvent(OrderCompletedEvent event) {
-        //TODO add event validator
+        eventValidator.validateOrderCompletedEvent(event);
         //TODO finish logic
         log.info("event is received");
     }
