@@ -1,6 +1,7 @@
 package com.home.mail.service.service.impl;
 
 import com.home.growme.common.module.events.EmailRequestEvent;
+import com.home.growme.common.module.events.OrderConfirmationEmailEvent;
 import com.home.mail.service.exception.EmailProcessingException;
 import com.home.mail.service.service.EmailEventHandler;
 import com.home.mail.service.service.EmailSenderService;
@@ -25,6 +26,9 @@ public class EmailEventHandlerImpl implements EmailEventHandler {
     public void handleEmailRequest(EmailRequestEvent event) {
         try {
             switch (event.getType()){
+                case ORDER_CONFIRMATION:
+                    handleOrderConfirmation((OrderConfirmationEmailEvent) event);
+                    break;
                 case PRODUCT_ADD_CONFIRMATION:
                     log.info("PRODUCT_ADD_CONFIRMATION");
                     emailSenderService.sendProductAddConfirmation(event.getEmail());
@@ -41,6 +45,8 @@ public class EmailEventHandlerImpl implements EmailEventHandler {
                     log.info("ACCOUNT_UPDATE_CONFIRMATION");
                     emailSenderService.sendAccountUpdateConfirmation(event.getEmail());
                     break;
+                default:
+                    log.warn("Unhandled email type: {}", event.getType());
             }
         } catch (Exception e){
             log.error("Failed to process email request for {}", event.getEmail(), e);
@@ -48,5 +54,9 @@ public class EmailEventHandlerImpl implements EmailEventHandler {
         }
 
 
+    }
+
+    private void handleOrderConfirmation(OrderConfirmationEmailEvent event) {
+        //TODO implement orderConfirmation
     }
 }
