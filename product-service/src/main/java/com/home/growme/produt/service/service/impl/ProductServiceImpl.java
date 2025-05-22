@@ -5,6 +5,7 @@ import com.home.growme.common.module.dto.OrderItemDTO;
 import com.home.growme.common.module.dto.ProductInfo;
 import com.home.growme.common.module.dto.ProductValidationResult;
 import com.home.growme.common.module.events.OrderCompletedEvent;
+import com.home.growme.common.module.events.ProductDeletionToUserEvent;
 import com.home.growme.produt.service.exception.CategoryNotFoundException;
 import com.home.growme.produt.service.exception.OwnerNotFoundException;
 import com.home.growme.produt.service.exception.ProductNotFoundException;
@@ -212,6 +213,7 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     public void completeOrder(OrderCompletedEvent event) {
         List<OrderItemDTO> items = event.getItems();
+        List<OrderItemDTO> itemsToRemoveFromUser = new ArrayList<>();
 
         items.forEach(item -> {
             Product product = productRepository.findById(UUID.fromString(item.getProductId()))
@@ -219,6 +221,10 @@ public class ProductServiceImpl implements ProductService {
 
             try {
                 product.reduceStock(item.getQuantity());
+                if (product.getUnitsInStock() == 0) {
+                    eventPublisherService.publishProductDeletion(product.getOwner().getOwnerId().toString()
+                            , product.getProductId().toString());
+                }
                 productRepository.save(product);
                 log.debug("Reduced stock for product {} by {}", item.getProductId(), item.getQuantity());
 
