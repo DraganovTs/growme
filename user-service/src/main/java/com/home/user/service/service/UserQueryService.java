@@ -1,5 +1,6 @@
 package com.home.user.service.service;
 
+import com.home.growme.common.module.dto.UserInfo;
 import com.home.user.service.model.dto.UserDTO;
 import com.home.user.service.model.entity.User;
 
@@ -14,4 +15,6 @@ public interface UserQueryService {
     List<UUID>getUsersOwnedProducts(String userId);
     boolean existsByEmail(String email);
     boolean existsByUsername(String username);
+
+    UserInfo getUserInformation(String userId);
 }

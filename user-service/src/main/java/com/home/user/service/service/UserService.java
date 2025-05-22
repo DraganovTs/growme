@@ -1,6 +1,7 @@
 package com.home.user.service.service;
 
 
+import com.home.growme.common.module.dto.UserInfo;
 import com.home.user.service.model.dto.KeycloakUserDTO;
 import com.home.user.service.model.dto.UserDTO;
 
@@ -15,4 +16,6 @@ public interface UserService {
     void requestAccountDeletion(UUID userId);
 
     void addProductForSell(String userId, String productId);
+
+    UserInfo getUserInformation(String userId);
 }

@@ -1,6 +1,8 @@
 package com.home.user.service.mapper;
 
 
+import com.home.growme.common.module.dto.AddressInfo;
+import com.home.growme.common.module.dto.UserInfo;
 import com.home.user.service.exception.NotValidUserRoleException;
 import com.home.user.service.model.dto.AddressDto;
 import com.home.user.service.model.dto.KeycloakUserDTO;
@@ -98,6 +100,24 @@ public class UserMapper {
                 .city(address.getCity())
                 .state(address.getState())
                 .zipCode(address.getZipCode())
+                .build();
+    }
+
+    public UserInfo mapUserToUserInfo(User user) {
+        AddressInfo addressInfo = AddressInfo.builder()
+                .street(user.getAddress().getStreet())
+                .city(user.getAddress().getCity())
+                .state(user.getAddress().getState())
+                .zipCode(user.getAddress().getZipCode())
+                .build();
+
+        return UserInfo.builder()
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .phone(user.getPhone())
+                .addressInfo(addressInfo)
                 .build();
     }
 }

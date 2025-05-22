@@ -1,5 +1,6 @@
 package com.home.user.service.controller;
 
+import com.home.growme.common.module.dto.UserInfo;
 import com.home.user.service.model.dto.KeycloakUserDTO;
 import com.home.user.service.model.dto.UserDTO;
 import com.home.user.service.service.UserService;
@@ -28,8 +29,8 @@ public class UserController {
     @PostMapping("/sync")
     public ResponseEntity<Void> syncUserFromKeycloak(@Valid @RequestBody KeycloakUserDTO request) {
         log.debug("Initiating user sync for Keycloak ID: {}", request.getUserId());
-            userService.requestAccountCreation(request);
-            return ResponseEntity.accepted().build();
+        userService.requestAccountCreation(request);
+        return ResponseEntity.accepted().build();
 
 
     }
@@ -47,6 +48,10 @@ public class UserController {
     }
 
 
-
+    @GetMapping("/userinfo/{userId}")
+    public ResponseEntity<UserInfo> getUserName(@PathVariable String userId) {
+        UserInfo userInfo = userService.getUserInformation(userId);
+        return ResponseEntity.ok(userInfo);
+    }
 
 }

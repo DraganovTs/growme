@@ -1,5 +1,6 @@
 package com.home.user.service.service.impl;
 
+import com.home.growme.common.module.dto.UserInfo;
 import com.home.user.service.exception.UserNotFoundException;
 import com.home.user.service.mapper.UserMapper;
 import com.home.user.service.model.dto.UserDTO;
@@ -87,6 +88,19 @@ public class UserQueryServiceImpl implements UserQueryService {
     @Override
     public boolean existsByUsername(String username) {
         return userRepository.existsByUsername(username);
+    }
+
+    @Override
+    public UserInfo getUserInformation(String userId) {
+        return userRepository.findById(UUID.fromString(userId))
+                .map(user -> {
+                    log.debug("Found user with ID: {}", userId);
+                    return userMapper.mapUserToUserInfo(user);
+                })
+                .orElseThrow(() -> {
+                    log.warn("User not found: {}", userId);
+                    return new UserNotFoundException("User not found with ID: " + userId);
+                });
     }
 
 

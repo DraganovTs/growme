@@ -1,6 +1,7 @@
 package com.home.user.service.service.impl;
 
 
+import com.home.growme.common.module.dto.UserInfo;
 import com.home.user.service.exception.*;
 import com.home.user.service.model.dto.KeycloakUserDTO;
 import com.home.user.service.model.dto.UserDTO;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.UUID;
+
 @Slf4j
 @Service
 public class UserServiceImpl implements UserService {
@@ -105,5 +107,11 @@ public class UserServiceImpl implements UserService {
             log.error("Invalid ID format provided", e);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid ID format", e);
         }
+    }
+
+    @Override
+    public UserInfo getUserInformation(String userId) {
+        validator.validateUserId(userId);
+        return userQueryService.getUserInformation(userId);
     }
 }
