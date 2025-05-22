@@ -1,11 +1,14 @@
 package com.home.growme.produt.service.service.impl;
 
 import com.home.growme.common.module.dto.BasketItemDTO;
+import com.home.growme.common.module.dto.OrderItemDTO;
 import com.home.growme.common.module.dto.ProductInfo;
 import com.home.growme.common.module.dto.ProductValidationResult;
+import com.home.growme.common.module.events.OrderCompletedEvent;
 import com.home.growme.produt.service.exception.CategoryNotFoundException;
 import com.home.growme.produt.service.exception.OwnerNotFoundException;
 import com.home.growme.produt.service.exception.ProductNotFoundException;
+import com.home.growme.produt.service.exception.StockInsufficientException;
 import com.home.growme.produt.service.mapper.ProductMapper;
 import com.home.growme.produt.service.model.dto.ProductRequestDTO;
 import com.home.growme.produt.service.model.dto.ProductResponseDTO;
@@ -146,10 +149,10 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public void deleteProduct(String productId,String ownerId) {
+    public void deleteProduct(String productId, String ownerId) {
         productRepository.deleteById(UUID.fromString(productId));
         log.info("Product deleted successfully: {}", productId);
-        eventPublisherService.publishProductDeletion( productId, ownerId);
+        eventPublisherService.publishProductDeletion(productId, ownerId);
     }
 
     @Override
@@ -195,7 +198,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductInfo getProductInfo(String productId) {
         Product product = productRepository.findById(UUID.fromString(productId))
-                .orElseThrow(() -> new ProductNotFoundException("Продукт с ID " + productId + " не е намерен"));
+                .orElseThrow(() -> new ProductNotFoundException("Product whit ID " + productId + " is not found"));
 
         return ProductInfo.builder()
                 .id(product.getProductId().toString())
@@ -205,11 +208,33 @@ public class ProductServiceImpl implements ProductService {
                 .build();
     }
 
-    private ProductValidationResult  validateItem(BasketItemDTO item) {
+    @Override
+    @Transactional
+    public void completeOrder(OrderCompletedEvent event) {
+        List<OrderItemDTO> items = event.getItems();
+
+        items.forEach(item -> {
+            Product product = productRepository.findById(UUID.fromString(item.getProductId()))
+                    .orElseThrow(() -> new ProductNotFoundException("Product not found whit Id: " + item.getProductId()));
+
+            try {
+                product.reduceStock(item.getQuantity());
+                productRepository.save(product);
+                log.debug("Reduced stock for product {} by {}", item.getProductId(), item.getQuantity());
+
+            } catch (IllegalStateException e) {
+                throw new StockInsufficientException(String.format("Insufficient stock for product %s. Requested: %d, Available: %d",
+                        item.getProductId(), item.getQuantity(), product.getUnitsInStock()));
+            }
+        });
+        log.info("Completed order processing for order ID: {}", event.getOrderId());
+    }
+
+    private ProductValidationResult validateItem(BasketItemDTO item) {
         Optional<Product> productOptional = productRepository.findById(item.getProductId());
 
-        if (productOptional.isEmpty()){
-            return new ProductValidationResult(item.getProductId(),false,"Product not found");
+        if (productOptional.isEmpty()) {
+            return new ProductValidationResult(item.getProductId(), false, "Product not found");
         }
 
         Product product = productOptional.get();

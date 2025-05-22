@@ -55,4 +55,13 @@ public class Product {
         }
     }
 
+    public void reduceStock(int quantity) {
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("Quantity must be positive");
+        }
+        if (this.unitsInStock < quantity) {
+            throw new IllegalStateException("Insufficient stock for product: " + productId);
+        }
+        this.unitsInStock -= quantity;
+    }
 }
