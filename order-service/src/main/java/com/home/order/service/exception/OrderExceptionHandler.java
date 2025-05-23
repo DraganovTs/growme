@@ -16,13 +16,13 @@ public class OrderExceptionHandler extends BaseExceptionHandler {
 
 
     @ExceptionHandler(PaymentProcessingException.class)
-    public ResponseEntity<ErrorResponseDTO> handleBasketNotFound(PaymentProcessingException ex, WebRequest request) {
+    public ResponseEntity<ErrorResponseDTO> handlePaymentProcessing(PaymentProcessingException ex, WebRequest request) {
         log.warn("Payment is not valid: {}", ex.getMessage());
         return buildErrorResponse(ex, request, HttpStatus.INTERNAL_SERVER_ERROR, "PAYMENT_PROCESSING_ERROR");
     }
 
     @ExceptionHandler(InvalidProductException.class)
-    public ResponseEntity<ErrorResponseDTO> handleBasketNotFound(InvalidProductException ex, WebRequest request) {
+    public ResponseEntity<ErrorResponseDTO> handleInvalidProduct(InvalidProductException ex, WebRequest request) {
         log.warn("Product is not valid: {}", ex.getMessage());
         return buildErrorResponse(ex, request, HttpStatus.BAD_REQUEST, "INVALID_PRODUCT");
     }
@@ -35,13 +35,13 @@ public class OrderExceptionHandler extends BaseExceptionHandler {
 
 
     @ExceptionHandler(DeliveryMethodNotFoundException.class)
-    public ResponseEntity<ErrorResponseDTO> handleBasketNotFound(DeliveryMethodNotFoundException ex, WebRequest request) {
+    public ResponseEntity<ErrorResponseDTO> handleDeliveryMethodNotFound(DeliveryMethodNotFoundException ex, WebRequest request) {
         log.warn("Delivery Method not found: {}", ex.getMessage());
         return buildErrorResponse(ex, request, HttpStatus.NOT_FOUND, "DELIVERY_METHOD_NOT_FOUND");
     }
 
     @ExceptionHandler(OwnerNotFoundException.class)
-    public ResponseEntity<ErrorResponseDTO> handleBasketNotFound(OwnerNotFoundException ex, WebRequest request) {
+    public ResponseEntity<ErrorResponseDTO> handleOwnerNotFound(OwnerNotFoundException ex, WebRequest request) {
         log.warn("Owner not found: {}", ex.getMessage());
         return buildErrorResponse(ex, request, HttpStatus.NOT_FOUND, "OWNER_NOT_FOUND");
     }

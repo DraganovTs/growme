@@ -42,4 +42,6 @@ public class ProductExceptionHandler extends BaseExceptionHandler {
     public ResponseEntity<ErrorResponseDTO> handleOwnerExists(OwnerAlreadyExistsException ex, WebRequest request) {
         return buildErrorResponse(ex, request, HttpStatus.CONFLICT, "OWNER_EXISTS");
     }
+
+
 }
