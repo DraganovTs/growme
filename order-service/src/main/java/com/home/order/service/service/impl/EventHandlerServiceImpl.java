@@ -76,4 +76,5 @@ public class EventHandlerServiceImpl implements EventHandlerService {
                     record.topic(), record.partition(), record.offset(), e);
         }
     }
+
 }

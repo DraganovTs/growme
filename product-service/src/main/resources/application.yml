@@ -20,7 +20,7 @@ spring:
         generate_statistics: true
   sql:
     init:
-        mode: never
+        mode: always
   servlet:
     multipart:
       max-file-size: 5MB

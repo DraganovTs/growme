@@ -15,7 +15,7 @@ import java.util.List;
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 public class OrderCompletedEvent  extends Event{
-    private final Integer orderId;
+    private final String orderId;
     private final String orderUserId;
     private final String buyerEmail;
     private final List<OrderItemDTO> items;
@@ -24,7 +24,7 @@ public class OrderCompletedEvent  extends Event{
 
     @JsonCreator
     public OrderCompletedEvent(
-            @JsonProperty("orderId") Integer orderId,
+            @JsonProperty("orderId") String orderId,
             @JsonProperty("orderUserId") String orderUserId,
             @JsonProperty("buyerEmail") String buyerEmail,
             @JsonProperty("items") List<OrderItemDTO> items,

@@ -1,4 +1,4 @@
-package com.home.mail.service.model;
+package com.home.mail.service.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

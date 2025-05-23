@@ -14,7 +14,7 @@ import java.util.List;
 @Getter
 @ToString
 public class OrderConfirmationEmailEvent extends EmailRequestEvent{
-    private final Integer orderId;
+    private final String orderId;
     private final UserInfo userInfo;
     private final BigDecimal totalAmount;
     private final List<OrderItemDTO> items;
@@ -22,7 +22,7 @@ public class OrderConfirmationEmailEvent extends EmailRequestEvent{
     @JsonCreator
     public OrderConfirmationEmailEvent(
             @JsonProperty("email") String email,
-            @JsonProperty("orderId") Integer orderId,
+            @JsonProperty("orderId") String orderId,
             @JsonProperty("userInfo") UserInfo userInfo,
             @JsonProperty("totalAmount") BigDecimal totalAmount,
             @JsonProperty("items") List<OrderItemDTO> items) {

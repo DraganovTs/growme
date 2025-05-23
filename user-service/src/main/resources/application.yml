@@ -18,7 +18,9 @@ spring:
         generate_statistics: true
   sql:
     init:
-      mode: never
+      mode: always
+      platform: mysql
+      schema-locations: classpath:schema.sql
 
 
   kafka:

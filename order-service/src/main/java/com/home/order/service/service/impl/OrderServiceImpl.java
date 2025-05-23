@@ -110,7 +110,7 @@ public class OrderServiceImpl implements OrderService {
         BigDecimal totalAmount = order.getSubTotal().add(order.getDeliveryMethod().getPrice());
 
         OrderCompletedEvent event = new OrderCompletedEvent(
-                order.getOrderId(),
+                order.getOrderId().toString(),
                 order.getOwner().getOwnerId().toString(),
                 order.getBuyerEmail(),
                 itemDTOS,

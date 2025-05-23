@@ -14,5 +14,5 @@ public interface UserUpdateService {
 
     void deleteOwnedProduct(String userId, String productId);
 
-    void addOwnerOrder(String orderUserId, Integer orderId);
+    void addOwnerOrder(String orderUserId, String orderId);
 }

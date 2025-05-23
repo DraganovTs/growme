@@ -126,12 +126,12 @@ public class UserUpdateServiceImpl implements UserUpdateService {
     }
 
     @Override
-    public void addOwnerOrder(String orderUserId, Integer orderId) {
+    public void addOwnerOrder(String orderUserId, String orderId) {
         User user = userRepository.findById(UUID.fromString(orderUserId))
                 .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + orderUserId));
 
-        //TODO lets orders have UUID
-        user.getPurchasedOrderIds().add(UUID.randomUUID());
+
+        user.getPurchasedOrderIds().add(UUID.fromString(orderId));
         userRepository.save(user);
     }
 

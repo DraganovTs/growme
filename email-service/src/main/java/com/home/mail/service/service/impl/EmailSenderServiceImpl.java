@@ -1,7 +1,7 @@
 package com.home.mail.service.service.impl;
 
 import com.home.mail.service.exception.EmailSendingException;
-import com.home.mail.service.model.EmailRecord;
+import com.home.mail.service.model.entity.EmailRecord;
 import com.home.mail.service.repository.EmailRecordRepository;
 import com.home.mail.service.service.EmailSenderService;
 import com.home.mail.service.service.EmailTemplateService;
