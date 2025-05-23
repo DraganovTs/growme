@@ -10,7 +10,7 @@ import lombok.ToString;
 @Getter
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public abstract class EmailRequestEvent extends Event{
+public  class EmailRequestEvent extends Event{
 
     private final String email;
     private final EmailType type;

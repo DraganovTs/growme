@@ -22,7 +22,7 @@ export interface IOrderReturned {
 
 
 export interface IOrder {
-    orderId: number;
+    orderId: string;
     buyerEmail: string;
     orderDate: string;
     shipToAddress: IAddress;
