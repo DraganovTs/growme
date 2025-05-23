@@ -84,6 +84,7 @@ public class EventHandlerServiceImpl implements EventHandlerService {
     }
 
     @Override
+    @KafkaListener(topics = USER_CREATE_TOPIC)
     public void handleUserCreatedEvent(UserCreatedEvent event) {
         try {
            //TODO add event validator
