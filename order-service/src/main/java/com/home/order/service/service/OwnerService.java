@@ -8,4 +8,6 @@ public interface OwnerService {
     Owner findOwnerByEmail(String email);
 
     void createOwner(UserCreatedEvent event);
+
+
 }

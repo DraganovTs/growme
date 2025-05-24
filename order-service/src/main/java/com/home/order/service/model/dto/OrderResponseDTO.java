@@ -10,7 +10,7 @@ import java.util.List;
 @Builder
 public class OrderResponseDTO {
 
-    private int orderId;
+    private String orderId;
     private Instant orderDate;
     private String deliveryMethodShortName;
     private double total;

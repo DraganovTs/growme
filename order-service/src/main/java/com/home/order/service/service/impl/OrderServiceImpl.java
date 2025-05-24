@@ -9,9 +9,10 @@ import com.home.order.service.exception.InvalidProductException;
 import com.home.order.service.exception.PaymentProcessingException;
 import com.home.order.service.feign.ProductServiceClient;
 import com.home.order.service.mapper.BasketMapper;
-import com.home.growme.common.module.dto.ProductValidationResult;
 import com.home.order.service.mapper.OrderMapper;
+import com.home.order.service.model.dto.IOrderDto;
 import com.home.order.service.model.dto.OrderDTO;
+import com.home.order.service.model.dto.OrderResponseDTO;
 import com.home.order.service.model.entity.*;
 import com.home.order.service.model.enums.OrderStatus;
 import com.home.order.service.repository.BasketRepository;
@@ -98,6 +99,15 @@ public class OrderServiceImpl implements OrderService {
         publishOrderCompletedEvent(order);
 
         return order;
+    }
+
+    @Override
+    public List<IOrderDto> getAllOrdersForUser(String userEmail) {
+        Owner owner = ownerService.findOwnerByEmail(userEmail);
+        return owner.getOrders().stream()
+                .map(orderMapper::IOrderDto)
+                .toList();
+
     }
 
     private void publishOrderCompletedEvent(Order order) {

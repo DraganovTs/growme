@@ -1,12 +1,17 @@
 package com.home.order.service.controller;
 
+import com.home.order.service.model.dto.IOrderDto;
 import com.home.order.service.model.dto.OrderDTO;
+import com.home.order.service.model.dto.OrderResponseDTO;
 import com.home.order.service.model.entity.Basket;
 import com.home.order.service.model.entity.Order;
 import com.home.order.service.service.OrderService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping(value = "/api/orders", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -34,6 +39,15 @@ public class OrderController {
         System.out.println("********");
         Order order = orderService.createOrUpdateOrder(orderDTO);
         return ResponseEntity.ok(order);
+    }
+
+    @GetMapping("/{userEmail}")
+    public  ResponseEntity<List<IOrderDto>> getAllOrderForUser(@PathVariable String userEmail ){
+        List<IOrderDto> orderDTOList = orderService.getAllOrdersForUser(userEmail);
+        if (orderDTOList == null){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(orderDTOList);
     }
 
 
