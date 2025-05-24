@@ -15,4 +15,6 @@ public interface OrderService {
     Order createOrUpdateOrder( OrderDTO orderDTO);
 
     List<IOrderDto> getAllOrdersForUser(String userEmail);
+
+    IOrderDto getOrderById(UUID uuid);
 }

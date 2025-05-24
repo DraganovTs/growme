@@ -16,4 +16,6 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
     Optional<Order> findOrderByOrderIdAndBuyerEmail(UUID orderId, String buyerEmail);
 
     Order findByPaymentIntentId(String paymentIntentId);
+
+    Optional<Order> getOrderByOrderId(UUID uuid);
 }

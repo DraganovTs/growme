@@ -1,13 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { OrderService } from 'src/app/services/order-service';
 import { IOrder } from 'src/app/shared/model/order';
 
 @Component({
   selector: 'app-order-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule , RouterModule],
   templateUrl: './order-list.component.html',
   styleUrl: './order-list.component.scss'
 })
@@ -22,7 +22,5 @@ export class OrderListComponent implements OnInit {
     });
   }
 
-  viewOrder(orderId: string) {
-    this.router.navigate(['/orders', orderId]);
-  }
+
 }

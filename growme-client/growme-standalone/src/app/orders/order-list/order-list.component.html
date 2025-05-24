@@ -10,7 +10,11 @@
         <div>
           <strong>Total: {{ order.total | currency }}</strong>
         </div>
-        <button class="btn btn-outline-primary" (click)="viewOrder(order.orderId)">View</button>
+        <a class="btn btn-outline-primary"
+              [routerLink]="['/orders', order.orderId]"
+              [state]="{ order: order }">
+             View Details
+        </a>
       </div>
     </div>
   </div>

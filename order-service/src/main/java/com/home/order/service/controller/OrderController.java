@@ -41,7 +41,7 @@ public class OrderController {
         return ResponseEntity.ok(order);
     }
 
-    @GetMapping("/{userEmail}")
+    @GetMapping("/user/{userEmail}")
     public  ResponseEntity<List<IOrderDto>> getAllOrderForUser(@PathVariable String userEmail ){
         List<IOrderDto> orderDTOList = orderService.getAllOrdersForUser(userEmail);
         if (orderDTOList == null){
@@ -50,5 +50,13 @@ public class OrderController {
         return ResponseEntity.ok(orderDTOList);
     }
 
+    @GetMapping("/{orderId}")
+    public ResponseEntity<IOrderDto> getOrderDetails(@PathVariable String orderId){
+        IOrderDto iOrderDto = orderService.getOrderById(UUID.fromString(orderId));
+        if (iOrderDto == null){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(iOrderDto);
+    }
 
 }

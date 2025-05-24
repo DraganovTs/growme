@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CartDetailsComponent } from 'src/app/cart/cart-details/cart-details.component';
 import { OrderService } from 'src/app/services/order-service';
 import { OrderTotalsComponent } from 'src/app/shared/components/order-totals/order-totals.component';
@@ -15,29 +15,45 @@ import { IOrder } from 'src/app/shared/model/order';
   styleUrl: './order-details.component.scss'
 })
 export class OrderDetailsComponent implements OnInit {
+  order: IOrder | null = null;
 
-
-    order: IOrder | null = null;
-
-  constructor(private route: ActivatedRoute, private orderService: OrderService) {}
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+    private orderService: OrderService
+  ) {}
 
   ngOnInit(): void {
-    const orderId = this.route.snapshot.paramMap.get('id')!;
-    this.orderService.getOrderById(orderId).subscribe({
-      next: (order) => (this.order = order)
-    });
+    const navigation = this.router.getCurrentNavigation();
+    const stateOrder = navigation?.extras?.state?.['order'] as IOrder;
+
+    if (stateOrder) {
+      this.order = stateOrder;
+    } else {
+      
+      const orderId = this.route.snapshot.paramMap.get('id')!;
+      this.orderService.getOrderById(orderId).subscribe({
+        next: (order) => (this.order = order),
+        error: () => {
+          console.error('Order not found.');
+          
+        }
+      });
+    }
   }
 
   get cartItems(): ICartItem[] {
-  return this.order?.orderItems.map(item => ({
-    productId: item.productId,
-    name: item.productName, 
-    unitsInStock: 0, 
-    quantity: item.quantity,
-    imageUrl: item.imageUrl,
-    price: item.price,
-    brandName: '', 
-    categoryName: '', 
-  })) || [];
-}
+    return (
+      this.order?.orderItems.map((item) => ({
+        productId: item.productId,
+        name: item.productName,
+        unitsInStock: 0,
+        quantity: item.quantity,
+        imageUrl: item.imageUrl,
+        price: item.price,
+        brandName: '',
+        categoryName: ''
+      })) || []
+    );
+  }
 }

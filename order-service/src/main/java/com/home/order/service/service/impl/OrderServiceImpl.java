@@ -3,16 +3,12 @@ package com.home.order.service.service.impl;
 import com.home.growme.common.module.dto.OrderItemDTO;
 import com.home.growme.common.module.events.OrderCompletedEvent;
 import com.home.growme.common.module.events.PaymentIntentResponseEvent;
-import com.home.order.service.exception.BasketNotFoundException;
-import com.home.order.service.exception.DeliveryMethodNotFoundException;
-import com.home.order.service.exception.InvalidProductException;
-import com.home.order.service.exception.PaymentProcessingException;
+import com.home.order.service.exception.*;
 import com.home.order.service.feign.ProductServiceClient;
 import com.home.order.service.mapper.BasketMapper;
 import com.home.order.service.mapper.OrderMapper;
 import com.home.order.service.model.dto.IOrderDto;
 import com.home.order.service.model.dto.OrderDTO;
-import com.home.order.service.model.dto.OrderResponseDTO;
 import com.home.order.service.model.entity.*;
 import com.home.order.service.model.enums.OrderStatus;
 import com.home.order.service.repository.BasketRepository;
@@ -105,15 +101,22 @@ public class OrderServiceImpl implements OrderService {
     public List<IOrderDto> getAllOrdersForUser(String userEmail) {
         Owner owner = ownerService.findOwnerByEmail(userEmail);
         return owner.getOrders().stream()
-                .map(orderMapper::IOrderDto)
+                .map(orderMapper::mapOrderToIOrderDto)
                 .toList();
 
+    }
+
+    @Override
+    public IOrderDto getOrderById(UUID uuid) {
+        Order order = orderRepository.getOrderByOrderId(uuid)
+                .orElseThrow(() -> new OrderNotfoundException("Order not found whit Id: " + uuid));
+        return orderMapper.mapOrderToIOrderDto(order);
     }
 
     private void publishOrderCompletedEvent(Order order) {
         List<OrderItemDTO> itemDTOS = order.getOrderItems().stream()
                 .map(item -> new OrderItemDTO(
-                    item.getOrderItemId().toString(),
+                        item.getOrderItemId().toString(),
                         item.getQuantity(),
                         item.getPrice()
                 )).toList();
