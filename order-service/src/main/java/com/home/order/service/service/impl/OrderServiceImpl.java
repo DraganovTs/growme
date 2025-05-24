@@ -121,6 +121,8 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.save(order);
     }
 
+
+
     private void publishOrderCompletedEvent(Order order) {
         List<OrderItemDTO> itemDTOS = order.getOrderItems().stream()
                 .map(item -> new OrderItemDTO(

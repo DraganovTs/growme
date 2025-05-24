@@ -2,6 +2,7 @@ package com.home.service.impl;
 
 import com.home.growme.common.module.events.PaymentIntentRequestEvent;
 import com.home.growme.common.module.events.PaymentIntentResponseEvent;
+import com.home.service.EventPublisherService;
 import com.home.service.PaymentService;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
@@ -22,6 +23,11 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Value("${stripe.api-key}")
     private String STRIPE_API_KEY;
+    private final EventPublisherService eventPublisherService;
+
+    public PaymentServiceImpl(EventPublisherService eventPublisherService) {
+        this.eventPublisherService = eventPublisherService;
+    }
 
 
     @Override
@@ -41,6 +47,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         } catch (StripeException e) {
             log.error("Stripe operation failed for request: {}", request, e);
+            eventPublisherService.publishPaymentFailure(request,e);
             throw e;
         }
 

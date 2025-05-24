@@ -14,16 +14,18 @@ public class PaymentFailureEvent extends Event {
     private final String correlationId;
     private final String errorCode;
     private final String errorMessage;
-    private Map<String, Object> additionalDetails;
+    private final String basketId;
 
 
     @JsonCreator
     public PaymentFailureEvent(
             @JsonProperty("correlationId") String correlationId,
             @JsonProperty("errorCode") String errorCode,
-            @JsonProperty("errorMessage") String errorMessage) {
+            @JsonProperty("errorMessage") String errorMessage,
+            @JsonProperty("basketId") String basketId) {
         this.correlationId = correlationId;
         this.errorCode = errorCode;
         this.errorMessage = errorMessage;
+        this.basketId = basketId;
     }
 }

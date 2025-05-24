@@ -83,6 +83,7 @@ public class EventHandlerServiceImpl implements EventHandlerService {
 
 
 
+
         } catch (JsonProcessingException e) {
             log.error("JSON parsing failed [Topic: {}, Partition: {}, Offset: {}] - {}",
                     record.topic(), record.partition(), record.offset(), record.value(), e);
