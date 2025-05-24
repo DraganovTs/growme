@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -37,7 +38,7 @@ public class User {
 
     @ElementCollection
     @CollectionTable(name = "user_owned_roles", joinColumns = @JoinColumn(name = "user_id"))
-    private List<String> roles;
+    private List<String> roles = new ArrayList<>();
 
 
     @Column(nullable = true)

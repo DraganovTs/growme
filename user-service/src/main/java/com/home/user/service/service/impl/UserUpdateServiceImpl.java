@@ -69,7 +69,7 @@ public class UserUpdateServiceImpl implements UserUpdateService {
         validator.validateUserUpdate(user, userDTO);
         user = userMapper.updateUserInitialAccount(user, userDTO);
 
-        if (userDTO.getRoles() != null && !userDTO.getRoles().isEmpty()) {
+        if (userDTO.getRoles() != null) {
             log.debug("Publishing role assignments for user: {}", userId);
             userDTO.getRoles().forEach(role -> eventPublisherService.publishRoleAssignment(
                     userId.toString(),

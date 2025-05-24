@@ -2,9 +2,9 @@ server:
   port: 8082
 
 keycloak:
-  realm: grow-me
-  adminClientId: admin-cli
-  adminClientSecret: NcIbcO44ILFnN87H2EFyD9BK5hx4zfkb
+  realm: ${realm}
+  adminClientId: ${admin_client}
+  adminClientSecret: ${admin_client_secret}
   urls:
     auth: http://localhost:7080
 

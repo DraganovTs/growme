@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletionException;
 
 
@@ -182,6 +183,7 @@ public class OrderServiceImpl implements OrderService {
         Owner owner = ownerService.findOwnerByEmail(email);
 
         Order order = Order.builder()
+                .orderId(UUID.randomUUID())
                 .buyerEmail(email)
                 .deliveryMethod(method)
                 .orderItems(items)
@@ -192,6 +194,8 @@ public class OrderServiceImpl implements OrderService {
                 .orderDate(Instant.now())
                 .owner(owner)
                 .build();
+
+        items.forEach(item -> item.setOrder(order));
 
         return orderRepository.save(order);
     }

@@ -22,7 +22,7 @@ public class UserMapper {
                 .userId(UUID.fromString(keycloakUserDTO.getUserId()))
                 .username(keycloakUserDTO.getUsername())
                 .email(keycloakUserDTO.getEmail())
-                .roles(new ArrayList<>())
+                .roles(null)
                 .accountStatus(AccountStatus.PENDING)
                 .address(null)
                 .createdAt(new Date())

@@ -74,6 +74,11 @@ export class CompleteProfileComponent {
   
     const apiUrl = `${environment.userApi}/update/${this.userProfile.id}`;
   
+     if (!this.isValidUUID(this.userProfile.id)) {
+    console.error('Invalid user ID format');
+    return;
+  }
+
     console.log('🚀 Sending profile update:', this.userProfile); // ✅ Debug log
   
     this.http.put(apiUrl, this.userProfile).subscribe({
@@ -89,6 +94,11 @@ export class CompleteProfileComponent {
       },
     });
   }
+  
+  private isValidUUID(id: string): boolean {
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  return uuidRegex.test(id);
+}
   
 
   /** Ensure the user is synced with the backend after updating */

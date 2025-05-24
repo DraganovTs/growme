@@ -42,7 +42,7 @@ public class OrderMapper {
                 throw new IllegalStateException("Invalid product data");
             }
 
-            return new OrderItem(
+          OrderItem orderItem = new OrderItem(
                     new ProductItemOrdered(
                             UUID.fromString(product.getId()),
                             product.getName(),
@@ -51,6 +51,11 @@ public class OrderMapper {
                     basketItem.getQuantity(),
                     product.getPrice()
             );
+
+
+              orderItem.setOrderItemId(UUID.fromString(product.getId()));
+              return orderItem;
+
         } catch (Exception e) {
             System.err.printf("Failed to process product %s: %s%n",
                     basketItem.getProductId(), e.getMessage());

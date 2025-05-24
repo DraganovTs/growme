@@ -29,7 +29,7 @@ public class Order {
     @Embedded
     @Column(name = "ship_to_address")
     private Address shipToAddress;
-    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY, cascade = CascadeType.ALL , orphanRemoval = true)
     private List<OrderItem> orderItems;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JsonIgnore
@@ -55,6 +55,12 @@ public class Order {
         this.paymentIntentId = paymentIntentId;
         this.status = OrderStatus.PENDING;
         this.orderDate = Instant.now();
+    }
+    @PrePersist
+    public void generateId() {
+        if (orderId == null) {
+            orderId = UUID.randomUUID();
+        }
     }
 
     @JsonInclude
