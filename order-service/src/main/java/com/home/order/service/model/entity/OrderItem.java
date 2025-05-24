@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -14,6 +15,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
+@ToString(exclude = "order")
 public class OrderItem {
 
     @Id
@@ -36,5 +38,12 @@ public class OrderItem {
         this.price = price;
         this.quantity = quantity;
         this.itemOrdered = itemOrdered;
+    }
+
+    @PrePersist
+    public void generateId() {
+        if (orderItemId == null) {
+            orderItemId = UUID.randomUUID();
+        }
     }
 }
