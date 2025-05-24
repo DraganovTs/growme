@@ -82,11 +82,17 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public Order createOrUpdateOrder(OrderDTO orderDTO) {
         Basket basket = fetchBasket(orderDTO.getBasketId());
+
+        orderRepository.findByPaymentIntentId(basket.getPaymentIntentId())
+                .ifPresent(order -> {
+                    throw new IllegalStateException("Order already paid and cannot be modified.");
+                });
+
+
         Address address = mapToAddress(orderDTO);
         DeliveryMethod deliveryMethod = fetchDeliveryMethod(orderDTO.getDeliveryMethodId());
 
-        Order existingOrder = orderRepository.findByPaymentIntentId(basket.getPaymentIntentId())
-                .orElseThrow(()->  new IllegalStateException("Order already paid and cannot be modified."));
+
 
         Order order = persistNewOrder(orderDTO.getUserEmail(), basket, address, deliveryMethod);
 
