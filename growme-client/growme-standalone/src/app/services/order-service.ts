@@ -11,10 +11,10 @@ export class OrderService {
     constructor(private http: HttpClient) {}
 
     getUserOrders(){
-        return this.http.get<IOrder[]>(`${this.baseUrl}/orders`);
+        return this.http.get<IOrder[]>(`${this.baseUrl}orders`);
     }
 
     getOrderById(orderId: string) {
-        return this.http.get<IOrder>(`${this.baseUrl}/orders/${orderId}`);
+        return this.http.get<IOrder>(`${this.baseUrl}orders/${orderId}`);
     }   
 }

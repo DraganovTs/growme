@@ -34,6 +34,10 @@ export const routes: Routes = [
           path: 'checkout',
           loadComponent: () => import('./check-out/check-out.component').then(m => m.CheckoutComponent)
         },
+        {
+         path: 'orders',
+         loadChildren: () => import('./orders/order.routes').then(m => m.ORDER_ROUTES)
+        },
       
     
     { path: '**', redirectTo: 'welcome' }

@@ -1,0 +1,18 @@
+<div class="container mt-5" *ngIf="order">
+  <h3>Order #{{ order.orderId }}</h3>
+  <p><strong>Status:</strong> {{ order.status }}</p>
+  <p><strong>Placed On:</strong> {{ order.orderDate | date }}</p>
+  <p><strong>Shipping Method:</strong> {{ order.deliveryMethod }}</p>
+
+  <div class="mt-4">
+        <app-cart-details [isCart]="false" [items]="cartItems"></app-cart-details>
+  </div>
+
+  <div class="mt-4">
+    <app-order-totals
+      [shippingPrice]="order.shippingPrice"
+      [subtotal]="order.subTotal"
+      [total]="order.total">
+    </app-order-totals>
+  </div>
+</div>
