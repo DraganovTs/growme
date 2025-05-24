@@ -7,8 +7,10 @@ import com.home.growme.common.module.events.PaymentIntentResponseEvent;
 import com.home.growme.common.module.events.UserCreatedEvent;
 import com.home.order.service.exception.OwnerAlreadyExistsException;
 import com.home.order.service.exception.PaymentFailedException;
+import com.home.order.service.model.enums.OrderStatus;
 import com.home.order.service.service.CorrelationService;
 import com.home.order.service.service.EventHandlerService;
+import com.home.order.service.service.OrderService;
 import com.home.order.service.service.OwnerService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -24,12 +26,14 @@ public class EventHandlerServiceImpl implements EventHandlerService {
     private final CorrelationService correlationService;
     private final ObjectMapper objectMapper;
     private final OwnerService ownerService;
+    private final OrderService orderService;
 
     public EventHandlerServiceImpl(CorrelationService correlationService, ObjectMapper objectMapper,
-                                   OwnerService ownerService) {
+                                   OwnerService ownerService, OrderService orderService) {
         this.correlationService = correlationService;
         this.objectMapper = objectMapper;
         this.ownerService = ownerService;
+        this.orderService = orderService;
     }
 
     @Override
@@ -44,6 +48,8 @@ public class EventHandlerServiceImpl implements EventHandlerService {
 
             log.info("Processing payment response [Correlation: {}]", response.getCorrelationId());
             correlationService.completeResponse(response.getCorrelationId(), response);
+
+            orderService.updateOrderStatusByPaymentIntentId(response.getPaymentIntentId(), OrderStatus.PAYMENT_RECEIVED);
 
         } catch (Exception e) {
             log.error("Failed to process payment response [Topic: {}, Partition: {}, Offset: {}]",
@@ -73,6 +79,9 @@ public class EventHandlerServiceImpl implements EventHandlerService {
                     event.getCorrelationId(),
                     new PaymentFailedException(event.getErrorMessage())
             );
+
+
+
 
         } catch (JsonProcessingException e) {
             log.error("JSON parsing failed [Topic: {}, Partition: {}, Offset: {}] - {}",

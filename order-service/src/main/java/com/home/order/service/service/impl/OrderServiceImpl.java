@@ -85,10 +85,8 @@ public class OrderServiceImpl implements OrderService {
         Address address = mapToAddress(orderDTO);
         DeliveryMethod deliveryMethod = fetchDeliveryMethod(orderDTO.getDeliveryMethodId());
 
-        Order existingOrder = orderRepository.findByPaymentIntentId(basket.getPaymentIntentId());
-        if (existingOrder != null && "succeeded".equalsIgnoreCase(existingOrder.getPaymentIntentId())) {
-            throw new IllegalStateException("Order already paid and cannot be modified.");
-        }
+        Order existingOrder = orderRepository.findByPaymentIntentId(basket.getPaymentIntentId())
+                .orElseThrow(()->  new IllegalStateException("Order already paid and cannot be modified."));
 
         Order order = persistNewOrder(orderDTO.getUserEmail(), basket, address, deliveryMethod);
 
@@ -111,6 +109,16 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderRepository.getOrderByOrderId(uuid)
                 .orElseThrow(() -> new OrderNotfoundException("Order not found whit Id: " + uuid));
         return orderMapper.mapOrderToIOrderDto(order);
+    }
+
+    @Override
+    @Transactional
+    public void updateOrderStatusByPaymentIntentId(String paymentIntentId, OrderStatus orderStatus) {
+        Order order = orderRepository.findByPaymentIntentId(paymentIntentId)
+                .orElseThrow(()->  new OrderNotfoundException("Order is not found whit paymentIntentId: " + paymentIntentId));
+
+        order.setStatus(orderStatus);
+        orderRepository.save(order);
     }
 
     private void publishOrderCompletedEvent(Order order) {
