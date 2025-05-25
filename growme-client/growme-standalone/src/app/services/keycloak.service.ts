@@ -7,6 +7,7 @@ import { environment } from '../environment/environments';
 import Keycloak from 'keycloak-js';
 import { isPlatformBrowser } from '@angular/common';
 import { NgZone } from '@angular/core';
+import { CartService } from './cart-service';
 
 
 @Injectable({ providedIn: 'root' })
@@ -20,6 +21,7 @@ export class KeycloakService {
     private http: HttpClient,
     private router: Router,
     private ngZone: NgZone,
+    private cartService: CartService,
     @Inject(PLATFORM_ID) private platformId: object
   ) {
     this.isBrowser = isPlatformBrowser(this.platformId);
@@ -97,6 +99,10 @@ export class KeycloakService {
 
   async logout(): Promise<void> {
     if (this.keycloak) {
+      const cart = this.cartService.getCurrentCart?.() ?? null;
+      if (cart) {
+        this.cartService.deleteCart(cart);
+      }
       await this.keycloak.logout();
       this.setAuthenticationState(false);
       this.router.navigate(['/login']);
