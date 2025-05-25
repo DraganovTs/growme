@@ -15,10 +15,7 @@ public interface UserUpdateService {
     void syncUserFromKeycloak(KeycloakUserDTO keycloakUserDTO);
     UserDTO updateUser(UUID id,UserDTO userDTO);
     void addOwnedProduct(String userId, String productId);
-    void markProfileAsCompleted(String userId);
     void deleteUser(UUID userId);
-
     void deleteOwnedProduct(String userId, String productId);
-
     void addOwnerOrder(String orderUserId, String orderId);
 }

@@ -20,6 +20,5 @@ public interface UserQueryService {
     List<UUID>getUsersOwnedProducts(String userId);
     boolean existsByEmail(String email);
     boolean existsByUsername(String username);
-
     UserInfo getUserInformation(String userId);
 }

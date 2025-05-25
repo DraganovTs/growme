@@ -6,6 +6,7 @@ import com.home.user.service.mapper.UserMapper;
 import com.home.user.service.model.dto.KeycloakUserDTO;
 import com.home.user.service.model.dto.UserDTO;
 import com.home.user.service.model.entity.User;
+import com.home.user.service.model.enums.AccountStatus;
 import com.home.user.service.repository.UserRepository;
 import com.home.user.service.service.EventPublisherService;
 import com.home.user.service.service.UserUpdateService;
@@ -77,6 +78,7 @@ public class UserUpdateServiceImpl implements UserUpdateService {
                     "UPDATE"));
         }
 
+
         User savedUser = userRepository.save(user);
         UserCreatedEvent event = new UserCreatedEvent(userId.toString(), savedUser.getFirstName(), savedUser.getEmail());
         eventPublisherService.publishUserCreated(event);
@@ -97,11 +99,6 @@ public class UserUpdateServiceImpl implements UserUpdateService {
             userRepository.save(user);
             log.info("Added product {} to user {}", productId, userId);
         }
-    }
-
-    @Override
-    public void markProfileAsCompleted(String id) {
-
     }
 
     @Override

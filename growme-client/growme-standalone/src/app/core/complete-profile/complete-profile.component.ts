@@ -1,11 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, Inject, PLATFORM_ID } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environment/environments';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { KeycloakService } from '../../services/keycloak.service';
-import { catchError, switchMap, of } from 'rxjs';
+import { catchError, switchMap, of, from, throwError } from 'rxjs';
 
 @Component({
   selector: 'app-complete-profile',
@@ -34,14 +34,18 @@ export class CompleteProfileComponent {
   availableRoles: string[] = ['Buyer', 'Seller'];
   submitted = false;
   errorMessage: string = '';
+  isLoading = false;
 
   constructor(
     private http: HttpClient,
     private router: Router,
-    private keycloakService: KeycloakService
+    private keycloakService: KeycloakService,
+    @Inject(PLATFORM_ID) private platformId: Object
   ) {
+    if(isPlatformBrowser(this.platformId)) {
     this.setUserInfo();
   }
+}
 
   /** Get user info from KeycloakService */
   private setUserInfo() {
@@ -49,9 +53,13 @@ export class CompleteProfileComponent {
     const email = this.keycloakService.getEmail();
     const username = this.keycloakService.getUsername();
 
-    this.userProfile.id = userId || '';
-    this.userProfile.email = email || '';
-    this.userProfile.username = username || '';
+     if (userId && email && username) {
+      this.userProfile.id = userId;
+      this.userProfile.email = email;
+      this.userProfile.username = username;
+    } else {
+      console.warn('User information not available');
+    }
 
     if (!userId) console.error('User ID not found');
     if (!email) console.warn('Email not found in Keycloak');
@@ -68,36 +76,52 @@ export class CompleteProfileComponent {
   }
 
   /** Submit profile and sync user with backend */
-  submitProfile() {
+  async submitProfile() {
     this.submitted = true;
-    if (!this.isFormValid()) return;
+    this.isLoading = true;
+
+      if (!this.isFormValid()) {
+      this.isLoading = false;
+      return;
+    }
+
+      if (!this.isValidUUID(this.userProfile.id)) {
+      console.error('Invalid user ID format');
+      this.isLoading = false;
+      return;
+    }
   
     const apiUrl = `${environment.userApi}/update/${this.userProfile.id}`;
   
-     if (!this.isValidUUID(this.userProfile.id)) {
-    console.error('Invalid user ID format');
-    return;
-  }
 
     console.log('🚀 Sending profile update:', this.userProfile); // ✅ Debug log
   
-    this.http.put(apiUrl, this.userProfile).subscribe({
-      next: () => {
-        console.log('✅ Profile updated successfully!');
-      
-  
-        this.router.navigate(['/home']);
-      },
-      error: (error) => {
-        console.error('❌ Error updating profile:', error);
-        alert('Failed to update profile. Please try again.');
-      },
-    });
+   try {
+      await this.http.put(apiUrl, this.userProfile)
+        .pipe(
+          switchMap(() => {
+            console.log('✅ Profile updated successfully!');
+            // Logout after successful update
+            return from(this.keycloakService.logout());
+          }),
+          catchError(error => {
+            console.error('❌ Error updating profile:', error);
+            this.errorMessage = 'Failed to update profile. Please try again.';
+            this.isLoading = false;
+            return throwError(() => error);
+          })
+        )
+        .toPromise();
+
+    } catch (error) {
+      console.error('Error during profile update:', error);
+      this.isLoading = false;
+    }
   }
-  
+
   private isValidUUID(id: string): boolean {
-  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-  return uuidRegex.test(id);
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    return uuidRegex.test(id);
 }
   
 
@@ -125,15 +149,19 @@ export class CompleteProfileComponent {
 
   /** Validate required fields */
   private isFormValid(): boolean {
-    return (
-      !!this.userProfile.firstName &&
+    const isValid = !!this.userProfile.firstName &&
       !!this.userProfile.lastName &&
       !!this.userProfile.phone &&
       !!this.userProfile.address.street &&
       !!this.userProfile.address.city &&
       !!this.userProfile.address.state &&
       !!this.userProfile.address.zipCode &&
-      this.userProfile.roles.length > 0
-    );
+      this.userProfile.roles.length > 0;
+
+    if (!isValid) {
+      this.errorMessage = 'Please fill all required fields and select at least one role';
+    }
+
+    return isValid;
   }
 }

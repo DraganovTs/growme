@@ -175,7 +175,7 @@ export class KeycloakService {
   }
 
   getUserId(): string | null {
-    if (this.keycloak?.tokenParsed?.sub) {
+    if (this.isBrowser && this.keycloak?.tokenParsed?.sub) {
       return this.keycloak.tokenParsed.sub;
     }
 

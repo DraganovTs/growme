@@ -168,7 +168,7 @@ public class OrderServiceImpl implements OrderService {
                 .validateBasketItems(basketMapper.mapBasketItemsToBasketItemsDTO(basket.getItems()))
                 .getBody();
 
-        if (validationResults == null || validationResults.stream().anyMatch(r -> !r.isValid())) {
+        if (validationResults == null || validationResults.stream().anyMatch(r -> !r.getValid())) {
             throw new InvalidProductException("Invalid items in basket");
         }
 

@@ -28,6 +28,6 @@ public class Address {
     private String state;
 
     @Column(name = "zip_code")
-    @Pattern(regexp = "^[0-9]{5}(-[0-9]{4})?$", message = "Invalid zip code format")
+    @Pattern(regexp = "^[0-9]{4}", message = "Invalid zip code format")
     private String zipCode;
 }
