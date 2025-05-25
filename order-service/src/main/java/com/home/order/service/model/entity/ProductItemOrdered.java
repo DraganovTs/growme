@@ -2,6 +2,7 @@ package com.home.order.service.model.entity;
 
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.Embeddable;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -13,7 +14,9 @@ import java.util.UUID;
 @Getter
 public class ProductItemOrdered {
     private UUID productItemId;
+    @Size(max = 30, message = "Product name must not exceed 30 characters")
     private String productName;
+    @Size(max = 255, message = "Image URL must not exceed 255 characters")
     private String imageUrl;
 
 

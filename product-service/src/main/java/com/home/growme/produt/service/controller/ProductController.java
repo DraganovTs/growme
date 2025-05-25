@@ -229,7 +229,7 @@ public class ProductController {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Image file returned"),
-            @ApiResponse(responseCode = "404", description = "Image not found")
+            @ApiResponse(responseCode = "404", description = "Image not found", content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class)))
     })
     @GetMapping("/images/{filename:.+}")
     public ResponseEntity<byte[]> getImage(@PathVariable String filename) {
@@ -249,7 +249,7 @@ public class ProductController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "List of recent images retrieved successfully",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = ImageDisplayDTO.class)))),
-            @ApiResponse(responseCode = "500", description = "Internal server error")
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class)))
     })
     @GetMapping("/images/recent")
     public ResponseEntity<List<ImageDisplayDTO>> getRecentImages() {

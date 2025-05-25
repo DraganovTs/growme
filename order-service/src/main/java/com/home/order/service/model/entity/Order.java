@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.home.order.service.model.enums.OrderStatus;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -22,6 +24,8 @@ public class Order {
     @Id
     @Column(name = "order_id")
     private UUID orderId;
+    @NotNull(message = "Buyer email is required")
+    @Size(max = 30, message = "Buyer email must not exceed 30 characters")
     @Column(name = "buyer_email", nullable = false)
     private String buyerEmail;
     @Column(name = "order_date", nullable = false)
@@ -40,6 +44,7 @@ public class Order {
     private OrderStatus status;
     @Column(name = "sub_total", nullable = false)
     private BigDecimal subTotal;
+    @Size(max = 30, message = "Payment Intent ID must not exceed 30 characters")
     private String paymentIntentId;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id")
