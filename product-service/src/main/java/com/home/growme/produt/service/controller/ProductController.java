@@ -61,7 +61,7 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<ProductResponseDTO> createProduct(@RequestBody ProductRequestDTO productRequestDTO) {
+    public ResponseEntity<ProductResponseDTO> createProduct(@Valid @RequestBody ProductRequestDTO productRequestDTO) {
         log.info("Creating new product: {}", productRequestDTO);
         ProductResponseDTO responseDTO = productService.createProduct(productRequestDTO);
         return ResponseEntity.ok(responseDTO);
@@ -88,7 +88,7 @@ public class ProductController {
     }
 
     @PostMapping("/validate")
-    public ResponseEntity<List<ProductValidationResult>> validateProducts(@RequestBody List<BasketItemDTO> basketItems){
+    public ResponseEntity<List<ProductValidationResult>> validateProducts(@Valid @RequestBody List<BasketItemDTO> basketItems){
         List<ProductValidationResult> results = productService.validateProducts(basketItems);
         return ResponseEntity.ok(results);
     }

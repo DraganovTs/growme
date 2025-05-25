@@ -6,6 +6,7 @@ import com.home.order.service.model.dto.OrderResponseDTO;
 import com.home.order.service.model.entity.Basket;
 import com.home.order.service.model.entity.Order;
 import com.home.order.service.service.OrderService;
+import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,7 +36,7 @@ public class OrderController {
     }
 
     @PostMapping
-    public ResponseEntity<Order> createOrUpdateOrder(@RequestBody OrderDTO orderDTO){
+    public ResponseEntity<Order> createOrUpdateOrder(@Valid @RequestBody OrderDTO orderDTO){
         System.out.println("********");
         Order order = orderService.createOrUpdateOrder(orderDTO);
         return ResponseEntity.ok(order);

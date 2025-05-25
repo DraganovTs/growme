@@ -37,7 +37,7 @@ public class UserController {
 
     @PutMapping("/update/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updateUser(@PathVariable UUID userId, @RequestBody UserDTO updateRequest) {
+    public void updateUser(@PathVariable UUID userId,@Valid @RequestBody UserDTO updateRequest) {
         userService.requestAccountUpdate(userId, updateRequest);
     }
 

@@ -2,6 +2,7 @@ package com.home.order.service.controller;
 
 import com.home.order.service.model.dto.BasketData;
 import com.home.order.service.service.BasketService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,7 @@ public class BasketController {
     }
 
     @PostMapping
-    public ResponseEntity<BasketData> createOrUpdateBasket(@RequestBody BasketData basketData){
+    public ResponseEntity<BasketData> createOrUpdateBasket(@Valid @RequestBody BasketData basketData){
         BasketData savedBasked = basketService.createOrUpdateBasket(basketData);
         return ResponseEntity.ok(savedBasked);
     }

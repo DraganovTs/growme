@@ -3,6 +3,7 @@ package com.home.growme.produt.service.controller;
 import com.home.growme.produt.service.model.dto.CategoryDTO;
 import com.home.growme.produt.service.model.dto.CategoryWhitProductsDTO;
 import com.home.growme.produt.service.service.CategoryService;
+import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,7 +35,7 @@ public class CategoryController {
     }
 
     @PostMapping
-    public ResponseEntity<CategoryDTO> createCategory(@RequestBody CategoryDTO categoryDTO) {
+    public ResponseEntity<CategoryDTO> createCategory(@Valid @RequestBody CategoryDTO categoryDTO) {
         CategoryDTO createdCategoryDTO = categoryService.createCategory(categoryDTO);
         return ResponseEntity.ok(createdCategoryDTO);
     }
