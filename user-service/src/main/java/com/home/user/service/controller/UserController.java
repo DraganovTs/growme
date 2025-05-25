@@ -6,7 +6,6 @@ import com.home.user.service.model.dto.KeycloakUserDTO;
 import com.home.user.service.model.dto.UserDTO;
 import com.home.user.service.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -36,7 +35,6 @@ import java.util.UUID;
         - Account deletion
         - Information retrieval
         
-        Requires ADMIN or appropriate permissions for write operations.
         """
 )
 @CrossOrigin(origins = "http://localhost:4200")

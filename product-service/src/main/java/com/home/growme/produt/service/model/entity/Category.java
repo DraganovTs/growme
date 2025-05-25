@@ -1,6 +1,8 @@
 package com.home.growme.produt.service.model.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 
@@ -19,6 +21,8 @@ public class Category {
     @Id
     @Column(name = "category_id")
     private UUID categoryId;
+    @NotBlank(message = "Category name must not be blank")
+    @Size(max = 30, message = "Category name must be at most 30 characters")
     @Column(name = "category_name", nullable = false,unique = true)
     private String categoryName;
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)

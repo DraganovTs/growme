@@ -12,6 +12,11 @@ import com.home.growme.produt.service.specification.ProductSpecParams;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Interface for managing product-related operations.
+ * This service provides methods for CRUD operations, retrieving products by various criteria,
+ * validating product-related requests, and handling product-related events.
+ */
 public interface ProductService {
     ProductResponseDTO getProductById(String productId);
     ProductResponseListDTO getAllProducts(ProductSpecParams specParams);
