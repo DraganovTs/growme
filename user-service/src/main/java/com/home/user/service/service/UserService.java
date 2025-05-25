@@ -7,6 +7,12 @@ import com.home.user.service.model.dto.UserDTO;
 
 import java.util.UUID;
 
+/**
+ * The UserService interface provides a set of methods for managing user-related
+ * operations within the system. This service acts as a high-level abstraction
+ * that combines functionalities such as user account management, product association,
+ * and fetching user information.
+ */
 public interface UserService {
 
     void requestAccountCreation(KeycloakUserDTO keycloakUserDTO);

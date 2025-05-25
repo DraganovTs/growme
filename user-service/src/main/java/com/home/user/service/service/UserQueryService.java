@@ -7,6 +7,11 @@ import com.home.user.service.model.entity.User;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * The UserQueryService interface provides a set of methods for querying user-related information
+ * and performing lookups within the system. It operates as a read-only service, supplying details
+ * about users and their associated data.
+ */
 public interface UserQueryService {
     UserDTO getUserById(UUID userId);
     User getUserEntityById(UUID userId);
