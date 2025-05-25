@@ -54,7 +54,7 @@ public class UserController {
     @Operation(
             summary = "Synchronize user account from Keycloak",
             description = """
-            Synchronizes a user account created in Keycloak with the application database.
+            Initial synchronization a user account created in Keycloak with the application database.
             This is typically called after successful user registration in Keycloak.
             
             """,
@@ -88,8 +88,13 @@ public class UserController {
     })
     @PostMapping("/sync")
     public ResponseEntity<Void> syncUserFromKeycloak(@Valid @RequestBody KeycloakUserDTO request) {
-        log.debug("Initiating user sync for Keycloak ID: {}", request.getUserId());
-        userService.requestAccountCreation(request);
+        log.debug("Synchronizing user data for ID: {}", request.getUserId());
+        if (!userService.existsById(request.getUserId())) {
+            log.debug("User not found. Creating new user for ID: {}", request.getUserId());
+            userService.requestAccountCreation(request);
+        } else {
+            userService.requestSyncUserData(request);
+        }
         return ResponseEntity.accepted().build();
     }
 
@@ -134,6 +139,8 @@ public class UserController {
     public void updateUser(@PathVariable UUID userId,@Valid @RequestBody UserDTO updateRequest) {
         userService.requestAccountUpdate(userId, updateRequest);
     }
+
+
 
     @Operation(
             summary = "Delete user account",

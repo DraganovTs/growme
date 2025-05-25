@@ -14,9 +14,12 @@ import com.home.user.service.util.UserValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
@@ -40,12 +43,12 @@ public class UserUpdateServiceImpl implements UserUpdateService {
 
     @Override
     public void syncUserFromKeycloak(KeycloakUserDTO keycloakUserDTO) {
-        validator.validateKeycloakUser(keycloakUserDTO);
+
         UUID userId = UUID.fromString(keycloakUserDTO.getUserId());
 
-//        if (userRepository.existsById(userId)) {
-//            throw new UserAlreadyExistException("User already exists with ID: " + userId);
-//        }
+        if (userRepository.existsById(userId)) {
+            throw new UserAlreadyExistException("User already exists with ID: " + userId);
+        }
 
         validator.checkForExistingCredentials(keycloakUserDTO.getEmail(), keycloakUserDTO.getUsername());
 
@@ -130,6 +133,23 @@ public class UserUpdateServiceImpl implements UserUpdateService {
 
         user.getPurchasedOrderIds().add(UUID.fromString(orderId));
         userRepository.save(user);
+    }
+
+    @Override
+    public void syncUserData(KeycloakUserDTO request) {
+
+        UUID userId = UUID.fromString(request.getUserId());
+        Optional<User> userOptional = userRepository.findById(userId);
+
+        if (userOptional.isEmpty()) {
+            throw new UserNotFoundException( "User not found whit id: "+ userId);
+        }
+
+        User user = userOptional.get();
+        userMapper.updateUserFromDto(request, user);
+        userRepository.save(user);
+
+        log.info("Updated user data for user: {}", userId);
     }
 
 

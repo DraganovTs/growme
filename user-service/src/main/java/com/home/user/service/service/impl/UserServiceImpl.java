@@ -114,4 +114,22 @@ public class UserServiceImpl implements UserService {
         validator.validateUserId(userId);
         return userQueryService.getUserInformation(userId);
     }
+
+    @Override
+    @Transactional
+    public void requestSyncUserData(KeycloakUserDTO request) {
+        validator.validateKeycloakUser(request);
+        log.info("Syncing user data for: {}", request.getUserId());
+
+        if (!userQueryService.existsByUsername(request.getUsername())) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        }
+
+        userUpdateService.syncUserData(request);
+    }
+
+    @Override
+    public boolean existsById(String userId) {
+        return userQueryService.existsById(UUID.fromString(userId));
+    }
 }

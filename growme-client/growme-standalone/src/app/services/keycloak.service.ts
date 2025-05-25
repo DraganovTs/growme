@@ -215,6 +215,8 @@ export class KeycloakService {
   
     console.log("Syncing user with backend:", userData);
     console.log(`API Endpoint: ${environment.userApi}/sync`);
+
+    
   
     return this.http.post(`${environment.userApi}/sync`, userData, { 
       observe: 'response' 

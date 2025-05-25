@@ -103,5 +103,10 @@ public class UserQueryServiceImpl implements UserQueryService {
                 });
     }
 
+    @Override
+    public boolean existsById(UUID uuid) {
+        return userRepository.existsById(uuid);
+    }
+
 
 }

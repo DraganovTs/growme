@@ -21,4 +21,6 @@ public interface UserQueryService {
     boolean existsByEmail(String email);
     boolean existsByUsername(String username);
     UserInfo getUserInformation(String userId);
+
+    boolean existsById(UUID uuid);
 }

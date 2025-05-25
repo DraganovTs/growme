@@ -4,6 +4,8 @@ package com.home.user.service.service;
 import com.home.growme.common.module.dto.UserInfo;
 import com.home.user.service.model.dto.KeycloakUserDTO;
 import com.home.user.service.model.dto.UserDTO;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 
 import java.util.UUID;
 
@@ -15,7 +17,7 @@ import java.util.UUID;
  */
 public interface UserService {
 
-    void requestAccountCreation(KeycloakUserDTO keycloakUserDTO);
+    void requestAccountCreation(@Valid KeycloakUserDTO keycloakUserDTO);
 
     void requestAccountUpdate(UUID userId, UserDTO userDTO);
 
@@ -24,4 +26,8 @@ public interface UserService {
     void addProductForSell(String userId, String productId);
 
     UserInfo getUserInformation(String userId);
+
+    void requestSyncUserData(@Valid KeycloakUserDTO request);
+
+    boolean existsById(@NotBlank(message = "User ID is required") String userId);
 }

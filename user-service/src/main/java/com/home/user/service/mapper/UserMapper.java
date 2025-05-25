@@ -120,4 +120,9 @@ public class UserMapper {
                 .addressInfo(addressInfo)
                 .build();
     }
+
+    public void updateUserFromDto(KeycloakUserDTO request, User user) {
+        user.setUsername(request.getUsername());
+        user.setEmail(request.getEmail());
+    }
 }
