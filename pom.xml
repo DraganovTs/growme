@@ -27,12 +27,12 @@
 
     <properties>
         <spring.boot.version>3.4.1</spring.boot.version>
-        <mysql.connector.java.version>8.0.32</mysql.connector.java.version>
+        <mysql.connector.java.version>8.0.33</mysql.connector.java.version>
         <project.lombok.version>1.18.34</project.lombok.version>
         <jakarta.validation.api.version>3.1.1</jakarta.validation.api.version>
-        <spring-cloud-starter-gateway.version>4.2.0</spring-cloud-starter-gateway.version>
+        <spring.cloud.starter.gateway.version>4.2.0</spring.cloud.starter.gateway.version>
         <spring.cloud.dependencies.version>2024.0.0</spring.cloud.dependencies.version>
-        <spring-security-oauth2-client.version>6.4.3</spring-security-oauth2-client.version>
+        <spring.security.oauth2.client.version>6.4.3</spring.security.oauth2.client.version>
         <keycloak.admin.client.version>26.0.4</keycloak.admin.client.version>
         <spring.kafka.version>3.3.4</spring.kafka.version>
         <jedis.version>5.2.0</jedis.version>
@@ -41,6 +41,7 @@
         <spring.cloud.starter.openfeign.version>4.2.1</spring.cloud.starter.openfeign.version>
         <sendgrid.java.vesion>4.10.3</sendgrid.java.vesion>
         <springdoc.openapi.starter.webmvc.ui.version>2.8.8</springdoc.openapi.starter.webmvc.ui.version>
+        <jib.maven.plugin>3.4.5</jib.maven.plugin>
     </properties>
 
     <dependencyManagement>
@@ -97,7 +98,7 @@
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-starter-gateway</artifactId>
-                <version>${spring-cloud-starter-gateway.version}</version>
+                <version>${spring.cloud.starter.gateway.version}</version>
             </dependency>
 
             <dependency>
@@ -109,7 +110,7 @@
             <dependency>
                 <groupId>org.springframework.security</groupId>
                 <artifactId>spring-security-oauth2-client</artifactId>
-                <version>${spring-security-oauth2-client.version}</version>
+                <version>${spring.security.oauth2.client.version}</version>
             </dependency>
 
             <dependency>
@@ -159,7 +160,7 @@
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-starter-openfeign</artifactId>
-                <version>${spring-cloud-starter-gateway.version}</version>
+                <version>${spring.cloud.starter.gateway.version}</version>
             </dependency>
 
             <dependency>
@@ -181,5 +182,18 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>com.google.cloud.tools</groupId>
+                    <artifactId>jib-maven-plugin</artifactId>
+                    <version>${jib.maven.plugin}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 
 </project>
