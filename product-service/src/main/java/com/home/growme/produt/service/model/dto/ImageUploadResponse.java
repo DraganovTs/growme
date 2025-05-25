@@ -19,18 +19,18 @@ import lombok.Data;
 public class ImageUploadResponse {
     @Schema(
             description = "System-generated unique filename",
-            example = "prod_67890.png",
+            example = "prod_67890.png"
     )
     private String filename;
     @Schema(
             description = "Original filename from upload",
-            example = "product_image.png",
+            example = "product_image.png"
     )
     private String originalName;
     @Schema(
             description = "Access path for the uploaded image",
             example = "/images/prod_67890.png",
-            format = "uri-reference",
+            format = "uri-reference"
     )
     private String url;
 }

@@ -19,7 +19,7 @@ import lombok.Data;
 public class ImageDisplayDTO {
     @Schema(
             description = "System-generated filename",
-            example = "prod_12345.jpg",
+            example = "prod_12345.jpg"
     )
     private String filename;
     @Schema(
@@ -31,7 +31,7 @@ public class ImageDisplayDTO {
     @Schema(
             description = "Full URL to access the image",
             example = "https://cdn.growme.com/images/prod_12345.jpg",
-            format = "uri",
+            format = "uri"
     )
     private String url;
 }
