@@ -132,4 +132,9 @@ public class UserServiceImpl implements UserService {
     public boolean existsById(String userId) {
         return userQueryService.existsById(UUID.fromString(userId));
     }
+
+    @Override
+    public Boolean requestCheckUserProfile(UUID userId) {
+        return userQueryService.checkUserProfileIsComplete(userId);
+    }
 }

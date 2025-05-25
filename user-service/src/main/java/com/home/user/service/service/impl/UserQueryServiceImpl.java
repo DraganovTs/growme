@@ -5,6 +5,7 @@ import com.home.user.service.exception.UserNotFoundException;
 import com.home.user.service.mapper.UserMapper;
 import com.home.user.service.model.dto.UserDTO;
 import com.home.user.service.model.entity.User;
+import com.home.user.service.model.enums.AccountStatus;
 import com.home.user.service.repository.UserRepository;
 import com.home.user.service.service.UserQueryService;
 import com.home.user.service.util.UserValidator;
@@ -106,6 +107,12 @@ public class UserQueryServiceImpl implements UserQueryService {
     @Override
     public boolean existsById(UUID uuid) {
         return userRepository.existsById(uuid);
+    }
+
+    @Override
+    public Boolean checkUserProfileIsComplete(UUID userId) {
+        User user = getUserEntityById(userId);
+        return user.getAccountStatus() == AccountStatus.ACTIVE;
     }
 
 

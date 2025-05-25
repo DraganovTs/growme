@@ -52,39 +52,17 @@ public class UserController {
     }
 
     @Operation(
-            summary = "Synchronize user account from Keycloak",
+            summary = "Synchronize user from Keycloak",
             description = """
-            Initial synchronization a user account created in Keycloak with the application database.
-            This is typically called after successful user registration in Keycloak.
-            
-            """,
+        Triggers synchronization of a Keycloak-registered user with the application’s database.
+        Should be called after user registration in Keycloak.
+    """,
             operationId = "syncUserFromKeycloak"
     )
     @ApiResponses({
-            @ApiResponse(
-                    responseCode = "202",
-                    description = "User sync request accepted",
-                    headers = @Header(
-                            name = "Location",
-                            description = "URL to track sync status",
-                            schema = @Schema(type = "string")
-                    )
-            ),
-            @ApiResponse(
-                    responseCode = "400",
-                    description = "Invalid request data",
-                    content = @Content(
-                            schema = @Schema(implementation = ErrorResponseDTO.class)
-                    )
-            ),
-            @ApiResponse(
-                    responseCode = "409",
-                    description = "User already exists in system",
-                    content = @Content(
-                            schema = @Schema(implementation = ErrorResponseDTO.class)
-                    )
-
-            )
+            @ApiResponse(responseCode = "202", description = "Sync accepted - processing asynchronously"),
+            @ApiResponse(responseCode = "400", description = "Invalid request body", content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class))),
+            @ApiResponse(responseCode = "409", description = "User already exists", content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class)))
     })
     @PostMapping("/sync")
     public ResponseEntity<Void> syncUserFromKeycloak(@Valid @RequestBody KeycloakUserDTO request) {
@@ -99,40 +77,18 @@ public class UserController {
     }
 
     @Operation(
-            summary = "Update user account information",
+            summary = "Update user profile",
             description = """
-            Updates additional user information including roles, address, and contact details.
-            Can only be performed by the account owner.
-            
-            """,
+        Updates user details such as address, contact, and role information.
+        Only the user or an admin should perform this operation.
+    """,
             operationId = "updateUser"
     )
     @ApiResponses({
-            @ApiResponse(
-                    responseCode = "204",
-                    description = "User updated successfully"
-            ),
-            @ApiResponse(
-                    responseCode = "400",
-                    description = "Invalid update data",
-                    content = @Content(
-                            schema = @Schema(implementation = ErrorResponseDTO.class)
-                    )
-            ),
-            @ApiResponse(
-                    responseCode = "404",
-                    description = "User not found",
-                    content = @Content(
-                            schema = @Schema(implementation = ErrorResponseDTO.class)
-                    )
-            ),
-            @ApiResponse(
-                    responseCode = "409",
-                    description = "Username or email already exists",
-                    content = @Content(
-                            schema = @Schema(implementation = ErrorResponseDTO.class)
-                    )
-            )
+            @ApiResponse(responseCode = "204", description = "User updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid input data", content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class))),
+            @ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class))),
+            @ApiResponse(responseCode = "409", description = "Email or username conflict", content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class)))
     })
     @PutMapping("/update/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -143,26 +99,13 @@ public class UserController {
 
 
     @Operation(
-            summary = "Delete user account",
-            description = """
-            Soft-deletes a user account from the system.
-            Performs logical deletion rather than physical data removal.
-         
-            """,
+            summary = "Delete a user (soft delete)",
+            description = "Performs a logical (soft) delete of the user account by UUID.",
             operationId = "deleteUser"
     )
     @ApiResponses({
-            @ApiResponse(
-                    responseCode = "204",
-                    description = "User deleted successfully"
-            ),
-            @ApiResponse(
-                    responseCode = "404",
-                    description = "User not found",
-                    content = @Content(
-                            schema = @Schema(implementation = ErrorResponseDTO.class)
-                    )
-            )
+            @ApiResponse(responseCode = "204", description = "User deleted"),
+            @ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class)))
     })
     @DeleteMapping("/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -173,35 +116,33 @@ public class UserController {
 
 
     @Operation(
-            summary = "Get user information",
-            description = """
-            Retrieves basic user information for internal system use.
-            Primarily used for email notifications and other internal processes.
-       
-            """,
+            summary = "Retrieve user info for internal use",
+            description = "Fetches user name, email, and roles. Used internally for emails or admin dashboards.",
             operationId = "getUserInfo",
             hidden = true
     )
     @ApiResponses({
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "User information retrieved",
-                    content = @Content(
-                            schema = @Schema(implementation = UserInfo.class)
-                    )
-            ),
-            @ApiResponse(
-                    responseCode = "404",
-                    description = "User not found",
-                    content = @Content(
-                            schema = @Schema(implementation = ErrorResponseDTO.class)
-                    )
-            )
+            @ApiResponse(responseCode = "200", description = "User info retrieved", content = @Content(schema = @Schema(implementation = UserInfo.class))),
+            @ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class)))
     })
     @GetMapping("/userinfo/{userId}")
     public ResponseEntity<UserInfo> getUserName(@PathVariable String userId) {
         UserInfo userInfo = userService.getUserInformation(userId);
         return ResponseEntity.ok(userInfo);
+    }
+
+    @Operation(
+            summary = "Check if user profile is complete",
+            description = "Returns true if user has submitted all required profile information.",
+            operationId = "checkUserProfile"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Profile check result", content = @Content(schema = @Schema(implementation = Boolean.class))),
+            @ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class)))
+    })
+    @GetMapping("/profile-complete/{userId}")
+    public ResponseEntity<Boolean>checkUserProfile(@PathVariable UUID userId){
+        return ResponseEntity.ok(userService.requestCheckUserProfile(userId));
     }
 
 }

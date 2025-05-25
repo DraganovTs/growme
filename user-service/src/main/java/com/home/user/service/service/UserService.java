@@ -6,6 +6,7 @@ import com.home.user.service.model.dto.KeycloakUserDTO;
 import com.home.user.service.model.dto.UserDTO;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import org.springframework.http.ResponseEntity;
 
 import java.util.UUID;
 
@@ -30,4 +31,6 @@ public interface UserService {
     void requestSyncUserData(@Valid KeycloakUserDTO request);
 
     boolean existsById(@NotBlank(message = "User ID is required") String userId);
+
+    Boolean requestCheckUserProfile(UUID userId);
 }

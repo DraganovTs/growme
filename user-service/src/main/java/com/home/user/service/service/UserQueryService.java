@@ -23,4 +23,6 @@ public interface UserQueryService {
     UserInfo getUserInformation(String userId);
 
     boolean existsById(UUID uuid);
+
+    Boolean checkUserProfileIsComplete(UUID userId);
 }
