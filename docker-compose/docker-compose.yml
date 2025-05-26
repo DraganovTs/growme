@@ -1,124 +1,55 @@
-version: '3.8'
-
 services:
-  keycloak-mysql:
-    container_name: keycloak-mysql
-    image: mysql:latest
-    volumes:
-      - ./volume-data/mysql_keycloak_data:/var/lib/mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: keycloak
-      MYSQL_USER: keycloak
-      MYSQL_PASSWORD: password
-    networks:
-      - grow-me
-
-  keycloak:
-    image: quay.io/keycloak/keycloak:latest
-    container_name: keycloak
+  user-service:
+    image: tzetzaka2/user-service:v1
+    container_name: user-service
     ports:
-      - "7080:8080"
-    environment:
-      KC_BOOTSTRAP_ADMIN_USERNAME: admin
-      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
-      DB_VENDOR: MYSQL
-      DB_ADDR: keycloak-mysql
-      DB_DATABASE: keycloak
-      DB_USER: keycloak
-      DB_PASSWORD: password
-    command: [ "start-dev","--import-realm" ]
-    volumes:
-      - ./docker/keycloak/realms/:/opt/keycloak/data/import/
-    depends_on:
-      - keycloak-mysql
-    networks:
-      - grow-me
-
-
-  redis-cart:
-    image: redis:latest
-    container_name: cart-redis
+      - "8081:8081"
+    deploy:
+      resources:
+        limits:
+          memory: 5000M
+  product-service:
+    image: tzetzaka2/product-service:v1
+    container_name: product-service
     ports:
-      - 6380:6379
-    command: ["redis-server","--appendonly","yes"]
-    volumes:
-      - redis-data:/data
-
-
-
-  kafka-1:
-    image: 'bitnami/kafka:latest'
-    container_name: kafka-1
-    environment:
-      # KRaft settings
-      - KAFKA_CFG_NODE_ID=1
-      - KAFKA_CFG_PROCESS_ROLES=broker,controller
-      - KAFKA_KRAFT_CLUSTER_ID=r4zt_wrqTRuT7W2NJsB_GA
-      # Listeners
-      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9192,CONTROLLER://:9094,EXTERNAL://:9091
-      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka-1:9192,EXTERNAL://localhost:9091
-      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT
-      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
-      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
-      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@kafka-1:9094,2@kafka-2:9094,3@kafka-3:9094
+      - "8087:8087"
+    deploy:
+      resources:
+        limits:
+          memory: 5000M
+  payment-service:
+    image: tzetzaka2/payment-service:v1
+    container_name: payment-service
     ports:
-      - 9091:9091
-    volumes:
-      - kafka-1-data:/bitnami/kafka
-    networks:
-      - grow-me
-
-  kafka-2:
-    image: 'bitnami/kafka:latest'
-    container_name: kafka-2
-    environment:
-      # KRaft settings
-      - KAFKA_CFG_NODE_ID=2
-      - KAFKA_CFG_PROCESS_ROLES=broker,controller
-      - KAFKA_KRAFT_CLUSTER_ID=r4zt_wrqTRuT7W2NJsB_GA
-      # Listeners
-      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9192,CONTROLLER://:9094,EXTERNAL://:9092
-      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka-2:9192,EXTERNAL://localhost:9092
-      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT
-      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
-      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
-      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@kafka-1:9094,2@kafka-2:9094,3@kafka-3:9094
+      - "8084:8084"
+    deploy:
+      resources:
+        limits:
+          memory: 5000M
+  order-service:
+    image: tzetzaka2/order-service:v1
+    container_name: order-service
     ports:
-      - 9092:9092
-    volumes:
-      - kafka-2-data:/bitnami/kafka
-    networks:
-      - grow-me
-
-  kafka-3:
-    image: 'bitnami/kafka:latest'
-    container_name: kafka-3
-    environment:
-      # KRaft settings
-      - KAFKA_CFG_NODE_ID=3
-      - KAFKA_CFG_PROCESS_ROLES=broker,controller
-      - KAFKA_KRAFT_CLUSTER_ID=r4zt_wrqTRuT7W2NJsB_GA
-      # Listeners
-      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9192,CONTROLLER://:9094,EXTERNAL://:9093
-      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka-3:9192,EXTERNAL://localhost:9093
-      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT
-      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
-      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
-      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@kafka-1:9094,2@kafka-2:9094,3@kafka-3:9094
+      - "8083:8083"
+    deploy:
+      resources:
+        limits:
+          memory: 5000M
+  keycloak-service:
+    image: tzetzaka2/keycloak-api:v1
+    container_name: keycloak-service
     ports:
-      - 9093:9093
-    volumes:
-      - kafka-3-data:/bitnami/kafka
-    networks:
-      - grow-me
-
-volumes:
-  redis-data:
-  kafka-1-data:
-  kafka-2-data:
-  kafka-3-data:
-
-networks:
-  grow-me:
-    driver: bridge
+      - "8082:8082"
+    deploy:
+      resources:
+        limits:
+          memory: 5000M
+  email-service:
+    image: tzetzaka2/email-service:v1
+    container_name: order-service
+    ports:
+      - "8085:8085"
+    deploy:
+      resources:
+        limits:
+          memory: 5000M
