@@ -8,6 +8,9 @@ services:
       resources:
         limits:
           memory: 5000M
+    networks:
+      - growme
+
   product-service:
     image: tzetzaka2/product-service:v1
     container_name: product-service
@@ -17,6 +20,9 @@ services:
       resources:
         limits:
           memory: 5000M
+    networks:
+      - growme
+
   payment-service:
     image: tzetzaka2/payment-service:v1
     container_name: payment-service
@@ -26,6 +32,9 @@ services:
       resources:
         limits:
           memory: 5000M
+    networks:
+      - growme
+
   order-service:
     image: tzetzaka2/order-service:v1
     container_name: order-service
@@ -35,6 +44,9 @@ services:
       resources:
         limits:
           memory: 5000M
+    networks:
+      - growme
+
   keycloak-service:
     image: tzetzaka2/keycloak-api:v1
     container_name: keycloak-service
@@ -44,6 +56,9 @@ services:
       resources:
         limits:
           memory: 5000M
+    networks:
+      - growme
+
   email-service:
     image: tzetzaka2/email-service:v1
     container_name: order-service
@@ -53,3 +68,9 @@ services:
       resources:
         limits:
           memory: 5000M
+    networks:
+      - growme
+
+networks:
+  growme:
+    driver: "bridge"
