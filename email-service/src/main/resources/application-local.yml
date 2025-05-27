@@ -1,0 +1,47 @@
+server:
+  port: 8085
+
+spring:
+  application:
+    name: email-service
+  datasource:
+    url: jdbc:mysql://localhost:3306/emails?createDatabaseIfNotExist=true
+    username: ${SQL_DB_USERNAME}
+    password: ${SQL_DB_PASSWORD}
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: true
+        generate_statistics: true
+  sql:
+    init:
+      mode: never
+      platform: mysql
+      schema-locations: classpath:schema.sql
+
+
+  kafka:
+    bootstrap-servers: localhost:9091,localhost:9092,localhost:9093
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        delivery.timeout.ms: 120000
+        request.timeout.ms: 30000
+        max.block.ms: 60000
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      group-id: email-service-group
+      properties:
+        spring.json.trusted.packages: "*"
+
+sendgrid:
+  api.key: ${SENDGRID_API_KEY}
+  from.email: no-reply@growme.com
+  from.name: GrowMe

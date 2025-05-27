@@ -1,23 +1,38 @@
+server:
+  port: 8082
+
+keycloak:
+  realm: ${realm}
+  adminClientId: ${admin_client}
+  adminClientSecret: ${admin_client_secret}
+  urls:
+    auth: http://localhost:7080
+
 spring:
-  application:
-    name: payment-service
-  config:
-    import: optional:configserver:http://localhost:8888
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:7080/realms/grow-me
   kafka:
     bootstrap-servers: localhost:9091,localhost:9092,localhost:9093
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-      properties:
-        delivery.timeout.ms: 120000
-        request.timeout.ms: 30000
-        max.block.ms: 60000
     consumer:
+      group-id: keycloak-role-service
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-      group-id: payment-service
       properties:
         spring.json.trusted.packages: "*"
-        spring.json.value.default.type: "com.home.growme.common.module.events.PaymentIntentRequestEvent"
-server:
-  port: 8084
+
+jwt:
+  auth:
+    converter:
+      resource-id: authenticationClientId
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.keycloak: DEBUG
+

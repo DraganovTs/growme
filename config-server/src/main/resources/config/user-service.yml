@@ -1,5 +1,3 @@
-server:
-  port: 8081
 
 spring:
   application:
@@ -22,3 +20,6 @@ spring:
       mode: never
       platform: mysql
       schema-locations: classpath:schema.sql
+  kafka:
+    consumer:
+      group-id: user-service

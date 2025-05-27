@@ -1,8 +1,9 @@
+server:
+  port: 8084
+
 spring:
   application:
     name: payment-service
-  config:
-    import: optional:configserver:http://localhost:8888
   kafka:
     bootstrap-servers: localhost:9091,localhost:9092,localhost:9093
     producer:
@@ -19,5 +20,7 @@ spring:
       properties:
         spring.json.trusted.packages: "*"
         spring.json.value.default.type: "com.home.growme.common.module.events.PaymentIntentRequestEvent"
-server:
-  port: 8084
+
+
+stripe:
+  API_KEY: ${StripeApiKey}

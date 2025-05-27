@@ -1,9 +1,10 @@
-server:
-  port: 8084
 
 spring:
   application:
     name: payment-service
+  kafka:
+    consumer:
+      group-id: payment-service
 
 stripe:
   API_KEY: ${StripeApiKey}
