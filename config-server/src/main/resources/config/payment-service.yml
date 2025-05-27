@@ -1,0 +1,9 @@
+server:
+  port: 8084
+
+spring:
+  application:
+    name: payment-service
+
+stripe:
+  API_KEY: ${StripeApiKey}

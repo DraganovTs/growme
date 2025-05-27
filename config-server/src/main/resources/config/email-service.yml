@@ -1,0 +1,29 @@
+server:
+  port: 8085
+
+spring:
+  application:
+    name: email-service
+  datasource:
+    url: jdbc:mysql://localhost:3306/emails?createDatabaseIfNotExist=true
+    username: ${SQL_DB_USERNAME}
+    password: ${SQL_DB_PASSWORD}
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: true
+        generate_statistics: true
+  sql:
+    init:
+      mode: never
+      platform: mysql
+      schema-locations: classpath:schema.sql
+
+sendgrid:
+  api.key: ${SENDGRID_API_KEY}
+  from.email: no-reply@growme.com
+  from.name: GrowMe
