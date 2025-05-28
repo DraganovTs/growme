@@ -1,75 +1,135 @@
 services:
-  user-service:
-    image: tzetzaka2/user-service:v1
-    container_name: user-service
+  config-server:
+    image: tzetzaka2/config-server:v1
+    container_name: config-server
     ports:
-      - "8081:8081"
+      - "8888:8888"
+    healthcheck:
+      test: "curl --fail --silent localhost:8888/actuator/health/readiness | grep UP || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
     deploy:
       resources:
         limits:
           memory: 5000M
     networks:
       - growme
+
+  user-service:
+    image: tzetzaka2/user-service:v1
+    container_name: user-service
+    ports:
+      - "8081:8081"
+    depends_on:
+      config-server:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 5000M
+    networks:
+      - growme
+    environment:
+      SPRING_APPLICATION_NAME: user-service
+      SPRING_CONFIG_IMPORT: "configserver:http://config-server:8888"
+      SPRING_PROFILES_ACTIVE: default
 
   product-service:
     image: tzetzaka2/product-service:v1
     container_name: product-service
     ports:
       - "8087:8087"
+    depends_on:
+      config-server:
+        condition: service_healthy
     deploy:
       resources:
         limits:
           memory: 5000M
     networks:
       - growme
+    environment:
+      SPRING_APPLICATION_NAME: product-service
+      SPRING_CONFIG_IMPORT: "configserver:http://config-server:8888"
+      SPRING_PROFILES_ACTIVE: default
 
   payment-service:
     image: tzetzaka2/payment-service:v1
     container_name: payment-service
     ports:
       - "8084:8084"
+    depends_on:
+      config-server:
+        condition: service_healthy
     deploy:
       resources:
         limits:
           memory: 5000M
     networks:
       - growme
+    environment:
+      SPRING_APPLICATION_NAME: payment-service
+      SPRING_CONFIG_IMPORT: "configserver:http://config-server:8888"
+      SPRING_PROFILES_ACTIVE: default
 
   order-service:
     image: tzetzaka2/order-service:v1
     container_name: order-service
     ports:
       - "8083:8083"
+    depends_on:
+      config-server:
+        condition: service_healthy
     deploy:
       resources:
         limits:
           memory: 5000M
     networks:
       - growme
+    environment:
+      SPRING_APPLICATION_NAME: order-service
+      SPRING_CONFIG_IMPORT: "configserver:http://config-server:8888"
+      SPRING_PROFILES_ACTIVE: default
 
   keycloak-service:
     image: tzetzaka2/keycloak-api:v1
     container_name: keycloak-service
     ports:
       - "8082:8082"
+    depends_on:
+      config-server:
+        condition: service_healthy
     deploy:
       resources:
         limits:
           memory: 5000M
     networks:
       - growme
+    environment:
+      SPRING_APPLICATION_NAME: keycloak-service
+      SPRING_CONFIG_IMPORT: "configserver:http://config-server:8888"
+      SPRING_PROFILES_ACTIVE: default
 
   email-service:
     image: tzetzaka2/email-service:v1
     container_name: order-service
     ports:
       - "8085:8085"
+    depends_on:
+      config-server:
+        condition: service_healthy
     deploy:
       resources:
         limits:
           memory: 5000M
     networks:
       - growme
+    environment:
+      SPRING_APPLICATION_NAME: order-service
+      SPRING_CONFIG_IMPORT: "configserver:http://config-server:8888"
+      SPRING_PROFILES_ACTIVE: default
 
 networks:
   growme:
