@@ -1,9 +1,182 @@
 services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_services
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: password12345
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD" , "mysqladmin" , "ping" , "-h" , "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - ./docker/mysql/init-databases.sh:/docker-entrypoint-initdb.d/init-databases.sh
+      - ./docker/mysql/schema_user_service.sql:/docker-entrypoint-initdb.d/schema_user_service.sql
+      - ./docker/mysql/schema_product_service.sql:/docker-entrypoint-initdb.d/schema_product_service.sql
+      - ./docker/mysql/schema_order_service.sql:/docker-entrypoint-initdb.d/schema_order_service.sql
+      - ./docker/mysql/schema_email_service.sql:/docker-entrypoint-initdb.d/schema_email_service.sql
+    networks:
+      - grow-me
+
+  keycloak-mysql:
+    container_name: keycloak-mysql
+    image: mysql:latest
+    volumes:
+      - keycloak-mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD" , "mysqladmin" , "ping" , "-h" , "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: keycloak
+      MYSQL_USER: keycloak
+      MYSQL_PASSWORD: password
+    networks:
+      - grow-me
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: keycloak
+    ports:
+      - "7080:8080"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:7080/realms/grow-me" ]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      DB_VENDOR: MYSQL
+      DB_ADDR: keycloak-mysql
+      DB_DATABASE: keycloak
+      DB_USER: keycloak
+      DB_PASSWORD: password
+    command: [ "start-dev","--import-realm" ]
+    volumes:
+      - ./docker/keycloak/realms/:/opt/keycloak/data/import/
+    depends_on:
+      - keycloak-mysql
+    networks:
+      - grow-me
+
+
+  redis-cart:
+    image: redis:latest
+    container_name: cart-redis
+    ports:
+      - 6380:6379
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+    command: [ "redis-server","--appendonly","yes" ]
+    volumes:
+      - redis-data:/data
+
+
+
+  kafka-1:
+    image: 'bitnami/kafka:latest'
+    container_name: kafka-1
+    environment:
+      # KRaft settings
+      - KAFKA_CFG_NODE_ID=1
+      - KAFKA_CFG_PROCESS_ROLES=broker,controller
+      - KAFKA_KRAFT_CLUSTER_ID=bba98d69-6a5d-4466-acc6-23b50e493beb
+      # Listeners
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9192,CONTROLLER://:9094,EXTERNAL://:9091
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka-1:9192,EXTERNAL://localhost:9091
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@kafka-1:9094,2@kafka-2:9094,3@kafka-3:9094
+    ports:
+      - 9091:9091
+    healthcheck:
+      test: ["CMD", "bash", "-c", "echo dump | nc localhost 9192 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    volumes:
+      - kafka-1-data:/bitnami/kafka
+    networks:
+      - grow-me
+
+  kafka-2:
+    image: 'bitnami/kafka:latest'
+    container_name: kafka-2
+    environment:
+      # KRaft settings
+      - KAFKA_CFG_NODE_ID=2
+      - KAFKA_CFG_PROCESS_ROLES=broker,controller
+      - KAFKA_KRAFT_CLUSTER_ID=bba98d69-6a5d-4466-acc6-23b50e493beb
+      # Listeners
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9192,CONTROLLER://:9094,EXTERNAL://:9092
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka-2:9192,EXTERNAL://localhost:9092
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@kafka-1:9094,2@kafka-2:9094,3@kafka-3:9094
+    ports:
+      - 9092:9092
+    healthcheck:
+      test: ["CMD", "bash", "-c", "echo dump | nc localhost 9192 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    volumes:
+      - kafka-2-data:/bitnami/kafka
+    networks:
+      - grow-me
+
+  kafka-3:
+    image: 'bitnami/kafka:latest'
+    container_name: kafka-3
+    environment:
+      # KRaft settings
+      - KAFKA_CFG_NODE_ID=3
+      - KAFKA_CFG_PROCESS_ROLES=broker,controller
+      - KAFKA_KRAFT_CLUSTER_ID=bba98d69-6a5d-4466-acc6-23b50e493beb
+      # Listeners
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9192,CONTROLLER://:9094,EXTERNAL://:9093
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka-3:9192,EXTERNAL://localhost:9093
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@kafka-1:9094,2@kafka-2:9094,3@kafka-3:9094
+    ports:
+      - 9093:9093
+    healthcheck:
+      test: ["CMD", "bash", "-c", "echo dump | nc localhost 9192 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    volumes:
+      - kafka-3-data:/bitnami/kafka
+    networks:
+      - grow-me
+
   config-server:
     image: tzetzaka2/config-server:v1
     container_name: config-server
     ports:
       - "8888:8888"
+    depends_on:
+      - redis-cart
+      - kafka-1
+      - kafka-2
+      - kafka-3
+      - keycloak
     healthcheck:
       test: "curl --fail --silent localhost:8888/actuator/health/readiness | grep UP || exit 1"
       interval: 10s
@@ -15,7 +188,7 @@ services:
         limits:
           memory: 5000M
     networks:
-      - growme
+      - grow-me
 
   user-service:
     image: tzetzaka2/user-service:v1
@@ -25,12 +198,14 @@ services:
     depends_on:
       config-server:
         condition: service_healthy
+      mysql:
+        condition: service_healthy
     deploy:
       resources:
         limits:
           memory: 5000M
     networks:
-      - growme
+      - grow-me
     environment:
       SPRING_APPLICATION_NAME: user-service
       SPRING_CONFIG_IMPORT: "configserver:http://config-server:8888"
@@ -44,12 +219,14 @@ services:
     depends_on:
       config-server:
         condition: service_healthy
+      mysql:
+        condition: service_healthy
     deploy:
       resources:
         limits:
           memory: 5000M
     networks:
-      - growme
+      - grow-me
     environment:
       SPRING_APPLICATION_NAME: product-service
       SPRING_CONFIG_IMPORT: "configserver:http://config-server:8888"
@@ -68,7 +245,7 @@ services:
         limits:
           memory: 5000M
     networks:
-      - growme
+      - grow-me
     environment:
       SPRING_APPLICATION_NAME: payment-service
       SPRING_CONFIG_IMPORT: "configserver:http://config-server:8888"
@@ -82,12 +259,14 @@ services:
     depends_on:
       config-server:
         condition: service_healthy
+      mysql:
+        condition: service_healthy
     deploy:
       resources:
         limits:
           memory: 5000M
     networks:
-      - growme
+      - grow-me
     environment:
       SPRING_APPLICATION_NAME: order-service
       SPRING_CONFIG_IMPORT: "configserver:http://config-server:8888"
@@ -106,7 +285,7 @@ services:
         limits:
           memory: 5000M
     networks:
-      - growme
+      - grow-me
     environment:
       SPRING_APPLICATION_NAME: keycloak-service
       SPRING_CONFIG_IMPORT: "configserver:http://config-server:8888"
@@ -114,23 +293,32 @@ services:
 
   email-service:
     image: tzetzaka2/email-service:v1
-    container_name: order-service
+    container_name: email-service
     ports:
       - "8085:8085"
     depends_on:
       config-server:
+        condition: service_healthy
+      mysql:
         condition: service_healthy
     deploy:
       resources:
         limits:
           memory: 5000M
     networks:
-      - growme
+      - grow-me
     environment:
-      SPRING_APPLICATION_NAME: order-service
+      SPRING_APPLICATION_NAME: email-service
       SPRING_CONFIG_IMPORT: "configserver:http://config-server:8888"
       SPRING_PROFILES_ACTIVE: default
 
+volumes:
+  keycloak-mysql-data:
+  redis-data:
+  kafka-1-data:
+  kafka-2-data:
+  kafka-3-data:
+
 networks:
-  growme:
+  grow-me:
     driver: "bridge"

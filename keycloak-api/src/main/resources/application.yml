@@ -8,7 +8,7 @@ spring:
           issuer-uri: http://localhost:7080/realms/grow-me
 
   config:
-    import: optional:configserver:http://localhost:8888
+    import: configserver:http://config-server:8888
 keycloak:
   realm: ${realm}
   adminClientId: ${admin_client}

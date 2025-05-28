@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="SqlDialectMappings">
+    <file url="file://$PROJECT_DIR$/docker-compose/docker/mysql/schema_email_service.sql" dialect="MySQL" />
+    <file url="file://$PROJECT_DIR$/docker-compose/docker/mysql/schema_order_service.sql" dialect="MySQL" />
+    <file url="file://$PROJECT_DIR$/docker-compose/docker/mysql/schema_product_service.sql" dialect="MySQL" />
+    <file url="file://$PROJECT_DIR$/docker-compose/docker/mysql/schema_user_service.sql" dialect="MySQL" />
     <file url="file://$PROJECT_DIR$/email-service/src/main/resources/schema.sql" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/order-service/src/main/resources/schema.sql" dialect="MySQL" />
     <file url="file://$PROJECT_DIR$/product-service/src/main/resources/schema.sql" dialect="GenericSQL" />
