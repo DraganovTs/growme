@@ -1,4 +1,4 @@
-USE product_service;
+USE growmeproducts;
 
 DROP TABLE IF EXISTS categories;
 

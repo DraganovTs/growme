@@ -1,7 +1,7 @@
 services:
-  mysql:
+  mysql-services:
     image: mysql:8.0
-    container_name: mysql_services
+    container_name: mysql-services
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: password12345
@@ -13,6 +13,7 @@ services:
       timeout: 5s
       retries: 10
     volumes:
+      - mysql_data:/var/lib/mysql
       - ./docker/mysql/init-databases.sh:/docker-entrypoint-initdb.d/init-databases.sh
       - ./docker/mysql/schema_user_service.sql:/docker-entrypoint-initdb.d/schema_user_service.sql
       - ./docker/mysql/schema_product_service.sql:/docker-entrypoint-initdb.d/schema_product_service.sql
@@ -20,6 +21,7 @@ services:
       - ./docker/mysql/schema_email_service.sql:/docker-entrypoint-initdb.d/schema_email_service.sql
     networks:
       - grow-me
+    command: --port=3306
 
   keycloak-mysql:
     container_name: keycloak-mysql
@@ -190,106 +192,106 @@ services:
     networks:
       - grow-me
 
-  user-service:
-    image: tzetzaka2/user-service:v1
-    container_name: user-service
-    ports:
-      - "8081:8081"
-    depends_on:
-      config-server:
-        condition: service_healthy
-      mysql:
-        condition: service_healthy
-    deploy:
-      resources:
-        limits:
-          memory: 5000M
-    networks:
-      - grow-me
-    environment:
-      SPRING_APPLICATION_NAME: user-service
-      SPRING_CONFIG_IMPORT: "configserver:http://config-server:8888"
-      SPRING_PROFILES_ACTIVE: default
-
-  product-service:
-    image: tzetzaka2/product-service:v1
-    container_name: product-service
-    ports:
-      - "8087:8087"
-    depends_on:
-      config-server:
-        condition: service_healthy
-      mysql:
-        condition: service_healthy
-    deploy:
-      resources:
-        limits:
-          memory: 5000M
-    networks:
-      - grow-me
-    environment:
-      SPRING_APPLICATION_NAME: product-service
-      SPRING_CONFIG_IMPORT: "configserver:http://config-server:8888"
-      SPRING_PROFILES_ACTIVE: default
-
-  payment-service:
-    image: tzetzaka2/payment-service:v1
-    container_name: payment-service
-    ports:
-      - "8084:8084"
-    depends_on:
-      config-server:
-        condition: service_healthy
-    deploy:
-      resources:
-        limits:
-          memory: 5000M
-    networks:
-      - grow-me
-    environment:
-      SPRING_APPLICATION_NAME: payment-service
-      SPRING_CONFIG_IMPORT: "configserver:http://config-server:8888"
-      SPRING_PROFILES_ACTIVE: default
-
-  order-service:
-    image: tzetzaka2/order-service:v1
-    container_name: order-service
-    ports:
-      - "8083:8083"
-    depends_on:
-      config-server:
-        condition: service_healthy
-      mysql:
-        condition: service_healthy
-    deploy:
-      resources:
-        limits:
-          memory: 5000M
-    networks:
-      - grow-me
-    environment:
-      SPRING_APPLICATION_NAME: order-service
-      SPRING_CONFIG_IMPORT: "configserver:http://config-server:8888"
-      SPRING_PROFILES_ACTIVE: default
-
-  keycloak-service:
-    image: tzetzaka2/keycloak-api:v1
-    container_name: keycloak-service
-    ports:
-      - "8082:8082"
-    depends_on:
-      config-server:
-        condition: service_healthy
-    deploy:
-      resources:
-        limits:
-          memory: 5000M
-    networks:
-      - grow-me
-    environment:
-      SPRING_APPLICATION_NAME: keycloak-service
-      SPRING_CONFIG_IMPORT: "configserver:http://config-server:8888"
-      SPRING_PROFILES_ACTIVE: default
+#  user-service:
+#    image: tzetzaka2/user-service:v1
+#    container_name: user-service
+#    ports:
+#      - "8081:8081"
+#    depends_on:
+#      config-server:
+#        condition: service_healthy
+#      mysql:
+#        condition: service_healthy
+#    deploy:
+#      resources:
+#        limits:
+#          memory: 5000M
+#    networks:
+#      - grow-me
+#    environment:
+#      SPRING_APPLICATION_NAME: user-service
+#      SPRING_CONFIG_IMPORT: "configserver:http://config-server:8888"
+#      SPRING_PROFILES_ACTIVE: default
+#
+#  product-service:
+#    image: tzetzaka2/product-service:v1
+#    container_name: product-service
+#    ports:
+#      - "8087:8087"
+#    depends_on:
+#      config-server:
+#        condition: service_healthy
+#      mysql:
+#        condition: service_healthy
+#    deploy:
+#      resources:
+#        limits:
+#          memory: 5000M
+#    networks:
+#      - grow-me
+#    environment:
+#      SPRING_APPLICATION_NAME: product-service
+#      SPRING_CONFIG_IMPORT: "configserver:http://config-server:8888"
+#      SPRING_PROFILES_ACTIVE: default
+#
+#  payment-service:
+#    image: tzetzaka2/payment-service:v1
+#    container_name: payment-service
+#    ports:
+#      - "8084:8084"
+#    depends_on:
+#      config-server:
+#        condition: service_healthy
+#    deploy:
+#      resources:
+#        limits:
+#          memory: 5000M
+#    networks:
+#      - grow-me
+#    environment:
+#      SPRING_APPLICATION_NAME: payment-service
+#      SPRING_CONFIG_IMPORT: "configserver:http://config-server:8888"
+#      SPRING_PROFILES_ACTIVE: default
+#
+#  order-service:
+#    image: tzetzaka2/order-service:v1
+#    container_name: order-service
+#    ports:
+#      - "8083:8083"
+#    depends_on:
+#      config-server:
+#        condition: service_healthy
+#      mysql:
+#        condition: service_healthy
+#    deploy:
+#      resources:
+#        limits:
+#          memory: 5000M
+#    networks:
+#      - grow-me
+#    environment:
+#      SPRING_APPLICATION_NAME: order-service
+#      SPRING_CONFIG_IMPORT: "configserver:http://config-server:8888"
+#      SPRING_PROFILES_ACTIVE: default
+#
+#  keycloak-service:
+#    image: tzetzaka2/keycloak-api:v1
+#    container_name: keycloak-service
+#    ports:
+#      - "8082:8082"
+#    depends_on:
+#      config-server:
+#        condition: service_healthy
+#    deploy:
+#      resources:
+#        limits:
+#          memory: 5000M
+#    networks:
+#      - grow-me
+#    environment:
+#      SPRING_APPLICATION_NAME: keycloak-service
+#      SPRING_CONFIG_IMPORT: "configserver:http://config-server:8888"
+#      SPRING_PROFILES_ACTIVE: default
 
   email-service:
     image: tzetzaka2/email-service:v1
@@ -299,7 +301,7 @@ services:
     depends_on:
       config-server:
         condition: service_healthy
-      mysql:
+      mysql-services:
         condition: service_healthy
     deploy:
       resources:
@@ -310,7 +312,9 @@ services:
     environment:
       SPRING_APPLICATION_NAME: email-service
       SPRING_CONFIG_IMPORT: "configserver:http://config-server:8888"
-      SPRING_PROFILES_ACTIVE: default
+      SQL_DB_USERNAME: root
+      SQL_DB_PASSWORD: password12345
+
 
 volumes:
   keycloak-mysql-data:
@@ -318,6 +322,7 @@ volumes:
   kafka-1-data:
   kafka-2-data:
   kafka-3-data:
+  mysql_data:
 
 networks:
   grow-me:

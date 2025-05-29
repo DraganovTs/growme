@@ -1,4 +1,4 @@
-USE user_service;
+USE growmeusers;
 
 DROP TABLE IF EXISTS users;
 
