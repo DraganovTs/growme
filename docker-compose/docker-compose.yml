@@ -1,6 +1,6 @@
 services:
   mysql-services:
-    image: mysql:8.0
+    image: mysql:latest
     container_name: mysql-services
     restart: unless-stopped
     environment:
@@ -8,7 +8,7 @@ services:
     ports:
       - "3306:3306"
     healthcheck:
-      test: ["CMD" , "mysqladmin" , "ping" , "-h" , "localhost"]
+      test: [ "CMD" , "mysqladmin" , "ping" , "-h" , "localhost" ]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -23,49 +23,49 @@ services:
       - grow-me
     command: --port=3306
 
-  keycloak-mysql:
-    container_name: keycloak-mysql
-    image: mysql:latest
-    volumes:
-      - keycloak-mysql-data:/var/lib/mysql
-    healthcheck:
-      test: ["CMD" , "mysqladmin" , "ping" , "-h" , "localhost"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: keycloak
-      MYSQL_USER: keycloak
-      MYSQL_PASSWORD: password
-    networks:
-      - grow-me
-
-  keycloak:
-    image: quay.io/keycloak/keycloak:latest
-    container_name: keycloak
-    ports:
-      - "7080:8080"
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:7080/realms/grow-me" ]
-      interval: 10s
-      timeout: 5s
-      retries: 20
-    environment:
-      KC_BOOTSTRAP_ADMIN_USERNAME: admin
-      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
-      DB_VENDOR: MYSQL
-      DB_ADDR: keycloak-mysql
-      DB_DATABASE: keycloak
-      DB_USER: keycloak
-      DB_PASSWORD: password
-    command: [ "start-dev","--import-realm" ]
-    volumes:
-      - ./docker/keycloak/realms/:/opt/keycloak/data/import/
-    depends_on:
-      - keycloak-mysql
-    networks:
-      - grow-me
+#  keycloak-mysql:
+#    container_name: keycloak-mysql
+#    image: mysql:latest
+#    volumes:
+#      - keycloak-mysql-data:/var/lib/mysql
+#    healthcheck:
+#      test: ["CMD" , "mysqladmin" , "ping" , "-h" , "localhost"]
+#      interval: 10s
+#      timeout: 5s
+#      retries: 10
+#    environment:
+#      MYSQL_ROOT_PASSWORD: root
+#      MYSQL_DATABASE: keycloak
+#      MYSQL_USER: keycloak
+#      MYSQL_PASSWORD: password
+#    networks:
+#      - grow-me
+#
+#  keycloak:
+#    image: quay.io/keycloak/keycloak:latest
+#    container_name: keycloak
+#    ports:
+#      - "7080:8080"
+#    healthcheck:
+#      test: [ "CMD", "curl", "-f", "http://localhost:7080/realms/grow-me" ]
+#      interval: 10s
+#      timeout: 5s
+#      retries: 20
+#    environment:
+#      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+#      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+#      DB_VENDOR: MYSQL
+#      DB_ADDR: keycloak-mysql
+#      DB_DATABASE: keycloak
+#      DB_USER: keycloak
+#      DB_PASSWORD: password
+#    command: [ "start-dev","--import-realm" ]
+#    volumes:
+#      - ./docker/keycloak/realms/:/opt/keycloak/data/import/
+#    depends_on:
+#      - keycloak-mysql
+#    networks:
+#      - grow-me
 
 
   redis-cart:
@@ -81,7 +81,8 @@ services:
     command: [ "redis-server","--appendonly","yes" ]
     volumes:
       - redis-data:/data
-
+    networks:
+      - grow-me
 
 
   kafka-1:
@@ -94,7 +95,7 @@ services:
       - KAFKA_KRAFT_CLUSTER_ID=bba98d69-6a5d-4466-acc6-23b50e493beb
       # Listeners
       - KAFKA_CFG_LISTENERS=PLAINTEXT://:9192,CONTROLLER://:9094,EXTERNAL://:9091
-      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka-1:9192,EXTERNAL://localhost:9091
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka-1:9192,EXTERNAL://kafka-1:9091
       - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT
       - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
       - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
@@ -122,7 +123,7 @@ services:
       - KAFKA_KRAFT_CLUSTER_ID=bba98d69-6a5d-4466-acc6-23b50e493beb
       # Listeners
       - KAFKA_CFG_LISTENERS=PLAINTEXT://:9192,CONTROLLER://:9094,EXTERNAL://:9092
-      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka-2:9192,EXTERNAL://localhost:9092
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka-2:9192,EXTERNAL://kafka-2:9092
       - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT
       - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
       - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
@@ -150,7 +151,7 @@ services:
       - KAFKA_KRAFT_CLUSTER_ID=bba98d69-6a5d-4466-acc6-23b50e493beb
       # Listeners
       - KAFKA_CFG_LISTENERS=PLAINTEXT://:9192,CONTROLLER://:9094,EXTERNAL://:9093
-      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka-3:9192,EXTERNAL://localhost:9093
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka-3:9192,EXTERNAL://kafka-3:9093
       - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT
       - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
       - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
@@ -174,13 +175,12 @@ services:
     ports:
       - "8888:8888"
     depends_on:
-      - redis-cart
-      - kafka-1
-      - kafka-2
-      - kafka-3
-      - keycloak
+      mysql-services:
+        condition: service_healthy
+      kafka-1:
+        condition: service_completed_successfully
     healthcheck:
-      test: "curl --fail --silent localhost:8888/actuator/health/readiness | grep UP || exit 1"
+      test: "curl --fail --silent http://localhost:8888/actuator/health/readiness | grep UP || exit 1"
       interval: 10s
       timeout: 5s
       retries: 10
@@ -192,106 +192,109 @@ services:
     networks:
       - grow-me
 
-#  user-service:
-#    image: tzetzaka2/user-service:v1
-#    container_name: user-service
-#    ports:
-#      - "8081:8081"
-#    depends_on:
-#      config-server:
-#        condition: service_healthy
-#      mysql:
-#        condition: service_healthy
-#    deploy:
-#      resources:
-#        limits:
-#          memory: 5000M
-#    networks:
-#      - grow-me
-#    environment:
-#      SPRING_APPLICATION_NAME: user-service
-#      SPRING_CONFIG_IMPORT: "configserver:http://config-server:8888"
-#      SPRING_PROFILES_ACTIVE: default
-#
-#  product-service:
-#    image: tzetzaka2/product-service:v1
-#    container_name: product-service
-#    ports:
-#      - "8087:8087"
-#    depends_on:
-#      config-server:
-#        condition: service_healthy
-#      mysql:
-#        condition: service_healthy
-#    deploy:
-#      resources:
-#        limits:
-#          memory: 5000M
-#    networks:
-#      - grow-me
-#    environment:
-#      SPRING_APPLICATION_NAME: product-service
-#      SPRING_CONFIG_IMPORT: "configserver:http://config-server:8888"
-#      SPRING_PROFILES_ACTIVE: default
-#
-#  payment-service:
-#    image: tzetzaka2/payment-service:v1
-#    container_name: payment-service
-#    ports:
-#      - "8084:8084"
-#    depends_on:
-#      config-server:
-#        condition: service_healthy
-#    deploy:
-#      resources:
-#        limits:
-#          memory: 5000M
-#    networks:
-#      - grow-me
-#    environment:
-#      SPRING_APPLICATION_NAME: payment-service
-#      SPRING_CONFIG_IMPORT: "configserver:http://config-server:8888"
-#      SPRING_PROFILES_ACTIVE: default
-#
-#  order-service:
-#    image: tzetzaka2/order-service:v1
-#    container_name: order-service
-#    ports:
-#      - "8083:8083"
-#    depends_on:
-#      config-server:
-#        condition: service_healthy
-#      mysql:
-#        condition: service_healthy
-#    deploy:
-#      resources:
-#        limits:
-#          memory: 5000M
-#    networks:
-#      - grow-me
-#    environment:
-#      SPRING_APPLICATION_NAME: order-service
-#      SPRING_CONFIG_IMPORT: "configserver:http://config-server:8888"
-#      SPRING_PROFILES_ACTIVE: default
-#
-#  keycloak-service:
-#    image: tzetzaka2/keycloak-api:v1
-#    container_name: keycloak-service
-#    ports:
-#      - "8082:8082"
-#    depends_on:
-#      config-server:
-#        condition: service_healthy
-#    deploy:
-#      resources:
-#        limits:
-#          memory: 5000M
-#    networks:
-#      - grow-me
-#    environment:
-#      SPRING_APPLICATION_NAME: keycloak-service
-#      SPRING_CONFIG_IMPORT: "configserver:http://config-server:8888"
-#      SPRING_PROFILES_ACTIVE: default
+  user-service:
+    image: tzetzaka2/user-service:v1
+    container_name: user-service
+    ports:
+      - "8081:8081"
+    depends_on:
+      config-server:
+        condition: service_healthy
+      mysql-services:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 5000M
+    networks:
+      - grow-me
+    environment:
+      SPRING_APPLICATION_NAME: user-service
+      SPRING_CONFIG_IMPORT: "configserver:http://config-server:8888"
+      SPRING_PROFILES_ACTIVE: default
+
+  product-service:
+    image: tzetzaka2/product-service:v1
+    container_name: product-service
+    ports:
+      - "8087:8087"
+    depends_on:
+      config-server:
+        condition: service_healthy
+      mysql-services:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 5000M
+    networks:
+      - grow-me
+    environment:
+      SPRING_APPLICATION_NAME: product-service
+      SPRING_CONFIG_IMPORT: "configserver:http://config-server:8888"
+      SPRING_PROFILES_ACTIVE: default
+
+  payment-service:
+    image: tzetzaka2/payment-service:v1
+    container_name: payment-service
+    ports:
+      - "8084:8084"
+    depends_on:
+      config-server:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 5000M
+    networks:
+      - grow-me
+    environment:
+      SPRING_APPLICATION_NAME: payment-service
+      SPRING_CONFIG_IMPORT: "configserver:http://config-server:8888"
+      SPRING_PROFILES_ACTIVE: default
+
+  order-service:
+    image: tzetzaka2/order-service:v1
+    container_name: order-service
+    ports:
+      - "8083:8083"
+    depends_on:
+      config-server:
+        condition: service_healthy
+      mysql-services:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 5000M
+    networks:
+      - grow-me
+    environment:
+      SPRING_APPLICATION_NAME: order-service
+      SPRING_CONFIG_IMPORT: "configserver:http://config-server:8888"
+      SPRING_PROFILES_ACTIVE: default
+
+  keycloak-service:
+    image: tzetzaka2/keycloak-api:v1
+    container_name: keycloak-service
+    ports:
+      - "8082:8082"
+    depends_on:
+      config-server:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 5000M
+    networks:
+      - grow-me
+    environment:
+      SPRING_APPLICATION_NAME: keycloak-service
+      SPRING_CONFIG_IMPORT: "configserver:http://config-server:8888"
+      SPRING_PROFILES_ACTIVE: default
+      REALM: ${REALM}
+      ADMIN_CLIENT: ${ADMIN_CLIENT}
+      ADMIN_CLIENT_SECRET: ${ADMIN_CLIENT_SECRET}
 
   email-service:
     image: tzetzaka2/email-service:v1
@@ -312,8 +315,8 @@ services:
     environment:
       SPRING_APPLICATION_NAME: email-service
       SPRING_CONFIG_IMPORT: "configserver:http://config-server:8888"
-      SQL_DB_USERNAME: root
-      SQL_DB_PASSWORD: password12345
+      SQL_DB_USERNAME: ${SQL_DB_USERNAME}
+      SQL_DB_PASSWORD: ${SQL_DB_PASSWORD}
 
 
 volumes:
@@ -327,3 +330,5 @@ volumes:
 networks:
   grow-me:
     driver: "bridge"
+
+
