@@ -28,8 +28,8 @@ public class RoleAssignmentConsumer {
 
 
     @KafkaListener(
-            topics = ROLE_ASSIGNMENT_TOPIC,
-            containerFactory = "kafkaListenerContainerFactory"
+            topics = ROLE_ASSIGNMENT_TOPIC
+
     )
     public void consumeRoleAssignment(RoleAssignmentEvent event) {
         try {

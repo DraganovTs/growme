@@ -1,30 +1,27 @@
-
-spring:
-  application:
-    name: keycloak-role-service
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: ${KEYCLOAK_URL}/realms/${KEYCLOAK_REALM}
-
-  kafka:
-    consumer:
-      group-id: keycloak-role-service-group
-  config:
-    import: optional:configserver:http://config-server:8888/kafka-config.yml
-keycloak:
-  realm: ${KEYCLOAK_REALM}
-  adminClientId: ${KEYCLOAK_CLIENT_ID}
-  adminClientSecret: ${KEYCLOAK_CLIENT_SECRET}
-  urls:
-    auth: ${KEYCLOAK_URL}
-    token: ${KEYCLOAK_URL}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/token
-
-jwt:
-  auth:
-    converter:
-      resource-id: ${JWT_AUTH_RESOURCE_ID:keycloak-service-client-id}
-
-
-
+#
+#spring:
+#  security:
+#    oauth2:
+#      resourceserver:
+#        jwt:
+#          issuer-uri: ${KEYCLOAK_URL}/realms/${KEYCLOAK_REALM}
+#  kafka:
+#    consumer:
+#      group-id: keycloak-role-service-group
+#  config:
+#    import: optional:configserver:http://config-server:8888/kafka-config.yml
+#keycloak:
+#  realm: ${KEYCLOAK_REALM}
+#  adminClientId: ${KEYCLOAK_CLIENT_ID}
+#  adminClientSecret: ${KEYCLOAK_CLIENT_SECRET}
+#  urls:
+#    auth: ${KEYCLOAK_URL}
+#    token: ${KEYCLOAK_URL}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/token
+#
+#jwt:
+#  auth:
+#    converter:
+#      resource-id: ${JWT_AUTH_RESOURCE_ID:keycloak-service-client-id}
+#
+#
+#

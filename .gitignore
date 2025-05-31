@@ -237,6 +237,9 @@ docker-compose/volume-data/mysql_keycloak_data/sys/sys_config.ibd
 /kafka-volumes/
 /docker-compose/volume-data/
 
-c k   - - l o s t - f o u n d  
- * . t m p  
+c k   - - l o s t - f o u n d 
  
+ * . t m p 
+ 
+ 
+/docker-compose/.env
