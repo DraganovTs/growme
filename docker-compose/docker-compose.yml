@@ -52,10 +52,11 @@ services:
     ports:
       - "7080:8080"
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:7080/realms/grow-me" ]
-      interval: 10s
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/7080;echo -e 'GET /health/ready HTTP/1.1\r\nhost: http://localhost\r\nConnection: close\r\n\r\n' >&3;if [ $? -eq 0 ]; then echo 'Healthcheck Successful';exit 0;else echo 'Healthcheck Failed';exit 1;fi;"]
+      interval: 30s
+      retries: 3
       timeout: 5s
-      retries: 20
+      start_period: 120s
     environment:
       KC_DB: mysql
       KC_DB_URL_HOST: keycloak-mysql
@@ -117,7 +118,7 @@ services:
     ports:
       - 9091:9091
     healthcheck:
-      test: ["CMD", "bash", "-c", "echo dump | nc localhost 9192 || exit 1"]
+      test: [ "CMD-SHELL", "/opt/bitnami/kafka/bin/kafka-topics.sh --bootstrap-server kafka-1:9091 --list || exit 1" ]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -145,7 +146,7 @@ services:
     ports:
       - 9092:9092
     healthcheck:
-      test: ["CMD", "bash", "-c", "echo dump | nc localhost 9192 || exit 1"]
+      test: [ "CMD-SHELL", "/opt/bitnami/kafka/bin/kafka-topics.sh --bootstrap-server kafka-2:9092 --list || exit 1" ]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -173,7 +174,7 @@ services:
     ports:
       - 9093:9093
     healthcheck:
-      test: ["CMD", "bash", "-c", "echo dump | nc localhost 9192 || exit 1"]
+      test: [ "CMD-SHELL", "/opt/bitnami/kafka/bin/kafka-topics.sh --bootstrap-server kafka-3:9093 --list || exit 1" ]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -192,7 +193,11 @@ services:
       mysql:
         condition: service_healthy
       kafka-1:
-        condition: service_completed_successfully
+        condition: service_healthy
+      kafka-2:
+        condition: service_healthy
+      kafka-3:
+        condition: service_healthy
     healthcheck:
       test: "curl --fail --silent http://localhost:8888/actuator/health/readiness | grep UP || exit 1"
       interval: 10s
