@@ -1,8 +1,8 @@
-USE emails;
+USE growmeemails;
 
-DROP TABLE IF EXISTS emails;
+DROP TABLE IF EXISTS growmeemails;
 
-CREATE TABLE IF NOT EXISTS emails (
+CREATE TABLE IF NOT EXISTS growmeemails (
                                              id BINARY(16) PRIMARY KEY,
     recipient_email VARCHAR(255) NOT NULL,
     email_type VARCHAR(50) NOT NULL,
@@ -21,11 +21,11 @@ CREATE TABLE IF NOT EXISTS emails (
 
 CREATE OR REPLACE VIEW failed_emails AS
 SELECT id, recipient_email, email_type, sent_at, error_message
-FROM emails
+FROM growmeemails
 WHERE success = false;
 
 CREATE OR REPLACE VIEW successful_emails_by_type AS
 SELECT email_type, COUNT(*) as count
-FROM emails
+FROM growmeemails
 WHERE success = true
 GROUP BY email_type;

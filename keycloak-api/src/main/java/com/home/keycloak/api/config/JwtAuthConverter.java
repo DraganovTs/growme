@@ -1,6 +1,7 @@
 package com.home.keycloak.api.config;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
@@ -8,6 +9,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtClaimNames;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtDecoders;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 
@@ -20,8 +23,8 @@ public class JwtAuthConverter implements Converter<Jwt, AbstractAuthenticationTo
 
     private final JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
 
-    @Value("${jwt.auth.converter.resource-id}")
-    private String resourceId;
+    @Value("${JWT_AUTH_RESOURCE_ID}")
+    private String resourceId = "authenticationClientId";
 
 
     @Override
@@ -66,6 +69,13 @@ public class JwtAuthConverter implements Converter<Jwt, AbstractAuthenticationTo
         return allRoles.stream()
                 .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
                 .collect(Collectors.toSet());
+    }
+
+    @Bean
+    public JwtDecoder jwtDecoder(
+            @Value("${KEYCLOAK_URL}") String keycloakUrl,
+            @Value("${KEYCLOAK_REALM}") String realm) {
+        return JwtDecoders.fromIssuerLocation(keycloakUrl + "/realms/" + realm);
     }
 }
 

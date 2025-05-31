@@ -3,23 +3,11 @@ spring:
   application:
     name: user-service
   datasource:
-    url: jdbc:mysql://localhost:3306/growmeusers?createDatabaseIfNotExist=true
+    url: jdbc:mysql://${DB_HOST:mysql}:3306/growmeusers?useSSL=false&allowPublicKeyRetrieval=true
     username: ${SQL_DB_USERNAME}
     password: ${SQL_DB_PASSWORD}
-  jpa:
-    show-sql: true
-    hibernate:
-      ddl-auto: update
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect
-        format_sql: true
-        generate_statistics: true
-  sql:
-    init:
-      mode: never
-      platform: mysql
-      schema-locations: classpath:schema.sql
   kafka:
     consumer:
-      group-id: user-service
+      group-id: user-service-group
+  config:
+    import: optional:configserver:http://config-server:8888/kafka-config.yml

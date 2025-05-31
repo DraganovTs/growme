@@ -1,71 +1,75 @@
 services:
-  mysql-services:
-    image: mysql:latest
-    container_name: mysql-services
-    restart: unless-stopped
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
     environment:
-      MYSQL_ROOT_PASSWORD: password12345
+      MYSQL_ROOT_PASSWORD: ${SQL_DB_PASSWORD}
+      MYSQL_ROOT_HOST: '%'
     ports:
       - "3306:3306"
+    volumes:
+       - ./docker/mysql/init-databases.sh:/docker-entrypoint-initdb.d/init-databases.sh
+       - ./docker/mysql/schema_user_service.sql:/docker-entrypoint-initdb.d/schema_user_service.sql
+       - ./docker/mysql/schema_product_service.sql:/docker-entrypoint-initdb.d/schema_product_service.sql
+       - ./docker/mysql/schema_order_service.sql:/docker-entrypoint-initdb.d/schema_order_service.sql
+       - ./docker/mysql/schema_email_service.sql:/docker-entrypoint-initdb.d/schema_email_service.sql
     healthcheck:
-      test: [ "CMD" , "mysqladmin" , "ping" , "-h" , "localhost" ]
+      test: [ "CMD-SHELL", "mysqladmin ping -h localhost -uroot -p$SQL_DB_PASSWORD" ]
       interval: 10s
       timeout: 5s
       retries: 10
-    volumes:
-      - mysql_data:/var/lib/mysql
-      - ./docker/mysql/init-databases.sh:/docker-entrypoint-initdb.d/init-databases.sh
-      - ./docker/mysql/schema_user_service.sql:/docker-entrypoint-initdb.d/schema_user_service.sql
-      - ./docker/mysql/schema_product_service.sql:/docker-entrypoint-initdb.d/schema_product_service.sql
-      - ./docker/mysql/schema_order_service.sql:/docker-entrypoint-initdb.d/schema_order_service.sql
-      - ./docker/mysql/schema_email_service.sql:/docker-entrypoint-initdb.d/schema_email_service.sql
+    command: >
+      --default-authentication-plugin=caching_sha2_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+      --explicit_defaults_for_timestamp=1
     networks:
       - grow-me
-    command: --port=3306
 
-#  keycloak-mysql:
-#    container_name: keycloak-mysql
-#    image: mysql:latest
-#    volumes:
-#      - keycloak-mysql-data:/var/lib/mysql
-#    healthcheck:
-#      test: ["CMD" , "mysqladmin" , "ping" , "-h" , "localhost"]
-#      interval: 10s
-#      timeout: 5s
-#      retries: 10
-#    environment:
-#      MYSQL_ROOT_PASSWORD: root
-#      MYSQL_DATABASE: keycloak
-#      MYSQL_USER: keycloak
-#      MYSQL_PASSWORD: password
-#    networks:
-#      - grow-me
-#
-#  keycloak:
-#    image: quay.io/keycloak/keycloak:latest
-#    container_name: keycloak
-#    ports:
-#      - "7080:8080"
-#    healthcheck:
-#      test: [ "CMD", "curl", "-f", "http://localhost:7080/realms/grow-me" ]
-#      interval: 10s
-#      timeout: 5s
-#      retries: 20
-#    environment:
-#      KC_BOOTSTRAP_ADMIN_USERNAME: admin
-#      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
-#      DB_VENDOR: MYSQL
-#      DB_ADDR: keycloak-mysql
-#      DB_DATABASE: keycloak
-#      DB_USER: keycloak
-#      DB_PASSWORD: password
-#    command: [ "start-dev","--import-realm" ]
-#    volumes:
-#      - ./docker/keycloak/realms/:/opt/keycloak/data/import/
-#    depends_on:
-#      - keycloak-mysql
-#    networks:
-#      - grow-me
+  keycloak-mysql:
+    container_name: keycloak-mysql
+    image: mysql:8.0
+    volumes:
+      - keycloak-mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -uroot -p${KEYCLOAK_DB_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    environment:
+      MYSQL_ROOT_PASSWORD: ${KEYCLOAK_DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${KEYCLOAK_DB_NAME}
+      MYSQL_USER: ${KEYCLOAK_DB_USER}
+      MYSQL_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
+    networks:
+      - grow-me
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: keycloak
+    ports:
+      - "7080:8080"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:7080/realms/grow-me" ]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN_USER}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      DB_VENDOR: MYSQL
+      DB_ADDR: keycloak-mysql
+      DB_DATABASE: keycloak
+      DB_USER: keycloak
+      DB_PASSWORD: password
+    command: [ "start-dev","--import-realm" ]
+    volumes:
+      - ./docker/keycloak/realms/:/opt/keycloak/data/import/
+    depends_on:
+      keycloak-mysql:
+        condition: service_healthy
+    networks:
+      - grow-me
 
 
   redis-cart:
@@ -175,7 +179,7 @@ services:
     ports:
       - "8888:8888"
     depends_on:
-      mysql-services:
+      mysql:
         condition: service_healthy
       kafka-1:
         condition: service_completed_successfully
@@ -188,7 +192,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 5000M
+          memory: 1000M
     networks:
       - grow-me
 
@@ -200,18 +204,20 @@ services:
     depends_on:
       config-server:
         condition: service_healthy
-      mysql-services:
+      mysql:
         condition: service_healthy
     deploy:
       resources:
         limits:
-          memory: 5000M
+          memory: 1000M
     networks:
       - grow-me
     environment:
       SPRING_APPLICATION_NAME: user-service
       SPRING_CONFIG_IMPORT: "configserver:http://config-server:8888"
       SPRING_PROFILES_ACTIVE: default
+      SPRING_DATASOURCE_USERNAME: ${SQL_DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SQL_DB_PASSWORD}
 
   product-service:
     image: tzetzaka2/product-service:v1
@@ -221,18 +227,20 @@ services:
     depends_on:
       config-server:
         condition: service_healthy
-      mysql-services:
+      mysql:
         condition: service_healthy
     deploy:
       resources:
         limits:
-          memory: 5000M
+          memory: 1000M
     networks:
       - grow-me
     environment:
       SPRING_APPLICATION_NAME: product-service
       SPRING_CONFIG_IMPORT: "configserver:http://config-server:8888"
       SPRING_PROFILES_ACTIVE: default
+      SPRING_DATASOURCE_USERNAME: ${SQL_DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SQL_DB_PASSWORD}
 
   payment-service:
     image: tzetzaka2/payment-service:v1
@@ -242,16 +250,19 @@ services:
     depends_on:
       config-server:
         condition: service_healthy
+      mysql:
+        condition: service_healthy
     deploy:
       resources:
         limits:
-          memory: 5000M
+          memory: 1000M
     networks:
       - grow-me
     environment:
       SPRING_APPLICATION_NAME: payment-service
       SPRING_CONFIG_IMPORT: "configserver:http://config-server:8888"
       SPRING_PROFILES_ACTIVE: default
+      STRIPE_API_KEY: ${STRIPE_API_KEY}
 
   order-service:
     image: tzetzaka2/order-service:v1
@@ -261,18 +272,24 @@ services:
     depends_on:
       config-server:
         condition: service_healthy
-      mysql-services:
+      mysql:
+        condition: service_healthy
+      redis-cart:
         condition: service_healthy
     deploy:
       resources:
         limits:
-          memory: 5000M
+          memory: 1000M
     networks:
       - grow-me
     environment:
       SPRING_APPLICATION_NAME: order-service
       SPRING_CONFIG_IMPORT: "configserver:http://config-server:8888"
       SPRING_PROFILES_ACTIVE: default
+      SPRING_DATASOURCE_USERNAME: ${SQL_DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SQL_DB_PASSWORD}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
 
   keycloak-service:
     image: tzetzaka2/keycloak-api:v1
@@ -282,19 +299,26 @@ services:
     depends_on:
       config-server:
         condition: service_healthy
+      keycloak:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
     deploy:
       resources:
         limits:
-          memory: 5000M
-    networks:
-      - grow-me
+          memory: 1000M
     environment:
       SPRING_APPLICATION_NAME: keycloak-service
       SPRING_CONFIG_IMPORT: "configserver:http://config-server:8888"
       SPRING_PROFILES_ACTIVE: default
-      REALM: ${REALM}
-      ADMIN_CLIENT: ${ADMIN_CLIENT}
-      ADMIN_CLIENT_SECRET: ${ADMIN_CLIENT_SECRET}
+      KEYCLOAK_REALM: ${KEYCLOAK_REALM}
+      KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
+      KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
+      KEYCLOAK_URL: ${KEYCLOAK_URL}
+      JWT_AUTH_RESOURCE_ID: authenticationClientId
+    networks:
+      - grow-me
+
 
   email-service:
     image: tzetzaka2/email-service:v1
@@ -304,31 +328,33 @@ services:
     depends_on:
       config-server:
         condition: service_healthy
-      mysql-services:
+      mysql:
         condition: service_healthy
     deploy:
       resources:
         limits:
-          memory: 5000M
+          memory: 1000M
     networks:
       - grow-me
     environment:
       SPRING_APPLICATION_NAME: email-service
       SPRING_CONFIG_IMPORT: "configserver:http://config-server:8888"
+      SENDGRID_API_KEY: ${SENDGRID_API_KEY}
       SQL_DB_USERNAME: ${SQL_DB_USERNAME}
       SQL_DB_PASSWORD: ${SQL_DB_PASSWORD}
 
 
 volumes:
   keycloak-mysql-data:
+  keycloak_data:
   redis-data:
   kafka-1-data:
   kafka-2-data:
   kafka-3-data:
-  mysql_data:
 
 networks:
   grow-me:
     driver: "bridge"
+
 
 

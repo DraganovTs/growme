@@ -7,7 +7,7 @@ mysql -u root -p"$MYSQL_ROOT_PASSWORD" <<-EOSQL
     CREATE DATABASE IF NOT EXISTS growmeusers CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
     CREATE DATABASE IF NOT EXISTS growmeproducts CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
     CREATE DATABASE IF NOT EXISTS growmeorders CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-    CREATE DATABASE IF NOT EXISTS emails CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+    CREATE DATABASE IF NOT EXISTS growmeemails CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 EOSQL
 
 
@@ -16,6 +16,6 @@ mysql -u root -p"$MYSQL_ROOT_PASSWORD" <<-EOSQL
     GRANT ALL PRIVILEGES ON growmeusers.* TO 'root'@'%';
     GRANT ALL PRIVILEGES ON growmeproducts.* TO 'root'@'%';
     GRANT ALL PRIVILEGES ON growmeorders.* TO 'root'@'%';
-    GRANT ALL PRIVILEGES ON emails.* TO 'root'@'%';
+    GRANT ALL PRIVILEGES ON growmeemails.* TO 'root'@'%';
     FLUSH PRIVILEGES;
 EOSQL

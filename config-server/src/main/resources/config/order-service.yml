@@ -4,27 +4,14 @@ spring:
     name: order-service
   data:
     redis:
-      host: localhost
-      port: 6380
+      host: ${REDIS_HOST:redis-cart}
+      port: ${REDIS_PORT:6379}
   datasource:
-    url: jdbc:mysql://localhost:3306/growmeorders?createDatabaseIfNotExist=true
+    url: jdbc:mysql://${DB_HOST:mysql}:3306/growmeorders?useSSL=false&allowPublicKeyRetrieval=true
     username: ${SQL_DB_USERNAME}
     password: ${SQL_DB_PASSWORD}
-  jpa:
-    show-sql: true
-    hibernate:
-      ddl-auto: update
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect
-        format_sql: true
-        generate_statistics: false
-  sql:
-    init:
-      mode: never
-      platform: mysql
-      schema-locations: classpath:schema.sql
-      data-locations: classpath:data.sql
   kafka:
     consumer:
-      group-id: order-service
+      group-id: order-service-group
+  config:
+    import: optional:configserver:http://config-server:8888/kafka-config.yml

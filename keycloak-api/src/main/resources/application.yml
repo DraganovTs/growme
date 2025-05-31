@@ -1,25 +1,7 @@
 spring:
   application:
     name: keycloak-role-service
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: http://localhost:7080/realms/grow-me
-
   config:
-    import: configserver:http://config-server:8888
-keycloak:
-  realm: ${realm}
-  adminClientId: ${admin_client}
-  adminClientSecret: ${admin_client_secret}
-  urls:
-    auth: http://localhost:7080
-
-jwt:
-  auth:
-    converter:
-      resource-id: authenticationClientId
-
+    import: optional:configserver:http://config-server:8888
 server:
   port: 8082

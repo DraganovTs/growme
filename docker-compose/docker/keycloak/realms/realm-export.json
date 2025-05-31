@@ -1,0 +1,12 @@
+{
+  "realm": "grow-me",
+  "enabled": true,
+  "clients": [
+    {
+      "clientId": "admin-cli",
+      "secret": "${KEYCLOAK_CLIENT_SECRET}",
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": true
+    }
+  ]
+}

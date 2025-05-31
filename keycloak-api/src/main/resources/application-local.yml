@@ -29,7 +29,7 @@ spring:
 jwt:
   auth:
     converter:
-      resource-id: authenticationClientId
+      resource-id: ${JWT_AUTH_RESOURCE_ID:keycloak-service-client-id}
 
 logging:
   level:

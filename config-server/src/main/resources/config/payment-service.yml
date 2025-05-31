@@ -4,7 +4,8 @@ spring:
     name: payment-service
   kafka:
     consumer:
-      group-id: payment-service
-
+      group-id: payment-service-group
+  config:
+    import: optional:configserver:http://config-server:8888/kafka-config.yml
 stripe:
-  API_KEY: ${StripeApiKey}
+  API_KEY: ${STRIPE_API_KEY}
