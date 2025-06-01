@@ -1,2 +1,36 @@
 services:
   network-deploy-service:
+    networks:
+      - grow-me
+
+  microservice-base-config:
+    extends:
+      service: network-deploy-service
+    deploy:
+      resources:
+        limits:
+          memory: 1000M
+
+
+
+  microservice-configserver-config:
+    extends:
+      service: microservice-base-config
+    depends_on:
+      config-server:
+        condition: service_healthy
+    environment:
+      SPRING_CONFIG_IMPORT: "configserver:http://config-server:8888"
+      SPRING_PROFILES_ACTIVE: default
+
+
+  microservice-db-config:
+    extends:
+      service: microservice-configserver-config
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_USERNAME: ${SQL_DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SQL_DB_PASSWORD}
+

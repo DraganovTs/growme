@@ -23,8 +23,9 @@ services:
       --character-set-server=utf8mb4
       --collation-server=utf8mb4_unicode_ci
       --explicit_defaults_for_timestamp=1
-    networks:
-      - grow-me
+    extends:
+      file: common_config.yml
+      service: network-deploy-service
 
   keycloak-mysql:
     container_name: keycloak-mysql
@@ -43,8 +44,9 @@ services:
       MYSQL_DATABASE: ${KEYCLOAK_DB_NAME}
       MYSQL_USER: ${KEYCLOAK_DB_USER}
       MYSQL_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
-    networks:
-      - grow-me
+    extends:
+      file: common_config.yml
+      service: network-deploy-service
 
   keycloak:
     image: quay.io/keycloak/keycloak:latest
@@ -79,8 +81,9 @@ services:
     depends_on:
       keycloak-mysql:
         condition: service_healthy
-    networks:
-      - grow-me
+    extends:
+      file: common_config.yml
+      service: network-deploy-service
 
 
   redis-cart:
@@ -96,8 +99,9 @@ services:
     command: [ "redis-server","--appendonly","yes" ]
     volumes:
       - redis-data:/data
-    networks:
-      - grow-me
+    extends:
+      file: common_config.yml
+      service: network-deploy-service
 
 
   kafka-1:
@@ -125,8 +129,9 @@ services:
       start_period: 30s
     volumes:
       - kafka-1-data:/bitnami/kafka
-    networks:
-      - grow-me
+    extends:
+      file: common_config.yml
+      service: network-deploy-service
 
   kafka-2:
     image: 'bitnami/kafka:latest'
@@ -153,8 +158,9 @@ services:
       start_period: 30s
     volumes:
       - kafka-2-data:/bitnami/kafka
-    networks:
-      - grow-me
+    extends:
+      file: common_config.yml
+      service: network-deploy-service
 
   kafka-3:
     image: 'bitnami/kafka:latest'
@@ -181,8 +187,9 @@ services:
       start_period: 30s
     volumes:
       - kafka-3-data:/bitnami/kafka
-    networks:
-      - grow-me
+    extends:
+      file: common_config.yml
+      service: network-deploy-service
 
   config-server:
     image: tzetzaka2/config-server:v1
@@ -204,80 +211,48 @@ services:
       timeout: 5s
       retries: 10
       start_period: 10s
-    deploy:
-      resources:
-        limits:
-          memory: 1000M
-    networks:
-      - grow-me
+    extends:
+      file: common_config.yml
+      service: microservice-base-config
 
   user-service:
     image: tzetzaka2/user-service:v1
     container_name: user-service
     ports:
       - "8081:8081"
-    depends_on:
-      config-server:
-        condition: service_healthy
-      mysql:
-        condition: service_healthy
     deploy:
       resources:
         limits:
           memory: 1000M
-    networks:
-      - grow-me
     environment:
       SPRING_APPLICATION_NAME: user-service
-      SPRING_CONFIG_IMPORT: "configserver:http://config-server:8888"
-      SPRING_PROFILES_ACTIVE: default
-      SPRING_DATASOURCE_USERNAME: ${SQL_DB_USERNAME}
-      SPRING_DATASOURCE_PASSWORD: ${SQL_DB_PASSWORD}
+    extends:
+      file: common_config.yml
+      service: microservice-db-config
+
 
   product-service:
     image: tzetzaka2/product-service:v1
     container_name: product-service
     ports:
       - "8087:8087"
-    depends_on:
-      config-server:
-        condition: service_healthy
-      mysql:
-        condition: service_healthy
-    deploy:
-      resources:
-        limits:
-          memory: 1000M
-    networks:
-      - grow-me
     environment:
       SPRING_APPLICATION_NAME: product-service
-      SPRING_CONFIG_IMPORT: "configserver:http://config-server:8888"
-      SPRING_PROFILES_ACTIVE: default
-      SPRING_DATASOURCE_USERNAME: ${SQL_DB_USERNAME}
-      SPRING_DATASOURCE_PASSWORD: ${SQL_DB_PASSWORD}
+    extends:
+      file: common_config.yml
+      service: microservice-db-config
 
   payment-service:
     image: tzetzaka2/payment-service:v1
     container_name: payment-service
     ports:
       - "8084:8084"
-    depends_on:
-      config-server:
-        condition: service_healthy
-      mysql:
-        condition: service_healthy
-    deploy:
-      resources:
-        limits:
-          memory: 1000M
-    networks:
-      - grow-me
     environment:
       SPRING_APPLICATION_NAME: payment-service
-      SPRING_CONFIG_IMPORT: "configserver:http://config-server:8888"
-      SPRING_PROFILES_ACTIVE: default
       STRIPE_API_KEY: ${STRIPE_API_KEY}
+    extends:
+      file: common_config.yml
+      service: microservice-configserver-config
 
   order-service:
     image: tzetzaka2/order-service:v1
@@ -285,26 +260,15 @@ services:
     ports:
       - "8083:8083"
     depends_on:
-      config-server:
-        condition: service_healthy
-      mysql:
-        condition: service_healthy
       redis-cart:
         condition: service_healthy
-    deploy:
-      resources:
-        limits:
-          memory: 1000M
-    networks:
-      - grow-me
     environment:
       SPRING_APPLICATION_NAME: order-service
-      SPRING_CONFIG_IMPORT: "configserver:http://config-server:8888"
-      SPRING_PROFILES_ACTIVE: default
-      SPRING_DATASOURCE_USERNAME: ${SQL_DB_USERNAME}
-      SPRING_DATASOURCE_PASSWORD: ${SQL_DB_PASSWORD}
       REDIS_HOST: ${REDIS_HOST}
       REDIS_PORT: ${REDIS_PORT}
+    extends:
+      file: common_config.yml
+      service: microservice-db-config
 
   keycloak-service:
     image: tzetzaka2/keycloak-api:v1
@@ -312,27 +276,18 @@ services:
     ports:
       - "8082:8082"
     depends_on:
-      config-server:
-        condition: service_healthy
       keycloak:
         condition: service_healthy
-      mysql:
-        condition: service_healthy
-    deploy:
-      resources:
-        limits:
-          memory: 1000M
     environment:
       SPRING_APPLICATION_NAME: keycloak-service
-      SPRING_CONFIG_IMPORT: "configserver:http://config-server:8888"
-      SPRING_PROFILES_ACTIVE: default
       KEYCLOAK_REALM: ${KEYCLOAK_REALM}
       KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
       KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
       KEYCLOAK_URL: ${KEYCLOAK_URL}
       JWT_AUTH_RESOURCE_ID: authenticationClientId
-    networks:
-      - grow-me
+    extends:
+      file: common_config.yml
+      service: microservice-configserver-config
 
 
   email-service:
@@ -340,23 +295,12 @@ services:
     container_name: email-service
     ports:
       - "8085:8085"
-    depends_on:
-      config-server:
-        condition: service_healthy
-      mysql:
-        condition: service_healthy
-    deploy:
-      resources:
-        limits:
-          memory: 1000M
-    networks:
-      - grow-me
     environment:
       SPRING_APPLICATION_NAME: email-service
-      SPRING_CONFIG_IMPORT: "configserver:http://config-server:8888"
       SENDGRID_API_KEY: ${SENDGRID_API_KEY}
-      SQL_DB_USERNAME: ${SQL_DB_USERNAME}
-      SQL_DB_PASSWORD: ${SQL_DB_PASSWORD}
+    extends:
+      file: common_config.yml
+      service: microservice-db-config
 
 
 volumes:
