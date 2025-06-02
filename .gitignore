@@ -243,3 +243,4 @@ c k   - - l o s t - f o u n d 
  
  
 /docker-compose/.env
+/keycloak-api/src/main/resources/.env

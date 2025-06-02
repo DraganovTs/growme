@@ -18,7 +18,7 @@ pagination:
     size:
       default: 12
   config:
-    import: optional:configserver:http://config-server:8888/kafka-config.yml
+    import: optional:configserver:http://config-server:8888/kafka-config-prod.yml
 app:
   upload:
     dir: uploads

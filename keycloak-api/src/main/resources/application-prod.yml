@@ -1,38 +1,26 @@
-server:
-  port: 8082
-
-keycloak:
-  realm: ${realm}
-  adminClientId: ${admin_client}
-  adminClientSecret: ${admin_client_secret}
-  urls:
-    auth: http://localhost:7080
-
 spring:
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: http://localhost:7080/realms/grow-me
+  config:
+    import: optional:configserver:http://config-server:8888
   kafka:
-    bootstrap-servers: localhost:9091,localhost:9092,localhost:9093
+    bootstrap-servers: kafka-1:9091,kafka-2:9092,kafka-3:9093
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        delivery.timeout.ms: 100000
+        request.timeout.ms: 30000
+        max.block.ms: 60000
     consumer:
-      group-id: keycloak-role-service
+      group-id: kafka-role-service-group
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
         spring.json.trusted.packages: "*"
 
-jwt:
-  auth:
-    converter:
-      resource-id: ${JWT_AUTH_RESOURCE_ID:keycloak-service-client-id}
+server:
+  port: 8082
 
 logging:
   level:
     org.springframework.security: DEBUG
     org.keycloak: DEBUG
-

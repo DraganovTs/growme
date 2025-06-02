@@ -1,28 +1,21 @@
 spring:
   application:
     name: keycloak-role-service
-  config:
-    import: optional:configserver:http://config-server:8888
-  kafka:
-    bootstrap-servers: kafka-1:9091,kafka-2:9092,kafka-3:9093
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-      properties:
-        delivery.timeout.ms: 100000
-        request.timeout.ms: 30000
-        max.block.ms: 60000
-    consumer:
-      group-id: kafka-role-service-group
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-      properties:
-        spring.json.trusted.packages: "*"
+  profiles:
+    active: dev
 
-server:
-  port: 8082
 
-logging:
-  level:
-    org.springframework.security: DEBUG
-    org.keycloak: DEBUG
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  health:
+    readiness-state:
+      enabled: true
+    liveness-state:
+      enabled: true
