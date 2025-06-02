@@ -21,8 +21,8 @@ import java.util.List;
 @Service
 public class PaymentServiceImpl implements PaymentService {
 
-    @Value("${STRIPE_API_KEY}")
-    private String STRIPE_API_KEY;
+//    @Value("${STRIPE_API_KEY}")
+    private String STRIPE_API_KEY = "tete";
     private final EventPublisherService eventPublisherService;
 
     public PaymentServiceImpl(EventPublisherService eventPublisherService) {

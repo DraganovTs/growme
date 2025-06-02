@@ -1,0 +1,17 @@
+
+spring:
+  application:
+    name: order-service
+  data:
+    redis:
+      host: localhost
+      port: 6380
+  datasource:
+    url: jdbc:mysql://localhost:3306/growmeorders?useSSL=false&allowPublicKeyRetrieval=true
+    username: ${SQL_DB_USERNAME}
+    password: ${SQL_DB_PASSWORD}
+  kafka:
+    consumer:
+      group-id: order-service-group
+  config:
+    import: optional:configserver:http://config-server:8888/kafka-config-devyml
