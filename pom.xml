@@ -24,6 +24,7 @@
         <module>payment-service</module>
         <module>email-service</module>
         <module>config-server</module>
+        <module>eureka-server</module>
     </modules>
 
     <properties>
@@ -186,6 +187,12 @@
                 <groupId>org.springdoc</groupId>
                 <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
                 <version>${springdoc.openapi.starter.webmvc.ui.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
+                <version>${spring.cloud.starter.version}</version>
             </dependency>
 
             <dependency>
