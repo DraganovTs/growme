@@ -7,22 +7,4 @@ spring:
   config:
     activate:
       on-profile: dev
-    import: optional:configserver:http://localhost:8888
-  kafka:
-    bootstrap-servers: localhost:9091,localhost:9092,localhost:9093
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-      properties:
-        delivery.timeout.ms: 120000
-        request.timeout.ms: 30000
-        max.block.ms: 60000
-    consumer:
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-      group-id: payment-service
-      properties:
-        spring.json.trusted.packages: "*"
-        spring.json.value.default.type: "com.home.growme.common.module.events.PaymentIntentRequestEvent"
-stripe:
-  STRIPE_API_KEY: "test"
+    import: configserver:http://localhost:8888
