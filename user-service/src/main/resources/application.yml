@@ -18,3 +18,11 @@ management:
       enabled: true
     liveness-state:
       enabled: true
+  info:
+    env:
+      enabled: true
+info:
+  app:
+    name: "user-service"
+    description: "Grow-me-user-service-application"
+    version: "1.0.0"

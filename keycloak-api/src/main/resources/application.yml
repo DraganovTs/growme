@@ -19,3 +19,11 @@ management:
       enabled: true
     liveness-state:
       enabled: true
+  info:
+    env:
+      enabled: true
+info:
+  app:
+    name: "keycloak-service"
+    description: "Grow-me-keycloak-service-application"
+    version: "1.0.0"

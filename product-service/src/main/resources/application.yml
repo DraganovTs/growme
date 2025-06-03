@@ -18,3 +18,11 @@ management:
       enabled: true
     liveness-state:
       enabled: true
+  info:
+    env:
+      enabled: true
+info:
+   app:
+    name: "product-service"
+    description: "Grow-me-product-service-application"
+    version: "1.0.0"

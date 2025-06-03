@@ -26,3 +26,13 @@ spring:
         spring.json.value.default.type: "com.home.growme.common.module.events.PaymentIntentRequestEvent"
 stripe:
   STRIPE_API_KEY: "test"
+
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://localhost:8070/eureka/

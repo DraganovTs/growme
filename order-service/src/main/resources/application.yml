@@ -18,3 +18,11 @@ management:
       enabled: true
     liveness-state:
       enabled: true
+  info:
+    env:
+      enabled: true
+info:
+  app:
+    name: "order-service"
+    description: "Grow-me-order-service-application"
+    version: "1.0.0"
