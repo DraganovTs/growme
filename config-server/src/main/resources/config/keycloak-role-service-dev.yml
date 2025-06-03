@@ -9,6 +9,8 @@ spring:
   kafka:
     consumer:
       group-id: keycloak-role-service
+  config:
+    import: configserver:http://localhost:8888/kafka-config-dev.yml
 keycloak:
   realm: ${realm}
   adminClientId: ${admin_client}

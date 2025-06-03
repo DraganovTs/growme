@@ -14,7 +14,7 @@ spring:
     consumer:
       group-id: product-service-group
   config:
-    import: optional:configserver:http://config-server:8888/kafka-config-dev.yml
+    import: configserver:http://localhost:8888/kafka-config-dev.yml
 pagination:
   page:
     size:
