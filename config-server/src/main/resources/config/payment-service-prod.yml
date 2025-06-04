@@ -6,6 +6,6 @@ spring:
     consumer:
       group-id: payment-service-group
   config:
-    import: optional:configserver:http://config-server:8888/kafka-config-prod.yml
+    import: configserver:http://config-server:8888/kafka-config-prod.yml
 stripe:
   API_KEY: ${STRIPE_API_KEY}

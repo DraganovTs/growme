@@ -10,4 +10,4 @@ spring:
     consumer:
       group-id: user-service-group
   config:
-    import: optional:configserver:http://config-server:8888/kafka-config-prod.yml
+    import: configserver:http://config-server:8888/kafka-config-prod.yml

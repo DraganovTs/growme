@@ -122,7 +122,11 @@ services:
     ports:
       - 9091:9091
     healthcheck:
-      test: [ "CMD-SHELL", "/opt/bitnami/kafka/bin/kafka-topics.sh --bootstrap-server kafka-1:9091 --list || exit 1" ]
+      test: >
+        CMD-SHELL
+        /opt/bitnami/kafka/bin/kafka-topics.sh --bootstrap-server kafka-1:9091 --topic hc --create --if-not-exists --partitions 1 --replication-factor 1 &&
+        /opt/bitnami/kafka/bin/kafka-topics.sh --bootstrap-server kafka-1:9091 --topic hc --describe || exit 1
+
       interval: 10s
       timeout: 5s
       retries: 10
@@ -151,7 +155,11 @@ services:
     ports:
       - 9092:9092
     healthcheck:
-      test: [ "CMD-SHELL", "/opt/bitnami/kafka/bin/kafka-topics.sh --bootstrap-server kafka-2:9092 --list || exit 1" ]
+      test: >
+        CMD-SHELL
+        /opt/bitnami/kafka/bin/kafka-topics.sh --bootstrap-server kafka-2:9092 --topic hc --create --if-not-exists --partitions 1 --replication-factor 1 &&
+        /opt/bitnami/kafka/bin/kafka-topics.sh --bootstrap-server kafka-2:9092 --topic hc --describe || exit 1
+
       interval: 10s
       timeout: 5s
       retries: 10
@@ -180,7 +188,11 @@ services:
     ports:
       - 9093:9093
     healthcheck:
-      test: [ "CMD-SHELL", "/opt/bitnami/kafka/bin/kafka-topics.sh --bootstrap-server kafka-3:9093 --list || exit 1" ]
+      test: >
+        CMD-SHELL
+        /opt/bitnami/kafka/bin/kafka-topics.sh --bootstrap-server kafka-3:9093 --topic hc --create --if-not-exists --partitions 1 --replication-factor 1 &&
+        /opt/bitnami/kafka/bin/kafka-topics.sh --bootstrap-server kafka-3:9093 --topic hc --describe || exit 1
+
       interval: 10s
       timeout: 5s
       retries: 10
@@ -199,14 +211,8 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
-      kafka-1:
-        condition: service_healthy
-      kafka-2:
-        condition: service_healthy
-      kafka-3:
-        condition: service_healthy
     healthcheck:
-      test: "curl --fail --silent http://configserver:8888/actuator/health/readiness | grep UP || exit 1"
+      test: "curl --fail --silent http://localhost:8888/actuator/health/readiness | grep UP || exit 1"
       interval: 10s
       timeout: 5s
       retries: 10
@@ -216,7 +222,7 @@ services:
       service: microservice-base-config
 
   eureka-server:
-    image: tzetzaka2/eurekaserver:v1
+    image: tzetzaka2/eureka-server:v1
     container_name: eureka-server
     ports:
       - "8070:8070"
@@ -224,13 +230,14 @@ services:
      config-server:
        condition: service_healthy
     healthcheck:
-      test: "curl --fail --silent http://eurekaserver:8070/actuator/health/readiness | grep UP || exit 1"
+      test: "curl --fail --silent http://localhost:8070/actuator/health/readiness | grep UP || exit 1"
       interval: 10s
       timeout: 5s
       retries: 10
       start_period: 10s
     environment:
       SPRING_APPLICATION_NAME: eureka-server
+      SPRING_PROFILES_ACTIVE: prod
     extends:
       file: common_config.yml
       service: microservice-base-config
@@ -272,7 +279,7 @@ services:
       STRIPE_API_KEY: ${STRIPE_API_KEY}
     extends:
       file: common_config.yml
-      service: microservice-configserver-config
+      service: microservice-eureka-config
 
   order-service:
     image: tzetzaka2/order-service:v1
@@ -307,7 +314,7 @@ services:
       JWT_AUTH_RESOURCE_ID: authenticationClientId
     extends:
       file: common_config.yml
-      service: microservice-configserver-config
+      service: microservice-eureka-config
 
 
   email-service:

@@ -5,7 +5,5 @@ spring:
   cloud:
     config:
       server:
-        git:
-          uri: https://github.com/DraganovTs/grow-me-config.git
-          search-paths: config
-          clone-on-start: true
+        native:
+          search-locations: "classpath:/config"
