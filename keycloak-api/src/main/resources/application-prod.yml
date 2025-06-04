@@ -1,5 +1,7 @@
 spring:
   config:
+    activate:
+      on-profile: prod
     import: optional:configserver:http://config-server:8888
   kafka:
     bootstrap-servers: kafka-1:9091,kafka-2:9092,kafka-3:9093
