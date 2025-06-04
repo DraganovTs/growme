@@ -19,9 +19,12 @@ services:
     depends_on:
       config-server:
         condition: service_healthy
+      eureka-server:
+        condition: service_healthy
     environment:
       SPRING_CONFIG_IMPORT: "configserver:http://config-server:8888"
-      SPRING_PROFILES_ACTIVE: default
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: "http://eureka-server:8070/eureka/"
+      SPRING_PROFILES_ACTIVE: prod
 
 
   microservice-db-config:
