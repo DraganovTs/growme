@@ -12,12 +12,17 @@ spring:
           jwk-set-uri: http://localhost:7080/realms/grow-me/protocol/openid-connect/certs
   config:
     import: configserver:http://localhost:8888
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
 
 management:
   endpoints:
     web:
       exposure:
-        include: health,info
+        include: "*"
   endpoint:
     gateway:
       access: unrestricted
