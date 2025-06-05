@@ -15,3 +15,12 @@ sendgrid:
   api.key: ${SENDGRID_API_KEY:}
   from.email: ${SENDGRID_API_KEY:no-reply@growme.com}
   from.name: ${SENDGRID_API_NAME:GrowMe}
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://localhost:8070/eureka/
