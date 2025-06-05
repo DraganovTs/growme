@@ -4,19 +4,20 @@ server:
 spring:
   application:
     name: gateway-server
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: http://localhost:7080/realms/grow-me
-          jwk-set-uri: http://localhost:7080/realms/grow-me/protocol/openid-connect/certs
+#  security:
+#    oauth2:
+#      resourceserver:
+#        jwt:
+#          issuer-uri: http://localhost:7080/realms/grow-me
+#          jwk-set-uri: http://localhost:7080/realms/grow-me/protocol/openid-connect/certs
   config:
     import: configserver:http://localhost:8888
   cloud:
     gateway:
       discovery:
         locator:
-          enabled: true
+          enabled: false
+          lower-case-service-id: true
 
 management:
   endpoints:
