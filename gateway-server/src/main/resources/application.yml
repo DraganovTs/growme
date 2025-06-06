@@ -35,3 +35,11 @@ info:
     name: "gateway-server"
     description: "Grow-me-product-gateway-server"
     version: "1.0.0"
+
+logging:
+  level:
+    com:
+      home:
+        gateway:
+          server: DEBUG
+
