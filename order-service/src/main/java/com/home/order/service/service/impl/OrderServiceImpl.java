@@ -60,8 +60,8 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public Basket createOrUpdatePaymentIntent(String basketId) {
-        Basket basket = fetchValidatedBasket(basketId);
+    public Basket createOrUpdatePaymentIntent(String basketId,String correlationId) {
+        Basket basket = fetchValidatedBasket(basketId,correlationId);
         BigDecimal totalAmount = calculateTotalAmount(basket);
 
         try {
@@ -80,7 +80,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public Order createOrUpdateOrder(OrderDTO orderDTO) {
+    public Order createOrUpdateOrder(OrderDTO orderDTO,String correlationId) {
         Basket basket = fetchBasket(orderDTO.getBasketId());
 
         orderRepository.findByPaymentIntentId(basket.getPaymentIntentId())
@@ -94,7 +94,7 @@ public class OrderServiceImpl implements OrderService {
 
 
 
-        Order order = persistNewOrder(orderDTO.getUserEmail(), basket, address, deliveryMethod);
+        Order order = persistNewOrder(orderDTO.getUserEmail(), basket, address, deliveryMethod,correlationId);
 
         publishOrderCompletedEvent(order);
 
@@ -151,9 +151,9 @@ public class OrderServiceImpl implements OrderService {
         eventPublisherService.publishCompletedOrder(event);
     }
 
-    private Basket fetchValidatedBasket(String basketId) {
+    private Basket fetchValidatedBasket(String basketId,String correlationId) {
         Basket basket = fetchBasket(basketId);
-        validateBasketItems(basket);
+        validateBasketItems(basket, correlationId);
         return basket;
     }
 
@@ -163,9 +163,9 @@ public class OrderServiceImpl implements OrderService {
     }
 
 
-    private void validateBasketItems(Basket basket) {
+    private void validateBasketItems(Basket basket,String correlationId) {
         var validationResults = productServiceClient
-                .validateBasketItems(basketMapper.mapBasketItemsToBasketItemsDTO(basket.getItems()))
+                .validateBasketItems(correlationId,basketMapper.mapBasketItemsToBasketItemsDTO(basket.getItems()))
                 .getBody();
 
         if (validationResults == null || validationResults.stream().anyMatch(r -> !r.getValid())) {
@@ -206,8 +206,8 @@ public class OrderServiceImpl implements OrderService {
         );
     }
 
-    private Order persistNewOrder(String email, Basket basket, Address address, DeliveryMethod method) {
-        List<OrderItem> items = orderMapper.mapBasketItemsToOrderItems(basket.getItems());
+    private Order persistNewOrder(String email, Basket basket, Address address, DeliveryMethod method,String correlationId) {
+        List<OrderItem> items = orderMapper.mapBasketItemsToOrderItems(basket.getItems(),correlationId);
         BigDecimal subtotal = calculateSubTotal(items);
         Owner owner = ownerService.findOwnerByEmail(email);
 

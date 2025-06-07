@@ -36,15 +36,15 @@ import java.util.List;
 @Tag(
         name = "Product Management API",
         description = """
-        Complete set of REST APIs for product management in the GrowMe platform.
-        Includes operations for:
-        - Creating new products
-        - Updating existing products
-        - Deleting products (soft delete)
-        - Retrieving product details and lists
-
-        Requires ADMIN or appropriate permissions for write operations.
-    """
+                    Complete set of REST APIs for product management in the GrowMe platform.
+                    Includes operations for:
+                    - Creating new products
+                    - Updating existing products
+                    - Deleting products (soft delete)
+                    - Retrieving product details and lists
+                
+                    Requires ADMIN or appropriate permissions for write operations.
+                """
 )
 @Slf4j
 @RestController
@@ -77,6 +77,7 @@ public class ProductController {
         ProductResponseDTO productResponseDTO = productService.getProductById(productId);
         return ResponseEntity.ok(productResponseDTO);
     }
+
     @Operation(
             summary = "Get list of all products",
             description = "Retrieves a list of all products available in the system.",
@@ -91,6 +92,7 @@ public class ProductController {
         ProductResponseListDTO productResponseDTOList = productService.getAllProducts(request);
         return ResponseEntity.ok(productResponseDTOList);
     }
+
     @Operation(
             summary = "Get products by owner",
             description = "Retrieve all products for the currently authenticated owner.",
@@ -105,12 +107,13 @@ public class ProductController {
         ProductResponseListDTO productResponseDTOList = productService.getProductsByOwner(specParams);
         return ResponseEntity.ok(productResponseDTOList);
     }
+
     @Operation(
             summary = "Create a new product",
             description = """
-            Creates a new product in the system with the provided details.
-            Accessible only to authorized users with product creation permissions.
-        """,
+                        Creates a new product in the system with the provided details.
+                        Accessible only to authorized users with product creation permissions.
+                    """,
             operationId = "createProduct"
     )
     @ApiResponses({
@@ -128,9 +131,9 @@ public class ProductController {
     @Operation(
             summary = "Update an existing product",
             description = """
-            Updates product information by product UUID.
-            Only authorized users can perform this operation.
-        """,
+                        Updates product information by product UUID.
+                        Only authorized users can perform this operation.
+                    """,
             operationId = "updateProduct"
     )
     @ApiResponses({
@@ -148,6 +151,7 @@ public class ProductController {
         ProductResponseDTO productResponseDTO = productService.updateProduct(id, productRequestDTO);
         return ResponseEntity.ok(productResponseDTO);
     }
+
     @Operation(
             summary = "Soft delete a product",
             description = "Marks the product as deleted without physically removing it from the database.",
@@ -165,6 +169,7 @@ public class ProductController {
         productService.deleteProduct(productId, userId);
         return ResponseEntity.noContent().build();
     }
+
     @Operation(
             summary = "Validate products in basket",
             description = "Validate a list of basket items before checkout.",
@@ -174,10 +179,14 @@ public class ProductController {
             @ApiResponse(responseCode = "200", description = "Validation results returned", content = @Content(schema = @Schema(implementation = ProductValidationResult.class)))
     })
     @PostMapping("/validate")
-    public ResponseEntity<List<ProductValidationResult>> validateProducts(@Valid @RequestBody List<BasketItemDTO> basketItems){
+    public ResponseEntity<List<ProductValidationResult>> validateProducts(@RequestHeader("grow-me-correlation-id")
+                                                                          String correlationId,
+                                                                          @Valid @RequestBody List<BasketItemDTO> basketItems) {
+        log.debug("grow-me-correlation-id found: {}",correlationId);
         List<ProductValidationResult> results = productService.validateProducts(basketItems);
         return ResponseEntity.ok(results);
     }
+
     @Operation(
             summary = "Get product info",
             description = "Retrieve summarized product information by product ID.",
@@ -187,10 +196,14 @@ public class ProductController {
             @ApiResponse(responseCode = "200", description = "Product info retrieved", content = @Content(schema = @Schema(implementation = ProductInfo.class)))
     })
     @GetMapping("productinfo/{productId}")
-    public ResponseEntity<ProductInfo>getProductInfo(@PathVariable String productId){
+    public ResponseEntity<ProductInfo> getProductInfo(@RequestHeader("grow-me-correlation-id")
+                                                      String correlationId,
+                                                      @PathVariable String productId) {
+        log.debug("grow-me-correlation-id found: {}",correlationId);
         ProductInfo productInfo = productService.getProductInfo(productId);
         return ResponseEntity.ok(productInfo);
     }
+
     @Operation(
             summary = "Upload product image",
             description = "Upload an image file associated with a product.",
@@ -209,6 +222,7 @@ public class ProductController {
                 "/images/" + filename
         ));
     }
+
     @Operation(
             summary = "Get all uploaded image filenames",
             description = "Retrieve a list of all image filenames available.",
@@ -244,6 +258,7 @@ public class ProductController {
             return ResponseEntity.notFound().build();
         }
     }
+
     @Operation(summary = "Get recent images",
             description = "Returns a list of up to 5 most recently uploaded images for display purposes")
     @ApiResponses(value = {

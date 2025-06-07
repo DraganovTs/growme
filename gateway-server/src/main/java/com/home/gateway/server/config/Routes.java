@@ -5,6 +5,8 @@ import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.Date;
+
 @Configuration
 public class Routes {
 
@@ -35,7 +37,8 @@ public class Routes {
                         .filters(f -> f.rewritePath("/growme/deliverymethods/?(?<segment>/?.*)", "/api/deliverymethods${segment}"))
                         .uri("lb://ORDER-SERVICE"))
                 .route("order-service",p -> p.path("/growme/orders/**","/growme/orders/**")
-                        .filters(f -> f.rewritePath("/growme/orders(?<segment>/?.*)", "/api/orders${segment}"))
+                        .filters(f -> f.rewritePath("/growme/orders(?<segment>/?.*)", "/api/orders${segment}")
+                                .addResponseHeader("X-Response-Time",new Date().toString()))
                         .uri("lb://ORDER-SERVICE"))
 
                 //KEYCLOAK-ROLE-SERVICE

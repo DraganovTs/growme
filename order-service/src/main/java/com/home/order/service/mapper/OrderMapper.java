@@ -22,7 +22,7 @@ public class OrderMapper {
         this.productServiceClient = productServiceClient;
     }
 
-    public List<OrderItem> mapBasketItemsToOrderItems(List<BasketItem> basketItems) {
+    public List<OrderItem> mapBasketItemsToOrderItems(List<BasketItem> basketItems,String correlationId) {
         if (basketItems == null) {
             throw new IllegalArgumentException("Basket items cannot be null");
         }
@@ -30,15 +30,15 @@ public class OrderMapper {
         return basketItems.stream()
                 .filter(Objects::nonNull)
                 .filter(item -> item.getProductId() != null && item.getQuantity() > 0)
-                .map(this::createOrderItem)
+                .map(item -> createOrderItem(item,correlationId))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
 
 
-    private OrderItem createOrderItem(BasketItem basketItem) {
+    private OrderItem createOrderItem(BasketItem basketItem, String correlationId) {
         try {
-            ProductInfo product = productServiceClient.getProductInfo(basketItem.getProductId().toString());
+            ProductInfo product = productServiceClient.getProductInfo(correlationId,basketItem.getProductId().toString());
 
             if (product == null || product.getPrice() == null) {
                 throw new IllegalStateException("Invalid product data");

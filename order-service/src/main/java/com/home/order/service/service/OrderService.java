@@ -15,9 +15,9 @@ import java.util.UUID;
  * such as payment intents and order status updates.
  */
 public interface OrderService {
-    Basket createOrUpdatePaymentIntent(String basketId);
+    Basket createOrUpdatePaymentIntent(String basketId,String correlationId);
 
-    Order createOrUpdateOrder( OrderDTO orderDTO);
+    Order createOrUpdateOrder( OrderDTO orderDTO,String correlationId);
 
     List<IOrderDto> getAllOrdersForUser(String userEmail);
 

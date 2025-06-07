@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -28,14 +29,14 @@ import java.util.UUID;
 @Tag(
         name = "User Management API",
         description = """
-        Complete set of REST APIs for user account management in GrowMe platform.
-        Includes operations for:
-        - User synchronization with identity provider
-        - Profile updates
-        - Account deletion
-        - Information retrieval
-        
-        """
+                Complete set of REST APIs for user account management in GrowMe platform.
+                Includes operations for:
+                - User synchronization with identity provider
+                - Profile updates
+                - Account deletion
+                - Information retrieval
+                
+                """
 )
 @CrossOrigin(origins = "http://localhost:4200")
 @RestController
@@ -52,9 +53,9 @@ public class UserController {
     @Operation(
             summary = "Synchronize user from Keycloak",
             description = """
-        Triggers synchronization of a Keycloak-registered user with the application’s database.
-        Should be called after user registration in Keycloak.
-    """,
+                        Triggers synchronization of a Keycloak-registered user with the application’s database.
+                        Should be called after user registration in Keycloak.
+                    """,
             operationId = "syncUserFromKeycloak"
     )
     @ApiResponses({
@@ -77,9 +78,9 @@ public class UserController {
     @Operation(
             summary = "Update user profile",
             description = """
-        Updates user details such as address, contact, and role information.
-        Only the user or an admin should perform this operation.
-    """,
+                        Updates user details such as address, contact, and role information.
+                        Only the user or an admin should perform this operation.
+                    """,
             operationId = "updateUser"
     )
     @ApiResponses({
@@ -90,10 +91,9 @@ public class UserController {
     })
     @PutMapping("/update/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updateUser(@PathVariable UUID userId,@Valid @RequestBody UserDTO updateRequest) {
+    public void updateUser(@PathVariable UUID userId, @Valid @RequestBody UserDTO updateRequest) {
         userService.requestAccountUpdate(userId, updateRequest);
     }
-
 
 
     @Operation(
@@ -110,7 +110,6 @@ public class UserController {
     public void deleteUser(@PathVariable UUID userId) {
         userService.requestAccountDeletion(userId);
     }
-
 
 
     @Operation(
@@ -139,7 +138,7 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class)))
     })
     @GetMapping("/profile-complete/{userId}")
-    public ResponseEntity<Boolean>checkUserProfile(@PathVariable UUID userId){
+    public ResponseEntity<Boolean> checkUserProfile(@PathVariable UUID userId) {
         return ResponseEntity.ok(userService.requestCheckUserProfile(userId));
     }
 

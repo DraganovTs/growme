@@ -14,6 +14,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,11 +23,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
+
 @Tag(name = "Orders", description = "Operations related to orders and payment intents")
 @RestController
 @RequestMapping(value = "/api/orders", produces = MediaType.APPLICATION_JSON_VALUE)
 public class OrderController {
 
+    private final static Logger logger = LoggerFactory.getLogger(OrderController.class);
     private final OrderService orderService;
 
     public OrderController(OrderService orderService) {
@@ -40,15 +44,18 @@ public class OrderController {
                     content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class)))
     })
     @PostMapping("/{basketId}")
-    public ResponseEntity<Basket> createOrUpdatePaymentIntent(@PathVariable String basketId){
+    public ResponseEntity<Basket> createOrUpdatePaymentIntent(@RequestHeader("grow-me-correlation-id")
+                                                              String correlationId,
+                                                              @PathVariable String basketId) {
 
-        Basket basket = orderService.createOrUpdatePaymentIntent(basketId);
-        if (basket == null){
+        Basket basket = orderService.createOrUpdatePaymentIntent(basketId, correlationId);
+        if (basket == null) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(basket);
 
     }
+
     @Operation(summary = "Create or update an order", description = "Creates or updates an order based on provided order details.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Order created or updated successfully",
@@ -57,11 +64,14 @@ public class OrderController {
                     content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class)))
     })
     @PostMapping
-    public ResponseEntity<Order> createOrUpdateOrder(@Valid @RequestBody OrderDTO orderDTO){
+    public ResponseEntity<Order> createOrUpdateOrder(@RequestHeader("grow-me-correlation-id")
+                                                     String correlationId,
+                                                     @Valid @RequestBody OrderDTO orderDTO) {
         System.out.println("********");
-        Order order = orderService.createOrUpdateOrder(orderDTO);
+        Order order = orderService.createOrUpdateOrder(orderDTO, correlationId);
         return ResponseEntity.ok(order);
     }
+
     @Operation(summary = "Get all orders for a user", description = "Retrieves a list of orders for the specified user email.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Orders retrieved successfully",
@@ -70,13 +80,14 @@ public class OrderController {
                     content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class)))
     })
     @GetMapping("/user/{userEmail}")
-    public  ResponseEntity<List<IOrderDto>> getAllOrderForUser(@PathVariable String userEmail ){
+    public ResponseEntity<List<IOrderDto>> getAllOrderForUser(@PathVariable String userEmail) {
         List<IOrderDto> orderDTOList = orderService.getAllOrdersForUser(userEmail);
-        if (orderDTOList == null){
+        if (orderDTOList == null) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(orderDTOList);
     }
+
     @Operation(summary = "Get order details", description = "Retrieves detailed information about a specific order by its ID.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Order details retrieved successfully",
@@ -85,9 +96,9 @@ public class OrderController {
                     content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class)))
     })
     @GetMapping("/{orderId}")
-    public ResponseEntity<IOrderDto> getOrderDetails(@PathVariable String orderId){
+    public ResponseEntity<IOrderDto> getOrderDetails(@PathVariable String orderId) {
         IOrderDto iOrderDto = orderService.getOrderById(UUID.fromString(orderId));
-        if (iOrderDto == null){
+        if (iOrderDto == null) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(iOrderDto);
