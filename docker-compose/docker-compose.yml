@@ -329,6 +329,17 @@ services:
       file: common_config.yml
       service: microservice-db-config
 
+  gateway-server:
+    image: tzetzaka2/gateway-server:v1
+    container_name: gateway-server
+    ports:
+      - "8088:8088"
+    environment:
+      SPRING_APPLICATION_NAME: gateway-server
+    extends:
+      file: common_config.yml
+      service: microservice-eureka-config
+
 
 volumes:
   keycloak-mysql-data:
