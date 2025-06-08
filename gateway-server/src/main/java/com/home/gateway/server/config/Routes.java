@@ -14,31 +14,33 @@ public class Routes {
     public RouteLocator growMeRouteConfig(RouteLocatorBuilder routeLocatorBuilder) {
         return routeLocatorBuilder.routes()
                 // USER-SERVICE
-                .route("user-service",r -> r.path("/growme/users/**")
-                        .filters(f -> f.rewritePath("/growme/users/(?<segment>.*)", "/${segment}"))
+                .route("user-service", r -> r.path("/growme/users/**")
+                        .filters(f -> f.rewritePath("/growme/users/(?<segment>.*)", "/${segment}")
+                                .circuitBreaker(config -> config.setName("userServiceCircuitBreaker")
+                                        .setFallbackUri("forward:/contactSupport")))
                         .uri("lb://USER-SERVICE"))
 
                 // PRODUCT-SERVICE
-                .route("product-service" ,p -> p.path("/growme/categories/**")
+                .route("product-service", p -> p.path("/growme/categories/**")
                         .filters(f -> f.rewritePath("/growme/categories/(?<segment>.*)", "/api/categories/${segment}"))
                         .uri("lb://PRODUCT-SERVICE"))
-                .route("product-service",p -> p.path("/growme/owners/**")
+                .route("product-service", p -> p.path("/growme/owners/**")
                         .filters(f -> f.rewritePath("/growme/owners/(?<segment>.*)", "/${segment}"))
                         .uri("lb://PRODUCT-SERVICE"))
-                .route("product-service",p -> p.path("/growme/products/**")
+                .route("product-service", p -> p.path("/growme/products/**")
                         .filters(f -> f.rewritePath("/growme/products/(?<segment>.*)", "/api/products/${segment}"))
                         .uri("lb://PRODUCT-SERVICE"))
 
                 // ORDER-SERVICE
-                .route("order-service",p -> p.path("/growme/basket/**")
+                .route("order-service", p -> p.path("/growme/basket/**")
                         .filters(f -> f.rewritePath("/growme/basket(?<segment>/?.*)", "/api/basket${segment}"))
                         .uri("lb://ORDER-SERVICE"))
-                .route("order-service",p -> p.path("/growme/deliverymethods/**")
+                .route("order-service", p -> p.path("/growme/deliverymethods/**")
                         .filters(f -> f.rewritePath("/growme/deliverymethods/?(?<segment>/?.*)", "/api/deliverymethods${segment}"))
                         .uri("lb://ORDER-SERVICE"))
-                .route("order-service",p -> p.path("/growme/orders/**","/growme/orders/**")
+                .route("order-service", p -> p.path("/growme/orders/**", "/growme/orders/**")
                         .filters(f -> f.rewritePath("/growme/orders(?<segment>/?.*)", "/api/orders${segment}")
-                                .addResponseHeader("X-Response-Time",new Date().toString()))
+                                .addResponseHeader("X-Response-Time", new Date().toString()))
                         .uri("lb://ORDER-SERVICE"))
 
                 //KEYCLOAK-ROLE-SERVICE
