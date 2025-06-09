@@ -1,5 +1,6 @@
 package com.home.gateway.server.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
@@ -10,7 +11,12 @@ import java.time.Duration;
 import java.util.Date;
 
 @Configuration
-public class Routes {
+public class RoutesConfiguration {
+
+    @Autowired
+    RedisConfiguration redisConfiguration;
+    @Autowired
+    UserKeyResolverConfiguration userKeyResolverConfiguration;
 
     @Bean
     public RouteLocator growMeRouteConfig(RouteLocatorBuilder routeLocatorBuilder) {
@@ -22,7 +28,9 @@ public class Routes {
                                         .setFallbackUri("forward:/contactSupport"))
                                 .retry(retryConfig -> retryConfig.setRetries(3)
                                         .setMethods(HttpMethod.GET)
-                                        .setBackoff(Duration.ofMillis(100),Duration.ofMillis(1000),2,true)))
+                                        .setBackoff(Duration.ofMillis(100), Duration.ofMillis(1000), 2, true))
+                                .requestRateLimiter(config -> config.setRateLimiter(redisConfiguration.redisRateLimiter())
+                                        .setKeyResolver(userKeyResolverConfiguration.userKeyResolver())))
                         .uri("lb://USER-SERVICE"))
 
                 // PRODUCT-SERVICE
@@ -32,7 +40,9 @@ public class Routes {
                                         .setFallbackUri("forward:/contactSupport"))
                                 .retry(retryConfig -> retryConfig.setRetries(3)
                                         .setMethods(HttpMethod.GET)
-                                        .setBackoff(Duration.ofMillis(100),Duration.ofMillis(1000),2,true)))
+                                        .setBackoff(Duration.ofMillis(100), Duration.ofMillis(1000), 2, true))
+                                .requestRateLimiter(config -> config.setRateLimiter(redisConfiguration.redisRateLimiter())
+                                        .setKeyResolver(userKeyResolverConfiguration.userKeyResolver())))
                         .uri("lb://PRODUCT-SERVICE"))
                 .route("product-service", p -> p.path("/growme/owners/**")
                         .filters(f -> f.rewritePath("/growme/owners/(?<segment>.*)", "/${segment}")
@@ -40,7 +50,9 @@ public class Routes {
                                         .setFallbackUri("forward:/contactSupport"))
                                 .retry(retryConfig -> retryConfig.setRetries(3)
                                         .setMethods(HttpMethod.GET)
-                                        .setBackoff(Duration.ofMillis(100),Duration.ofMillis(1000),2,true)))
+                                        .setBackoff(Duration.ofMillis(100), Duration.ofMillis(1000), 2, true))
+                                .requestRateLimiter(config -> config.setRateLimiter(redisConfiguration.redisRateLimiter())
+                                        .setKeyResolver(userKeyResolverConfiguration.userKeyResolver())))
                         .uri("lb://PRODUCT-SERVICE"))
                 .route("product-service", p -> p.path("/growme/products/**")
                         .filters(f -> f.rewritePath("/growme/products/(?<segment>.*)", "/api/products/${segment}")
@@ -48,7 +60,9 @@ public class Routes {
                                         .setFallbackUri("forward:/contactSupport"))
                                 .retry(retryConfig -> retryConfig.setRetries(3)
                                         .setMethods(HttpMethod.GET)
-                                        .setBackoff(Duration.ofMillis(100),Duration.ofMillis(1000),2,true)))
+                                        .setBackoff(Duration.ofMillis(100), Duration.ofMillis(1000), 2, true))
+                                .requestRateLimiter(config -> config.setRateLimiter(redisConfiguration.redisRateLimiter())
+                                        .setKeyResolver(userKeyResolverConfiguration.userKeyResolver())))
                         .uri("lb://PRODUCT-SERVICE"))
 
                 // ORDER-SERVICE
@@ -58,7 +72,9 @@ public class Routes {
                                         .setFallbackUri("forward:/contactSupport"))
                                 .retry(retryConfig -> retryConfig.setRetries(3)
                                         .setMethods(HttpMethod.GET)
-                                        .setBackoff(Duration.ofMillis(100),Duration.ofMillis(1000),2,true)))
+                                        .setBackoff(Duration.ofMillis(100), Duration.ofMillis(1000), 2, true))
+                                .requestRateLimiter(config -> config.setRateLimiter(redisConfiguration.redisRateLimiter())
+                                        .setKeyResolver(userKeyResolverConfiguration.userKeyResolver())))
                         .uri("lb://ORDER-SERVICE"))
                 .route("order-service", p -> p.path("/growme/deliverymethods/**")
                         .filters(f -> f.rewritePath("/growme/deliverymethods/?(?<segment>/?.*)", "/api/deliverymethods${segment}")
@@ -66,7 +82,9 @@ public class Routes {
                                         .setFallbackUri("forward:/contactSupport"))
                                 .retry(retryConfig -> retryConfig.setRetries(3)
                                         .setMethods(HttpMethod.GET)
-                                        .setBackoff(Duration.ofMillis(100),Duration.ofMillis(1000),2,true)))
+                                        .setBackoff(Duration.ofMillis(100), Duration.ofMillis(1000), 2, true))
+                                .requestRateLimiter(config -> config.setRateLimiter(redisConfiguration.redisRateLimiter())
+                                        .setKeyResolver(userKeyResolverConfiguration.userKeyResolver())))
                         .uri("lb://ORDER-SERVICE"))
                 .route("order-service", p -> p.path("/growme/orders/**", "/growme/orders/**")
                         .filters(f -> f.rewritePath("/growme/orders(?<segment>/?.*)", "/api/orders${segment}")
@@ -75,7 +93,9 @@ public class Routes {
                                         .setFallbackUri("forward:/contactSupport"))
                                 .retry(retryConfig -> retryConfig.setRetries(3)
                                         .setMethods(HttpMethod.GET)
-                                        .setBackoff(Duration.ofMillis(100),Duration.ofMillis(1000),2,true)))
+                                        .setBackoff(Duration.ofMillis(100), Duration.ofMillis(1000), 2, true))
+                                .requestRateLimiter(config -> config.setRateLimiter(redisConfiguration.redisRateLimiter())
+                                        .setKeyResolver(userKeyResolverConfiguration.userKeyResolver())))
                         .uri("lb://ORDER-SERVICE"))
 
                 //KEYCLOAK-ROLE-SERVICE
@@ -83,12 +103,18 @@ public class Routes {
                         .filters(f -> f.rewritePath("/growme/roles/(?<segment>.*)", "/api/roles/${segment}")
                                 .circuitBreaker(config -> config.setName("keycloakRoleServiceCircuitBraker")
                                         .setFallbackUri("forward:/contactSupport"))
-                                .retry(retryConfig -> retryConfig.setRetries(3)))
+                                .retry(retryConfig -> retryConfig.setRetries(3)
+                                        .setMethods(HttpMethod.GET)
+                                        .setBackoff(Duration.ofMillis(100), Duration.ofMillis(1000), 2, true))
+                                .requestRateLimiter(config -> config.setRateLimiter(redisConfiguration.redisRateLimiter())
+                                        .setKeyResolver(userKeyResolverConfiguration.userKeyResolver())))
                         .uri("lb://KEYCLOAK-ROLE-SERVICE"))
                 .route(p -> p.path("/growme/usersk/**")
                         .filters(f -> f.rewritePath("/growme/usersk/(?<segment>.*)", "/api/usersk/${segment}")
                                 .circuitBreaker(config -> config.setName("keycloakRoleServiceCircuitBraker")
-                                        .setFallbackUri("forward:/contactSupport")))
+                                        .setFallbackUri("forward:/contactSupport"))
+                                .requestRateLimiter(config -> config.setRateLimiter(redisConfiguration.redisRateLimiter())
+                                        .setKeyResolver(userKeyResolverConfiguration.userKeyResolver())))
                         .uri("lb://KEYCLOAK-ROLE-SERVICE"))
                 .build();
     }

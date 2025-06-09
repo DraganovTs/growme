@@ -104,6 +104,24 @@ services:
       service: network-deploy-service
 
 
+  redis-gateway:
+    image: redis:latest
+    container_name: redis-gateway
+    ports:
+      - 6381:6379
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+    command: [ "redis-server","--appendonly","yes" ]
+    volumes:
+      - redis-data-gateway:/data
+    extends:
+      file: common_config.yml
+      service: network-deploy-service
+
+
   kafka-1:
     image: 'bitnami/kafka:latest'
     container_name: kafka-1
@@ -336,6 +354,10 @@ services:
       - "8088:8088"
     environment:
       SPRING_APPLICATION_NAME: gateway-server
+      SPRING_DATA_REDIS_CONNECT_TIMEOUT: 2s
+      SPRING_DATA_REDIS_HOST: redis-gateway
+      SPRING_DATA_REDIS_PORT: 6379
+      SPRING_DATA_REDIS_TIMEOUT: 1s
     extends:
       file: common_config.yml
       service: microservice-eureka-config
@@ -345,6 +367,7 @@ volumes:
   keycloak-mysql-data:
   keycloak_data:
   redis-data:
+  redis-data-gateway:
   kafka-1-data:
   kafka-2-data:
   kafka-3-data:
