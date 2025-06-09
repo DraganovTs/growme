@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@FeignClient(name = "product-service", url = "http://localhost:8087")
+@FeignClient(name = "product-service", url = "http://localhost:8087", fallback = ProductServiceFallback.class)
 public interface ProductServiceClient {
 
     @PostMapping("/api/products/validate")

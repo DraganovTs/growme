@@ -3,6 +3,10 @@ spring:
     name: order-service
   profiles:
     active: dev
+  cloud:
+    openfeign:
+      circuitbreaker:
+        enabled: true
 
 management:
   endpoints:
@@ -26,3 +30,12 @@ info:
     name: "order-service"
     description: "Grow-me-order-service-application"
     version: "1.0.0"
+
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        sliding-window-size: 10
+        permitted-number-of-calls-in-half-open-state: 2
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 10000
