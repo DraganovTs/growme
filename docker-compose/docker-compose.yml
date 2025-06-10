@@ -66,9 +66,7 @@ services:
       KC_DB_SCHEMA: keycloak
       KC_DB_USERNAME: keycloak
       KC_DB_PASSWORD: password
-
       KC_HEALTH_ENABLED: true
-
       KC_METRICS_ENABLED: true
       KC_LOG_LEVEL: INFO
       KC_FEATURES: scripts
@@ -276,76 +274,81 @@ services:
       service: microservice-db-config
 
 
-  product-service:
-    image: tzetzaka2/product-service:v1
-    container_name: product-service
-    ports:
-      - "8087:8087"
-    environment:
-      SPRING_APPLICATION_NAME: product-service
-    extends:
-      file: common_config.yml
-      service: microservice-db-config
-
-  payment-service:
-    image: tzetzaka2/payment-service:v1
-    container_name: payment-service
-    ports:
-      - "8084:8084"
-    environment:
-      SPRING_APPLICATION_NAME: payment-service
-      STRIPE_API_KEY: ${STRIPE_API_KEY}
-    extends:
-      file: common_config.yml
-      service: microservice-eureka-config
-
-  order-service:
-    image: tzetzaka2/order-service:v1
-    container_name: order-service
-    ports:
-      - "8083:8083"
-    depends_on:
-      redis-cart:
-        condition: service_healthy
-    environment:
-      SPRING_APPLICATION_NAME: order-service
-      REDIS_HOST: ${REDIS_HOST}
-      REDIS_PORT: ${REDIS_PORT}
-    extends:
-      file: common_config.yml
-      service: microservice-db-config
-
-  keycloak-service:
-    image: tzetzaka2/keycloak-api:v1
-    container_name: keycloak-service
-    ports:
-      - "8082:8082"
-    depends_on:
-      keycloak:
-        condition: service_healthy
-    environment:
-      SPRING_APPLICATION_NAME: keycloak-service
-      KEYCLOAK_REALM: ${KEYCLOAK_REALM}
-      KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
-      KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
-      KEYCLOAK_URL: ${KEYCLOAK_URL}
-      JWT_AUTH_RESOURCE_ID: authenticationClientId
-    extends:
-      file: common_config.yml
-      service: microservice-eureka-config
-
-
-  email-service:
-    image: tzetzaka2/email-service:v1
-    container_name: email-service
-    ports:
-      - "8085:8085"
-    environment:
-      SPRING_APPLICATION_NAME: email-service
-      SENDGRID_API_KEY: ${SENDGRID_API_KEY}
-    extends:
-      file: common_config.yml
-      service: microservice-db-config
+#  product-service:
+#    image: tzetzaka2/product-service:v1
+#    container_name: product-service
+#    ports:
+#      - "8087:8087"
+#    environment:
+#      SPRING_APPLICATION_NAME: product-service
+#      SPRING_PROFILES_ACTIVE: prod
+#    extends:
+#      file: common_config.yml
+#      service: microservice-db-config
+#
+#  payment-service:
+#    image: tzetzaka2/payment-service:v1
+#    container_name: payment-service
+#    ports:
+#      - "8084:8084"
+#    environment:
+#      SPRING_APPLICATION_NAME: payment-service
+#      STRIPE_API_KEY: ${STRIPE_API_KEY}
+#      SPRING_PROFILES_ACTIVE: prod
+#    extends:
+#      file: common_config.yml
+#      service: microservice-eureka-config
+#
+#  order-service:
+#    image: tzetzaka2/order-service:v1
+#    container_name: order-service
+#    ports:
+#      - "8083:8083"
+#    depends_on:
+#      redis-cart:
+#        condition: service_healthy
+#    environment:
+#      SPRING_APPLICATION_NAME: order-service
+#      REDIS_HOST: ${REDIS_HOST}
+#      REDIS_PORT: ${REDIS_PORT}
+#      SPRING_PROFILES_ACTIVE: prod
+#    extends:
+#      file: common_config.yml
+#      service: microservice-db-config
+#
+#  keycloak-service:
+#    image: tzetzaka2/keycloak-api:v1
+#    container_name: keycloak-service
+#    ports:
+#      - "8082:8082"
+#    depends_on:
+#      keycloak:
+#        condition: service_healthy
+#    environment:
+#      SPRING_APPLICATION_NAME: keycloak-service
+#      KEYCLOAK_REALM: ${KEYCLOAK_REALM}
+#      KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
+#      KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
+#      KEYCLOAK_URL: ${KEYCLOAK_URL}
+#      JWT_AUTH_RESOURCE_ID: authenticationClientId
+#      SPRING_PROFILES_ACTIVE: prod
+#    extends:
+#      file: common_config.yml
+#      service: microservice-eureka-config
+#
+#
+#  email-service:
+#    image: tzetzaka2/email-service:v1
+#    container_name: email-service
+#    ports:
+#      - "8085:8085"
+#    environment:
+#      SPRING_APPLICATION_NAME: email-service
+#      SENDGRID_API_KEY: ${SENDGRID_API_KEY}
+#      SPRING_PROFILES_ACTIVE: prod
+#    extends:
+#      file: common_config.yml
+#      service: microservice-db-config
 
   gateway-server:
     image: tzetzaka2/gateway-server:v1
@@ -356,8 +359,12 @@ services:
       SPRING_APPLICATION_NAME: gateway-server
       SPRING_DATA_REDIS_CONNECT_TIMEOUT: 2s
       SPRING_DATA_REDIS_HOST: redis-gateway
-      SPRING_DATA_REDIS_PORT: 6379
+      SPRING_DATA_REDIS_PORT: 6381
       SPRING_DATA_REDIS_TIMEOUT: 1s
+      SPRING_PROFILES_ACTIVE: prod
+    depends_on:
+      keycloak:
+        condition: service_healthy
     extends:
       file: common_config.yml
       service: microservice-eureka-config

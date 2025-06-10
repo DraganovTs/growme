@@ -1,0 +1,61 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: gateway-server
+  data:
+    redis:
+      connect-timeout: 2s
+      host: localhost
+      port: 6379
+      lettuce:
+        shutdown-timeout: 1s
+  #  security:
+#    oauth2:
+#      resourceserver:
+#        jwt:
+#          issuer-uri: http://localhost:7080/realms/grow-me
+#          jwk-set-uri: http://localhost:7080/realms/grow-me/protocol/openid-connect/certs
+  config:
+    import: configserver:http://config-server:8888
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: false
+          lower-case-service-id: true
+      httpclient:
+        connect-timeout: 1000
+        response-timeout: 5s
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    gateway:
+      access: unrestricted
+  info:
+    env:
+      enabled: true
+info:
+  app:
+    name: "gateway-server"
+    description: "Grow-me-product-gateway-server"
+    version: "1.0.0"
+
+logging:
+  level:
+    com:
+      home:
+        gateway:
+          server: DEBUG
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        sliding-window-size: 10
+        permitted-number-of-calls-in-half-open-state: 2
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 10000
