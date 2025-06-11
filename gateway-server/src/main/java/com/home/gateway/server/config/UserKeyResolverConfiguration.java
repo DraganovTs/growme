@@ -5,13 +5,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import reactor.core.publisher.Mono;
 
-@Configuration
+
 public class UserKeyResolverConfiguration {
 
     private static final String USER_HEADER = "user";
     private static final String ANONYMOUS_USER = "anonymous";
 
-    @Bean
+
     KeyResolver userKeyResolver() {
         return exchange -> Mono.justOrEmpty(exchange.getRequest()
                         .getHeaders()

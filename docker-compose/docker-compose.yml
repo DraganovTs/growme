@@ -55,35 +55,41 @@ services:
       - "7080:8080"
       - "9000:9000"
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://keycloak:9000/health/ready" ]
+      test: |
+        CMD-SHELL wget --no-verbose --tries=1 --spider http://localhost:9000/health/ready || exit 1
       interval: 10s
       timeout: 10s
       retries: 10
       start_period: 30s
     environment:
+      # Database configuration
       KC_DB: mysql
       KC_DB_URL_HOST: keycloak-mysql
       KC_DB_URL_PORT: 3306
       KC_DB_SCHEMA: keycloak
       KC_DB_USERNAME: keycloak
       KC_DB_PASSWORD: password
-      KC_HEALTH_ENABLED: true
-      KC_METRICS_ENABLED: true
-      KC_LOG_LEVEL: INFO
-      KC_FEATURES: scripts
-      KC_HOSTNAME_STRICT: false
-      KC_HOSTNAME_STRICT_HTTPS: false
-      KC_HTTP_ENABLED: true
-      KC_PROXY: edge
+      
+      # Server configuration
+      KC_HOSTNAME: localhost
+      KC_HOSTNAME_PORT: 7080
+      KC_HOSTNAME_STRICT: "false"
+      KC_HTTP_ENABLED: "true"
       KC_HTTP_PORT: 8080
+      KC_PROXY: edge
+      
+      # Features and monitoring
+      KC_HEALTH_ENABLED: "true"
+      KC_METRICS_ENABLED: "true"
+      KC_FEATURES: scripts
+      KC_LOG_LEVEL: INFO
       KC_MANAGEMENT_PORT: 9000
+      
+      # Admin credentials
       KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN_USER}
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
     command: 
       - start-dev
-      - --health-enabled=true
-      - --metrics-enabled=true
-      - --import-realm
     volumes:
       - ./docker/keycloak/realms/:/opt/keycloak/data/import/
     depends_on:

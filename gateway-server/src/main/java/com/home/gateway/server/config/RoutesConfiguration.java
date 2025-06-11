@@ -1,11 +1,14 @@
 package com.home.gateway.server.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.gateway.filter.ratelimit.KeyResolver;
+import org.springframework.cloud.gateway.filter.ratelimit.RedisRateLimiter;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 import java.util.Date;
@@ -13,10 +16,10 @@ import java.util.Date;
 @Configuration
 public class RoutesConfiguration {
 
-    @Autowired
-    RedisConfiguration redisConfiguration;
-    @Autowired
-    UserKeyResolverConfiguration userKeyResolverConfiguration;
+
+
+    private static final String USER_HEADER = "user";
+    private static final String ANONYMOUS_USER = "anonymous";
 
     @Bean
     public RouteLocator growMeRouteConfig(RouteLocatorBuilder routeLocatorBuilder) {
@@ -29,8 +32,8 @@ public class RoutesConfiguration {
                                 .retry(retryConfig -> retryConfig.setRetries(3)
                                         .setMethods(HttpMethod.GET)
                                         .setBackoff(Duration.ofMillis(100), Duration.ofMillis(1000), 2, true))
-                                .requestRateLimiter(config -> config.setRateLimiter(redisConfiguration.redisRateLimiter())
-                                        .setKeyResolver(userKeyResolverConfiguration.userKeyResolver())))
+                                .requestRateLimiter(config -> config.setRateLimiter(redisRateLimiter())
+                                        .setKeyResolver(userKeyResolver())))
                         .uri("lb://USER-SERVICE"))
 
                 // PRODUCT-SERVICE
@@ -41,8 +44,8 @@ public class RoutesConfiguration {
                                 .retry(retryConfig -> retryConfig.setRetries(3)
                                         .setMethods(HttpMethod.GET)
                                         .setBackoff(Duration.ofMillis(100), Duration.ofMillis(1000), 2, true))
-                                .requestRateLimiter(config -> config.setRateLimiter(redisConfiguration.redisRateLimiter())
-                                        .setKeyResolver(userKeyResolverConfiguration.userKeyResolver())))
+                                .requestRateLimiter(config -> config.setRateLimiter(redisRateLimiter())
+                                        .setKeyResolver(userKeyResolver())))
                         .uri("lb://PRODUCT-SERVICE"))
                 .route("product-service-owners", p -> p.path("/growme/owners/**")
                         .filters(f -> f.rewritePath("/growme/owners/(?<segment>.*)", "/${segment}")
@@ -51,8 +54,8 @@ public class RoutesConfiguration {
                                 .retry(retryConfig -> retryConfig.setRetries(3)
                                         .setMethods(HttpMethod.GET)
                                         .setBackoff(Duration.ofMillis(100), Duration.ofMillis(1000), 2, true))
-                                .requestRateLimiter(config -> config.setRateLimiter(redisConfiguration.redisRateLimiter())
-                                        .setKeyResolver(userKeyResolverConfiguration.userKeyResolver())))
+                                .requestRateLimiter(config -> config.setRateLimiter(redisRateLimiter())
+                                        .setKeyResolver(userKeyResolver())))
                         .uri("lb://PRODUCT-SERVICE"))
                 .route("product-service-products", p -> p.path("/growme/products/**")
                         .filters(f -> f.rewritePath("/growme/products/(?<segment>.*)", "/api/products/${segment}")
@@ -61,8 +64,8 @@ public class RoutesConfiguration {
                                 .retry(retryConfig -> retryConfig.setRetries(3)
                                         .setMethods(HttpMethod.GET)
                                         .setBackoff(Duration.ofMillis(100), Duration.ofMillis(1000), 2, true))
-                                .requestRateLimiter(config -> config.setRateLimiter(redisConfiguration.redisRateLimiter())
-                                        .setKeyResolver(userKeyResolverConfiguration.userKeyResolver())))
+                                .requestRateLimiter(config -> config.setRateLimiter(redisRateLimiter())
+                                        .setKeyResolver(userKeyResolver())))
                         .uri("lb://PRODUCT-SERVICE"))
 
                 // ORDER-SERVICE
@@ -73,8 +76,8 @@ public class RoutesConfiguration {
                                 .retry(retryConfig -> retryConfig.setRetries(3)
                                         .setMethods(HttpMethod.GET)
                                         .setBackoff(Duration.ofMillis(100), Duration.ofMillis(1000), 2, true))
-                                .requestRateLimiter(config -> config.setRateLimiter(redisConfiguration.redisRateLimiter())
-                                        .setKeyResolver(userKeyResolverConfiguration.userKeyResolver())))
+                                .requestRateLimiter(config -> config.setRateLimiter(redisRateLimiter())
+                                        .setKeyResolver(userKeyResolver())))
                         .uri("lb://ORDER-SERVICE"))
                 .route("order-service-deliverymethods", p -> p.path("/growme/deliverymethods/**")
                         .filters(f -> f.rewritePath("/growme/deliverymethods/?(?<segment>/?.*)", "/api/deliverymethods${segment}")
@@ -83,8 +86,8 @@ public class RoutesConfiguration {
                                 .retry(retryConfig -> retryConfig.setRetries(3)
                                         .setMethods(HttpMethod.GET)
                                         .setBackoff(Duration.ofMillis(100), Duration.ofMillis(1000), 2, true))
-                                .requestRateLimiter(config -> config.setRateLimiter(redisConfiguration.redisRateLimiter())
-                                        .setKeyResolver(userKeyResolverConfiguration.userKeyResolver())))
+                                .requestRateLimiter(config -> config.setRateLimiter(redisRateLimiter())
+                                        .setKeyResolver(userKeyResolver())))
                         .uri("lb://ORDER-SERVICE"))
                 .route("order-service-orders", p -> p.path("/growme/orders/**", "/growme/orders/**")
                         .filters(f -> f.rewritePath("/growme/orders(?<segment>/?.*)", "/api/orders${segment}")
@@ -94,8 +97,8 @@ public class RoutesConfiguration {
                                 .retry(retryConfig -> retryConfig.setRetries(3)
                                         .setMethods(HttpMethod.GET)
                                         .setBackoff(Duration.ofMillis(100), Duration.ofMillis(1000), 2, true))
-                                .requestRateLimiter(config -> config.setRateLimiter(redisConfiguration.redisRateLimiter())
-                                        .setKeyResolver(userKeyResolverConfiguration.userKeyResolver())))
+                                .requestRateLimiter(config -> config.setRateLimiter(redisRateLimiter())
+                                        .setKeyResolver(userKeyResolver())))
                         .uri("lb://ORDER-SERVICE"))
 
                 //KEYCLOAK-ROLE-SERVICE
@@ -106,16 +109,29 @@ public class RoutesConfiguration {
                                 .retry(retryConfig -> retryConfig.setRetries(3)
                                         .setMethods(HttpMethod.GET)
                                         .setBackoff(Duration.ofMillis(100), Duration.ofMillis(1000), 2, true))
-                                .requestRateLimiter(config -> config.setRateLimiter(redisConfiguration.redisRateLimiter())
-                                        .setKeyResolver(userKeyResolverConfiguration.userKeyResolver())))
+                                .requestRateLimiter(config -> config.setRateLimiter(redisRateLimiter())
+                                        .setKeyResolver(userKeyResolver())))
                         .uri("lb://KEYCLOAK-ROLE-SERVICE"))
                 .route("keycloak-service-users",p -> p.path("/growme/usersk/**")
                         .filters(f -> f.rewritePath("/growme/usersk/(?<segment>.*)", "/api/usersk/${segment}")
                                 .circuitBreaker(config -> config.setName("keycloakRoleServiceCircuitBraker")
                                         .setFallbackUri("forward:/contactSupport"))
-                                .requestRateLimiter(config -> config.setRateLimiter(redisConfiguration.redisRateLimiter())
-                                        .setKeyResolver(userKeyResolverConfiguration.userKeyResolver())))
+                                .requestRateLimiter(config -> config.setRateLimiter(redisRateLimiter())
+                                        .setKeyResolver(userKeyResolver())))
                         .uri("lb://KEYCLOAK-ROLE-SERVICE"))
                 .build();
+    }
+
+    @Bean
+    public RedisRateLimiter redisRateLimiter() {
+        return new RedisRateLimiter(1, 1, 1);
+    }
+
+    @Bean
+    KeyResolver userKeyResolver() {
+        return exchange -> Mono.justOrEmpty(exchange.getRequest()
+                        .getHeaders()
+                        .getFirst(USER_HEADER))
+                .defaultIfEmpty(ANONYMOUS_USER);
     }
 }
