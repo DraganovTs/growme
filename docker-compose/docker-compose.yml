@@ -53,10 +53,11 @@ services:
     container_name: keycloak
     ports:
       - "7080:8080"
+      - "9000:9000"
     healthcheck:
-      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/health/ready" ]
+      test: [ "CMD", "curl", "-f", "http://keycloak:9000/health/ready" ]
       interval: 10s
-      timeout: 5s
+      timeout: 10s
       retries: 10
       start_period: 30s
     environment:
@@ -70,10 +71,19 @@ services:
       KC_METRICS_ENABLED: true
       KC_LOG_LEVEL: INFO
       KC_FEATURES: scripts
-
+      KC_HOSTNAME_STRICT: false
+      KC_HOSTNAME_STRICT_HTTPS: false
+      KC_HTTP_ENABLED: true
+      KC_PROXY: edge
+      KC_HTTP_PORT: 8080
+      KC_MANAGEMENT_PORT: 9000
       KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN_USER}
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
-    command: [ "start-dev","--import-realm" ]
+    command: 
+      - start-dev
+      - --health-enabled=true
+      - --metrics-enabled=true
+      - --import-realm
     volumes:
       - ./docker/keycloak/realms/:/opt/keycloak/data/import/
     depends_on:
@@ -361,9 +371,11 @@ services:
       SPRING_DATA_REDIS_HOST: redis-gateway
       SPRING_DATA_REDIS_PORT: 6381
       SPRING_DATA_REDIS_TIMEOUT: 1s
-      SPRING_PROFILES_ACTIVE: prod
+      SPRING_PROFILES_ACTIVE: default
     depends_on:
       keycloak:
+        condition: service_healthy
+      redis-gateway:
         condition: service_healthy
     extends:
       file: common_config.yml
@@ -382,6 +394,3 @@ volumes:
 networks:
   grow-me:
     driver: "bridge"
-
-
-
