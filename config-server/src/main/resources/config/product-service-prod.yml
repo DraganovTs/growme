@@ -8,8 +8,8 @@ spring:
     password: ${SQL_DB_PASSWORD}
   servlet:
     multipart:
-      max-file-size: 5MB
-      max-request-size: 5MB
+      max-file-size: 6MB
+      max-request-size: 6MB
   kafka:
     consumer:
       group-id: product-service-group
