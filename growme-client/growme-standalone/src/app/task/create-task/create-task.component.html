@@ -1,0 +1,232 @@
+<!-- tasks/create-task.component.html -->
+<div class="container my-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      <div class="card shadow-sm">
+        <div class="card-header bg-warning text-white">
+          <h3 class="mb-0"><i class="fa fa-leaf me-2"></i>Create a New Grow Task</h3>
+          <p class="mb-0 small">Fill in the details of what you'd like to have grown for you</p>
+        </div>
+        <div class="card-body">
+          <form [formGroup]="taskForm" (ngSubmit)="onSubmit()" novalidate>
+            <!-- Basic Information -->
+            <div class="mb-4">
+              <h5 class="text-warning mb-3 border-bottom pb-2">What would you like to grow?</h5>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="productType" class="form-label">Product Type</label>
+                  <select class="form-select" id="productType" formControlName="productType" 
+                          [class.is-invalid]="taskForm.get('productType')?.invalid && taskForm.get('productType')?.touched">
+                    <option value="" disabled selected>Select a category</option>
+                    <option *ngFor="let type of productTypes" [value]="type.value">{{type.label}}</option>
+                  </select>
+                  <div *ngIf="taskForm.get('productType')?.invalid && taskForm.get('productType')?.touched" 
+                       class="invalid-feedback">
+                    Please select a product type
+                  </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="specificProduct" class="form-label">Specific Product</label>
+                  <input type="text" class="form-control" id="specificProduct" 
+                         formControlName="specificProduct" placeholder="e.g., Organic Tomatoes"
+                         [class.is-invalid]="taskForm.get('specificProduct')?.invalid && taskForm.get('specificProduct')?.touched">
+                  <div *ngIf="taskForm.get('specificProduct')?.invalid && taskForm.get('specificProduct')?.touched" 
+                       class="invalid-feedback">
+                    <span *ngIf="taskForm.get('specificProduct')?.errors?.['required']">
+                      Please specify the product
+                    </span>
+                    <span *ngIf="taskForm.get('specificProduct')?.errors?.['maxlength']">
+                      Maximum 100 characters allowed
+                    </span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <textarea class="form-control" id="description" rows="3" 
+                          formControlName="description" 
+                          placeholder="Provide details about what you're looking for (variety, special requirements, etc.)"
+                          [class.is-invalid]="taskForm.get('description')?.invalid && taskForm.get('description')?.touched"></textarea>
+                <div *ngIf="taskForm.get('description')?.invalid && taskForm.get('description')?.touched" 
+                     class="invalid-feedback">
+                  <span *ngIf="taskForm.get('description')?.errors?.['required']">
+                    Please provide a description
+                  </span>
+                  <span *ngIf="taskForm.get('description')?.errors?.['maxlength']">
+                    Maximum 500 characters allowed
+                  </span>
+                </div>
+                <small class="text-muted">Describe in detail what you're looking for to help growers understand your needs</small>
+              </div>
+            </div>
+
+            <!-- Quantity & Quality -->
+            <div class="mb-4">
+              <h5 class="text-warning mb-3 border-bottom pb-2">Quantity & Quality</h5>
+              <div class="row">
+                <div class="col-md-4 mb-3">
+                  <label for="quantity" class="form-label">Quantity</label>
+                  <input type="number" class="form-control" id="quantity" 
+                         formControlName="quantity" min="1" max="10000"
+                         [class.is-invalid]="taskForm.get('quantity')?.invalid && taskForm.get('quantity')?.touched">
+                  <div *ngIf="taskForm.get('quantity')?.invalid && taskForm.get('quantity')?.touched" 
+                       class="invalid-feedback">
+                    <span *ngIf="taskForm.get('quantity')?.errors?.['required']">
+                      Please enter quantity
+                    </span>
+                    <span *ngIf="taskForm.get('quantity')?.errors?.['min'] || taskForm.get('quantity')?.errors?.['max']">
+                      Quantity must be between 1 and 10,000
+                    </span>
+                  </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                  <label for="unit" class="form-label">Unit</label>
+                  <select class="form-select" id="unit" formControlName="unit"
+                          [class.is-invalid]="taskForm.get('unit')?.invalid && taskForm.get('unit')?.touched">
+                    <option *ngFor="let unit of units" [value]="unit.value">{{unit.label}}</option>
+                  </select>
+                </div>
+                <div class="col-md-4 mb-3">
+                  <label for="quality" class="form-label">Quality Standard</label>
+                  <select class="form-select" id="quality" formControlName="quality"
+                          [class.is-invalid]="taskForm.get('quality')?.invalid && taskForm.get('quality')?.touched">
+                    <option *ngFor="let quality of qualityStandards" [value]="quality.value">{{quality.label}}</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Timeline -->
+            <div class="mb-4">
+              <h5 class="text-warning mb-3 border-bottom pb-2">When do you need it?</h5>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="harvestDate" class="form-label">Desired Harvest Date</label>
+                  <input type="date" class="form-control" id="harvestDate" 
+                         formControlName="harvestDate" [min]="minHarvestDate"
+                         [class.is-invalid]="taskForm.get('harvestDate')?.invalid && taskForm.get('harvestDate')?.touched">
+                  <div *ngIf="taskForm.get('harvestDate')?.invalid && taskForm.get('harvestDate')?.touched" 
+                       class="invalid-feedback">
+                    Please select a valid harvest date (must be in the future)
+                  </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="deliveryDate" class="form-label">Delivery Deadline</label>
+                  <input type="date" class="form-control" id="deliveryDate" 
+                         formControlName="deliveryDate"
+                         [class.is-invalid]="taskForm.get('deliveryDate')?.invalid && taskForm.get('deliveryDate')?.touched">
+                  <div *ngIf="taskForm.get('deliveryDate')?.invalid && taskForm.get('deliveryDate')?.touched" 
+                       class="invalid-feedback">
+                    <span *ngIf="taskForm.get('deliveryDate')?.errors?.['required']">
+                      Please select a delivery date
+                    </span>
+                    <span *ngIf="taskForm.get('deliveryDate')?.errors?.['min']">
+                      Delivery date must be after harvest date
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" id="flexibleDates" 
+                       formControlName="flexibleDates">
+                <label class="form-check-label" for="flexibleDates">
+                  Dates are flexible (growers may propose alternatives)
+                </label>
+              </div>
+            </div>
+
+            <!-- Location & Delivery -->
+            <div class="mb-4">
+              <h5 class="text-warning mb-3 border-bottom pb-2">Location & Delivery</h5>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="deliveryLocation" class="form-label">Delivery Location</label>
+                  <input type="text" class="form-control" id="deliveryLocation" 
+                         formControlName="deliveryLocation" placeholder="City or ZIP code"
+                         [class.is-invalid]="taskForm.get('deliveryLocation')?.invalid && taskForm.get('deliveryLocation')?.touched">
+                  <div *ngIf="taskForm.get('deliveryLocation')?.invalid && taskForm.get('deliveryLocation')?.touched" 
+                       class="invalid-feedback">
+                    Please provide a delivery location
+                  </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="deliveryMethod" class="form-label">Preferred Delivery Method</label>
+                  <select class="form-select" id="deliveryMethod" formControlName="deliveryMethod">
+                    <option *ngFor="let method of deliveryMethods" [value]="method.value">{{method.label}}</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" id="willingToShip" 
+                       formControlName="willingToShip">
+                <label class="form-check-label" for="willingToShip">
+                  Willing to accept shipped produce (beyond local area)
+                </label>
+              </div>
+            </div>
+
+            <!-- Budget -->
+            <div class="mb-4">
+              <h5 class="text-warning mb-3 border-bottom pb-2">Budget</h5>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="maxPrice" class="form-label">Maximum Price You're Willing to Pay (optional)</label>
+                  <div class="input-group">
+                    <span class="input-group-text">$</span>
+                    <input type="number" class="form-control" id="maxPrice" 
+                           formControlName="maxPrice" min="0" step="0.01"
+                           [class.is-invalid]="taskForm.get('maxPrice')?.invalid && taskForm.get('maxPrice')?.touched">
+                  </div>
+                  <div *ngIf="taskForm.get('maxPrice')?.invalid && taskForm.get('maxPrice')?.touched" 
+                       class="invalid-feedback">
+                    Maximum price must be between $0 and $10,000
+                  </div>
+                  <small class="text-muted">Leave blank if you want growers to propose prices</small>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="priceModel" class="form-label">Preferred Pricing Model</label>
+                  <select class="form-select" id="priceModel" formControlName="priceModel">
+                    <option *ngFor="let model of priceModels" [value]="model.value">{{model.label}}</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Additional Options -->
+            <div class="mb-4">
+              <h5 class="text-warning mb-3 border-bottom pb-2">Additional Options</h5>
+              <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" id="photosRequired" 
+                       formControlName="photosRequired">
+                <label class="form-check-label" for="photosRequired">
+                  Require growth progress photos
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" id="visitFarm" 
+                       formControlName="visitFarm">
+                <label class="form-check-label" for="visitFarm">
+                  Would like option to visit farm during growth
+                </label>
+              </div>
+            </div>
+
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+              <button type="button" class="btn btn-outline-secondary me-md-2" 
+                      (click)="cancel()">Cancel</button>
+              <button type="submit" class="btn btn-warning" 
+                      [disabled]="!taskForm.valid || submitting">
+                <span *ngIf="!submitting">Post Grow Task</span>
+                <span *ngIf="submitting">
+                  <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                  Posting...
+                </span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -8,5 +8,6 @@ export const environment = {
     productApi: 'http://localhost:8087/api/products',
     basketApi: 'http://localhost:8083/api/basket',
     orderApi: 'http://localhost:8083/api/',
+    taskApi: 'http://localhost:8086/api/',
     pageSize:   6
 }
