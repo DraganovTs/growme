@@ -1,1 +1,335 @@
-<p>task-details works!</p>
+<!-- tasks/task-detail.component.html -->
+<div class="container my-5">
+  <div *ngIf="loading" class="text-center my-5">
+    <div class="spinner-border text-warning" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="mt-2">Loading task details...</p>
+  </div>
+
+  <div *ngIf="!loading && task" class="card shadow">
+    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+      <div>
+        <h3 class="mb-0 text-warning">{{task.specificProduct}}</h3>
+        <small class="text-muted">Created by {{task.user?.username || 'user'}} on {{task.createdAt | date:'mediumDate'}}</small>
+      </div>
+      <span class="badge" [ngClass]="{
+        'bg-success': task.status === 'active',
+        'bg-warning': task.status === 'pending',
+        'bg-secondary': task.status === 'completed',
+        'bg-danger': task.status === 'cancelled'
+      }">
+        {{task.status | titlecase}}
+      </span>
+    </div>
+
+    <div class="card-body">
+      <div class="row">
+        <!-- Task Details -->
+        <div class="col-lg-8">
+          <div class="mb-4">
+            <h5 class="text-warning border-bottom pb-2">Task Details</h5>
+            <p class="mb-3">{{task.description}}</p>
+            
+            <div class="row">
+              <div class="col-md-6">
+                <ul class="list-group mb-3">
+                  <li class="list-group-item d-flex justify-content-between">
+                    <span class="fw-bold">Product Type:</span>
+                    <span>{{task.productType | titlecase}}</span>
+                  </li>
+                  <li class="list-group-item d-flex justify-content-between">
+                    <span class="fw-bold">Quantity:</span>
+                    <span>{{task.quantity}} {{task.unit}}</span>
+                  </li>
+                  <li class="list-group-item d-flex justify-content-between">
+                    <span class="fw-bold">Quality Standard:</span>
+                    <span>{{task.quality | titlecase}}</span>
+                  </li>
+                </ul>
+              </div>
+              <div class="col-md-6">
+                <ul class="list-group mb-3">
+                  <li class="list-group-item d-flex justify-content-between">
+                    <span class="fw-bold">Harvest Date:</span>
+                    <span>{{task.harvestDate | date:'mediumDate'}}</span>
+                  </li>
+                  <li class="list-group-item d-flex justify-content-between">
+                    <span class="fw-bold">Delivery Deadline:</span>
+                    <span>{{task.deliveryDate | date:'mediumDate'}}</span>
+                  </li>
+                  <li class="list-group-item d-flex justify-content-between">
+                    <span class="fw-bold">Location:</span>
+                    <span>{{task.deliveryLocation}}</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <h5 class="text-warning border-bottom pb-2">Additional Requirements</h5>
+            <div class="d-flex flex-wrap gap-2 mb-3">
+              <span *ngIf="task.photosRequired" class="badge bg-info">
+                <i class="fa fa-camera me-1"></i> Progress Photos
+              </span>
+              <span *ngIf="task.visitFarm" class="badge bg-info">
+                <i class="fa fa-map-marker me-1"></i> Farm Visits
+              </span>
+              <span *ngIf="task.flexibleDates" class="badge bg-info">
+                <i class="fa fa-calendar me-1"></i> Flexible Dates
+              </span>
+              <span *ngIf="task.willingToShip" class="badge bg-info">
+                <i class="fa fa-truck me-1"></i> Willing to Ship
+              </span>
+            </div>
+          </div>
+
+          <!-- Bids Section -->
+          <div class="mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="text-warning mb-0 border-bottom pb-2">Grower Offers</h5>
+              <span class="badge bg-primary">{{bids.length}} {{bids.length === 1 ? 'Offer' : 'Offers'}}</span>
+            </div>
+
+            <div *ngIf="bids.length === 0" class="alert alert-info">
+              No offers yet. Check back later!
+            </div>
+
+            <div class="accordion" id="bidsAccordion">
+              <div class="accordion-item" *ngFor="let bid of bids; let i = index">
+                <h2 class="accordion-header" [id]="'heading' + i">
+                  <button class="accordion-button collapsed" type="button" 
+                          data-bs-toggle="collapse" [attr.data-bs-target]="'#collapse' + i" 
+                          aria-expanded="false" [attr.aria-controls]="'collapse' + i">
+                    <div class="d-flex justify-content-between w-100 me-3">
+                      <span>
+                        <strong>{{bid.growerName}}</strong> - ${{bid.price | number:'1.2-2'}} 
+                        <span *ngIf="bid.deliveryIncluded" class="badge bg-success ms-2">Delivery Included</span>
+                      </span>
+                      <span class="badge" [ngClass]="{
+                        'bg-success': bid.status === 'accepted',
+                        'bg-warning': bid.status === 'pending',
+                        'bg-secondary': bid.status === 'rejected'
+                      }">
+                        {{bid.status | titlecase}}
+                      </span>
+                    </div>
+                  </button>
+                </h2>
+                <div [id]="'collapse' + i" class="accordion-collapse collapse" 
+                     [attr.aria-labelledby]="'heading' + i" data-bs-parent="#bidsAccordion">
+                  <div class="accordion-body">
+                    <p class="mb-3">{{bid.message}}</p>
+                    <ul class="list-group mb-3">
+                      <li class="list-group-item d-flex justify-content-between">
+                        <span class="fw-bold">Proposed Harvest Date:</span>
+                        <span>{{bid.proposedHarvestDate | date:'mediumDate'}}</span>
+                      </li>
+                      <li class="list-group-item d-flex justify-content-between">
+                        <span class="fw-bold">Delivery Method:</span>
+                        <span>{{bid.deliveryMethod | titlecase}}</span>
+                      </li>
+                      <li class="list-group-item d-flex justify-content-between">
+                        <span class="fw-bold">Grower Rating:</span>
+                        <span>
+                          <i class="fa fa-star text-warning" *ngFor="let star of [1,2,3,4,5]" 
+                             [class.fa-star-o]="star > (bid.growerRating || 0)"></i>
+                          <small class="text-muted ms-2">({{bid.growerRatingCount || 0}} reviews)</small>
+                        </span>
+                      </li>
+                    </ul>
+                    
+                    <div *ngIf="isTaskOwner && task.status === 'pending'" class="d-flex gap-2">
+                      <button class="btn btn-sm btn-success" (click)="acceptBid(bid.id)">
+                        <i class="fa fa-check me-1"></i>Accept Offer
+                      </button>
+                      <button class="btn btn-sm btn-danger" (click)="rejectBid(bid.id)">
+                        <i class="fa fa-times me-1"></i>Reject
+                      </button>
+                    </div>
+                    
+                    <div *ngIf="bid.status === 'accepted'" class="alert alert-success mt-2">
+                      <i class="fa fa-check-circle me-2"></i>
+                      You've accepted this offer. The grower has been notified.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Task Actions & Summary -->
+        <div class="col-lg-4">
+          <div class="card shadow-sm mb-4">
+            <div class="card-header bg-light">
+              <h5 class="mb-0">Task Summary</h5>
+            </div>
+            <div class="card-body">
+              <div class="mb-3">
+                <h6>Price Range</h6>
+                <div *ngIf="bids.length > 0">
+                  <div class="progress mb-2" style="height: 20px;">
+                    <div class="progress-bar bg-warning" role="progressbar" 
+                         [style.width]="(lowestBidPrice / highestBidPrice) * 100 + '%'">
+                      ${{lowestBidPrice | number:'1.2-2'}}
+                    </div>
+                  </div>
+                  <div class="d-flex justify-content-between">
+                    <small>Lowest: ${{lowestBidPrice | number:'1.2-2'}}</small>
+                    <small>Highest: ${{highestBidPrice | number:'1.2-2'}}</small>
+                  </div>
+                </div>
+                <div *ngIf="bids.length === 0" class="text-muted">
+                  No offers yet
+                </div>
+              </div>
+
+              <div *ngIf="task.maxPrice" class="mb-3">
+                <h6>Your Max Price</h6>
+                <p class="mb-0">${{task.maxPrice | number:'1.2-2'}}</p>
+              </div>
+
+              <div class="mb-3">
+                <h6>Delivery Method</h6>
+                <p class="mb-0">{{task.deliveryMethod | titlecase}}</p>
+              </div>
+
+              <div class="mb-3">
+                <h6>Pricing Model</h6>
+                <p class="mb-0">{{task.priceModel | titlecase}}</p>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="isTaskOwner" class="card shadow-sm">
+            <div class="card-header bg-light">
+              <h5 class="mb-0">Task Actions</h5>
+            </div>
+            <div class="card-body">
+              <div *ngIf="task.status === 'pending'">
+                <p class="text-muted small mb-3">
+                  Your task is active and visible to growers. You'll receive offers soon.
+                </p>
+                <button class="btn btn-outline-danger w-100 mb-2" (click)="cancelTask()">
+                  <i class="fa fa-times me-2"></i>Cancel Task
+                </button>
+              </div>
+
+              <div *ngIf="task.status === 'active'">
+                <p class="text-success small mb-3">
+                  <i class="fa fa-check-circle me-2"></i>
+                  You've accepted an offer. The grower is now working on your order.
+                </p>
+                <button class="btn btn-outline-primary w-100 mb-2" (click)="contactGrower()">
+                  <i class="fa fa-envelope me-2"></i>Contact Grower
+                </button>
+                <button class="btn btn-outline-success w-100" (click)="completeTask()">
+                  <i class="fa fa-check-circle me-2"></i>Mark as Completed
+                </button>
+              </div>
+
+              <div *ngIf="task.status === 'completed'">
+                <p class="text-success small mb-3">
+                  <i class="fa fa-check-circle me-2"></i>
+                  This task has been successfully completed.
+                </p>
+                <button class="btn btn-outline-secondary w-100 mb-2" (click)="createSimilarTask()">
+                  <i class="fa fa-copy me-2"></i>Create Similar Task
+                </button>
+              </div>
+
+              <div *ngIf="task.status === 'cancelled'">
+                <p class="text-danger small mb-3">
+                  <i class="fa fa-times-circle me-2"></i>
+                  This task has been cancelled.
+                </p>
+                <button class="btn btn-outline-secondary w-100" (click)="createSimilarTask()">
+                  <i class="fa fa-copy me-2"></i>Create Similar Task
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="!isTaskOwner && isGrower && task.status === 'pending'" class="card shadow-sm mt-4">
+            <div class="card-header bg-light">
+              <h5 class="mb-0">Submit Your Offer</h5>
+            </div>
+            <div class="card-body">
+              <form [formGroup]="bidForm" (ngSubmit)="submitBid()">
+                <div class="mb-3">
+                  <label for="bidPrice" class="form-label">Your Price</label>
+                  <div class="input-group">
+                    <span class="input-group-text">$</span>
+                    <input type="number" class="form-control" id="bidPrice" 
+                           formControlName="price" min="0.01" step="0.01" required
+                           [class.is-invalid]="bidForm.get('price')?.invalid && bidForm.get('price')?.touched">
+                  </div>
+                  <div *ngIf="bidForm.get('price')?.invalid && bidForm.get('price')?.touched" 
+                       class="invalid-feedback">
+                    Please enter a valid price (minimum $0.01)
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label for="proposedHarvestDate" class="form-label">Proposed Harvest Date</label>
+                  <input type="date" class="form-control" id="proposedHarvestDate" 
+                         formControlName="proposedHarvestDate" required
+                         [min]="task.harvestDate | date:'yyyy-MM-dd'"
+                         [class.is-invalid]="bidForm.get('proposedHarvestDate')?.invalid && bidForm.get('proposedHarvestDate')?.touched">
+                  <div *ngIf="bidForm.get('proposedHarvestDate')?.invalid && bidForm.get('proposedHarvestDate')?.touched" 
+                       class="invalid-feedback">
+                    Please select a harvest date (after {{task.harvestDate | date:'mediumDate'}})
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label for="deliveryMethod" class="form-label">Delivery Method</label>
+                  <select class="form-select" id="deliveryMethod" formControlName="deliveryMethod" required>
+                    <option value="pickup">Customer Pickup</option>
+                    <option value="delivery">I'll Deliver</option>
+                    <option value="market">Meet at Farmers Market</option>
+                  </select>
+                </div>
+
+                <div class="form-check mb-3">
+                  <input class="form-check-input" type="checkbox" id="deliveryIncluded" 
+                         formControlName="deliveryIncluded">
+                  <label class="form-check-label" for="deliveryIncluded">
+                    Delivery cost included in price
+                  </label>
+                </div>
+
+                <div class="mb-3">
+                  <label for="bidMessage" class="form-label">Message to Buyer</label>
+                  <textarea class="form-control" id="bidMessage" rows="3" 
+                            formControlName="message" required
+                            placeholder="Explain your offer and growing approach"
+                            [class.is-invalid]="bidForm.get('message')?.invalid && bidForm.get('message')?.touched"></textarea>
+                  <div *ngIf="bidForm.get('message')?.invalid && bidForm.get('message')?.touched" 
+                       class="invalid-feedback">
+                    <span *ngIf="bidForm.get('message')?.errors?.['required']">
+                      Please enter a message
+                    </span>
+                    <span *ngIf="bidForm.get('message')?.errors?.['minlength']">
+                      Message should be at least 20 characters
+                    </span>
+                  </div>
+                </div>
+
+                <button type="submit" class="btn btn-warning w-100" [disabled]="!bidForm.valid || submittingBid">
+                  <span *ngIf="!submittingBid">Submit Offer</span>
+                  <span *ngIf="submittingBid">
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    Submitting...
+                  </span>
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
