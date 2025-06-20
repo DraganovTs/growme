@@ -1,4 +1,4 @@
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { environment } from "../environment/environments";
@@ -34,8 +34,31 @@ export class TaskService {
     return this.http.get(`${this.apiUrl}/${taskId}`);
   }
 
-  getTasks(params: any = {}): Observable<any> {
-    return this.http.get(this.apiUrl, { params });
+    getTasks(params: any = {}): Observable<any> {
+    let httpParams = new HttpParams();
+
+    // Add pagination params
+    if (params.page) {
+      httpParams = httpParams.set('page', params.page.toString());
+    }
+    if (params.limit) {
+      httpParams = httpParams.set('limit', params.limit.toString());
+    }
+
+    // Add filtering params
+    if (params.search) {
+      httpParams = httpParams.set('search', params.search);
+    }
+    if (params.category) {
+      httpParams = httpParams.set('category', params.category);
+    }
+
+    // Add sorting params
+    if (params.sort) {
+      httpParams = httpParams.set('sort', params.sort);
+    }
+
+    return this.http.get(this.apiUrl, { params: httpParams });
   }
 
   updateTaskStatus(taskId: string, status: string): Observable<any> {
