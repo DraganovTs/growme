@@ -38,7 +38,22 @@ export const routes: Routes = [
          path: 'orders',
          loadChildren: () => import('./orders/order.routes').then(m => m.ORDER_ROUTES)
         },
-      
-    
+          {
+        path: 'tasks',
+        children: [
+            {
+                path: '',
+                loadComponent: () => import('./task/task-list/task-list.component').then(m => m.TaskListComponent)
+            },
+            {
+                path: 'create',
+                loadComponent: () => import('./task/create-task/create-task.component').then(m => m.CreateTaskComponent)
+            },
+            {
+                path: ':id',
+                loadComponent: () => import('./task/task-details/task-details.component').then(m => m.TaskDetailsComponent)
+            }
+        ]
+    },
     { path: '**', redirectTo: 'welcome' }
 ];
