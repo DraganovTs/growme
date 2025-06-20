@@ -14,7 +14,7 @@ spring:
         generate_statistics: true
   sql:
     init:
-        mode: never
+        mode: always
   config:
     activate:
       on-profile: dev

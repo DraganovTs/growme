@@ -3,7 +3,7 @@ spring:
   application:
     name: email-service
   datasource:
-    url: jdbc:mysql://localhost:3306/emails?useSSL=false&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://localhost:3306/growmeemails?useSSL=false&allowPublicKeyRetrieval=true
     username: ${SQL_DB_USERNAME}
     password: ${SQL_DB_PASSWORD}
   kafka:

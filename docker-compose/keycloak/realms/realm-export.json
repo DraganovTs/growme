@@ -559,7 +559,7 @@
     "optionalClientScopes" : [ "address", "phone", "organization", "offline_access", "microprofile-jwt" ]
   }, {
     "id" : "898b78f3-6c62-4fb9-a25a-8b0cb1d695f5",
-    "clientId" : "grow-me",
+    "clientId" : "grow-me-client",
     "name" : "",
     "description" : "",
     "rootUrl" : "http://localhost:4200/*",
@@ -569,8 +569,12 @@
     "enabled" : true,
     "alwaysDisplayInConsole" : false,
     "clientAuthenticatorType" : "client-secret",
-    "redirectUris" : [ "http://localhost:4200/*" ],
-    "webOrigins" : [ "http://localhost:4200/*" ],
+    "redirectUris": [
+      "http://localhost:4200/auth/callback",
+      "http://localhost:4200/*",
+      "http://localhost:4200/silent-check-sso.html"
+    ],
+    "webOrigins" : [ "http://localhost:4200/" ],
     "notBefore" : 0,
     "bearerOnly" : false,
     "consentRequired" : false,
@@ -578,7 +582,7 @@
     "implicitFlowEnabled" : false,
     "directAccessGrantsEnabled" : false,
     "serviceAccountsEnabled" : false,
-    "publicClient" : true,
+    "publicClient" : false,
     "frontchannelLogout" : true,
     "protocol" : "openid-connect",
     "attributes" : {
