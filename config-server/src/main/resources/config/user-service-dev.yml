@@ -9,5 +9,5 @@ spring:
   kafka:
     consumer:
       group-id: user-service-group
-  config:
-    import: configserver:http://localhost:8888/kafka-config-dev.yml
+#  config:
+#    import: configserver:http://localhost:8888/kafka-config-dev.yml

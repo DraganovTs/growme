@@ -51,7 +51,7 @@ export class AuthCallbackComponent {
             console.log('User:', user);
 
           
-            this.http.post('http://localhost:8080/api/users/register', {
+            this.http.post('http://localhost:8081/api/users/register', {
               keycloakId: user.sub,
               username: user.preferred_username,
               email: user.email,

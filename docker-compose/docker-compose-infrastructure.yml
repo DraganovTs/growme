@@ -27,7 +27,8 @@ services:
       DB_DATABASE: keycloak
       DB_USER: keycloak
       DB_PASSWORD: password
-    command: [ "start-dev","--import-realm" ]
+    command: [ "start-dev"]
+#    [ "start-dev","--import-realm" ]
     volumes:
       - ./docker/keycloak/realms/:/opt/keycloak/data/import/
     depends_on:
