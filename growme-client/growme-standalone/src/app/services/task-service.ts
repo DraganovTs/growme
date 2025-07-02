@@ -4,7 +4,7 @@ import { Observable } from "rxjs";
 import { environment } from "../environment/environments";
 import { KeycloakService } from "./keycloak.service";
 
-Injectable({
+@Injectable({
   providedIn: 'root'
 })
 export class TaskService {

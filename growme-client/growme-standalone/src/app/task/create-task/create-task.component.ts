@@ -11,7 +11,11 @@ import { TaskService } from 'src/app/services/task-service';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './create-task.component.html',
-  styleUrl: './create-task.component.scss'
+  styleUrl: './create-task.component.scss',
+  providers: [
+    TaskService,
+    ToastrService
+  ]
 })
 export class CreateTaskComponent implements OnInit{
   taskForm!: FormGroup;
