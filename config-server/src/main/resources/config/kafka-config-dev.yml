@@ -2,8 +2,8 @@ spring:
   kafka:
     bootstrap-servers: localhost:9091,localhost:9092,localhost:9093
     producer:
-#      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-#      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       properties:
         delivery.timeout.ms: 100000
         request.timeout.ms: 30000

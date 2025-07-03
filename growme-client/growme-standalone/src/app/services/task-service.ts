@@ -8,7 +8,7 @@ import { KeycloakService } from "./keycloak.service";
   providedIn: 'root'
 })
 export class TaskService {
-  private apiUrl = `${environment.taskApi}/tasks`;
+  private apiUrl = `${environment.taskApi}tasks`;
 
   constructor(
     private http: HttpClient,

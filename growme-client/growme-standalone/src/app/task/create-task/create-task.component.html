@@ -18,7 +18,7 @@
                   <select class="form-select" id="productType" formControlName="productType" 
                           [class.is-invalid]="taskForm.get('productType')?.invalid && taskForm.get('productType')?.touched">
                     <option value="" disabled selected>Select a category</option>
-                    <option *ngFor="let type of productTypes" [value]="type.value">{{type.label}}</option>
+                    <option *ngFor="let type of productTypes" [value]="type.categoryName">{{type.categoryName}}</option>
                   </select>
                   <div *ngIf="taskForm.get('productType')?.invalid && taskForm.get('productType')?.touched" 
                        class="invalid-feedback">

@@ -3,8 +3,10 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
+import { CategoryService } from 'src/app/services/category-service';
 import { KeycloakService } from 'src/app/services/keycloak.service';
 import { TaskService } from 'src/app/services/task-service';
+import { ICategory } from 'src/app/shared/model/product';
 
 @Component({
   selector: 'app-create-task',
@@ -14,21 +16,15 @@ import { TaskService } from 'src/app/services/task-service';
   styleUrl: './create-task.component.scss',
   providers: [
     TaskService,
-    ToastrService
+    ToastrService,
+    CategoryService
   ]
 })
 export class CreateTaskComponent implements OnInit{
   taskForm!: FormGroup;
   submitting = false;
   minHarvestDate: string;
-  productTypes = [
-    { value: 'vegetables', label: 'Vegetables' },
-    { value: 'fruits', label: 'Fruits' },
-    { value: 'herbs', label: 'Herbs' },
-    { value: 'grains', label: 'Grains' },
-    { value: 'wine', label: 'Wine Grapes' },
-    { value: 'other', label: 'Other' }
-  ];
+  productTypes: ICategory[] = [];
   qualityStandards = [
     { value: 'organic', label: 'Organic Certified' },
     { value: 'pesticideFree', label: 'Pesticide Free' },
@@ -106,12 +102,19 @@ export class CreateTaskComponent implements OnInit{
         const harvestDateObj = new Date(harvestDate);
         const minDeliveryDate = new Date(harvestDateObj);
         minDeliveryDate.setDate(harvestDateObj.getDate() + 1);
+
+            const minDeliveryDateString = minDeliveryDate.toISOString().split('T')[0];
+
         
-        this.taskForm.get('deliveryDate')?.setValidators([
-          Validators.required,
-          Validators.min(minDeliveryDate.getTime())
-        ]);
-        this.taskForm.get('deliveryDate')?.updateValueAndValidity();
+      this.taskForm.get('deliveryDate')?.setValidators([
+      Validators.required,
+      // Create a custom validator to compare dates properly
+      (control) => {
+        if (!control.value) return null;
+        return control.value >= minDeliveryDateString ? null : { min: true };
+      }
+    ]);
+    this.taskForm.get('deliveryDate')?.updateValueAndValidity();
       }
     });
   }
