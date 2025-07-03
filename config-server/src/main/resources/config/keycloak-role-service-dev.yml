@@ -21,12 +21,7 @@ spring:
       properties:
         spring.json.trusted.packages: "*"
       group-id: keycloak-role-service
-keycloak:
-  realm: ${realm}
-  adminClientId: ${admin_client}
-  adminClientSecret: ${admin_client_secret}
-  urls:
-    auth: http://localhost:7080
+
 
 jwt:
   auth:
