@@ -91,24 +91,24 @@ export class CreateTaskComponent implements OnInit{
   }
 
   initForm(): void {
-    this.taskForm = this.fb.group({
-      productType: ['', Validators.required],
-      specificProduct: ['', [Validators.required, Validators.maxLength(100)]],
-      description: ['', [Validators.required, Validators.maxLength(500)]],
-      quantity: ['', [Validators.required, Validators.min(1), Validators.max(10000)]],
-      unit: ['kg', Validators.required],
-      quality: ['organic', Validators.required],
-      harvestDate: ['', Validators.required],
-      deliveryDate: ['', Validators.required],
-      flexibleDates: [false],
-      deliveryLocation: ['', [Validators.required, Validators.maxLength(100)]],
-      deliveryMethod: ['flexible'],
-      willingToShip: [false],
-      maxPrice: ['', [Validators.min(0), Validators.max(10000)]],
-      priceModel: ['negotiable'],
-      photosRequired: [false],
-      visitFarm: [false]
-    });
+  this.taskForm = this.fb.group({
+    title: ['', [Validators.required, Validators.maxLength(100)]],
+    description: ['', [Validators.required, Validators.maxLength(1000)]],
+    categoryName: ['', Validators.required], // Changed from productType to categoryName
+    quantity: ['', [Validators.required, Validators.min(1), Validators.max(10000)]],
+    unit: ['kg', Validators.required],
+    quality: ['organic', Validators.required],
+    harvestDate: ['', Validators.required],
+    deliveryDate: ['', Validators.required],
+    flexibleDates: [false],
+    deliveryLocation: ['', [Validators.required, Validators.maxLength(100)]],
+    deliveryMethod: ['flexible', Validators.required], // Added required validator
+    willingToShip: [false],
+    maxPrice: ['', [Validators.min(0), Validators.max(10000)]], // Will be mapped to budget
+    priceModel: ['negotiable', Validators.required], // Added required validator
+    photosRequired: [false],
+    visitFarm: [false]
+  });
 
     // Set delivery date to be after harvest date
     this.taskForm.get('harvestDate')?.valueChanges.subscribe(harvestDate => {
@@ -143,12 +143,25 @@ export class CreateTaskComponent implements OnInit{
     this.submitting = true;
     
     const formValue = this.taskForm.value;
-    const taskData = {
-      ...formValue,
-      harvestDate: new Date(formValue.harvestDate).toISOString(),
-      deliveryDate: new Date(formValue.deliveryDate).toISOString(),
-      status: 'pending'
-    };
+      const taskData = {
+    title: formValue.title,
+    description: formValue.description,
+    categoryName: formValue.categoryName,
+    quantity: formValue.quantity,
+    unit: formValue.unit,
+    quality: formValue.quality,
+    harvestDate: formValue.harvestDate,
+    deliveryDate: formValue.deliveryDate,
+    flexibleDates: formValue.flexibleDates,
+    deliveryLocation: formValue.deliveryLocation,
+    deliveryMethod: formValue.deliveryMethod,
+    willingToShip: formValue.willingToShip,
+    budget: formValue.maxPrice || 0, 
+    priceModel: formValue.priceModel,
+    photosRequired: formValue.photosRequired,
+    visitFarm: formValue.visitFarm,
+    status: 'OPEN' // Default status
+  };
 
     this.taskService.createTask(taskData).subscribe({
       next: (response) => {

@@ -27,6 +27,8 @@ export class TaskService {
       userId: userId
     };
 
+    console.log(completeTaskData);
+
     return this.http.post(`${this.apiUrl}`, completeTaskData);
   }
 

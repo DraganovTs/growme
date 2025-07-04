@@ -14,28 +14,28 @@
               <h5 class="text-warning mb-3 border-bottom pb-2">What would you like to grow?</h5>
               <div class="row">
                 <div class="col-md-6 mb-3">
-                  <label for="productType" class="form-label">Product Type</label>
-                  <select class="form-select" id="productType" formControlName="productType" 
-                          [class.is-invalid]="taskForm.get('productType')?.invalid && taskForm.get('productType')?.touched">
+                  <label for="categoryName" class="form-label">Category</label>
+                  <select class="form-select" id="categoryName" formControlName="categoryName" 
+                          [class.is-invalid]="taskForm.get('categoryName')?.invalid && taskForm.get('categoryName')?.touched">
                     <option value="" disabled selected>Select a category</option>
                     <option *ngFor="let type of productTypes" [value]="type.categoryName">{{type.categoryName}}</option>
                   </select>
-                  <div *ngIf="taskForm.get('productType')?.invalid && taskForm.get('productType')?.touched" 
+                  <div *ngIf="taskForm.get('categoryName')?.invalid && taskForm.get('categoryName')?.touched" 
                        class="invalid-feedback">
                     Please select a product type
                   </div>
                 </div>
                 <div class="col-md-6 mb-3">
-                  <label for="specificProduct" class="form-label">Specific Product</label>
-                  <input type="text" class="form-control" id="specificProduct" 
-                         formControlName="specificProduct" placeholder="e.g., Organic Tomatoes"
-                         [class.is-invalid]="taskForm.get('specificProduct')?.invalid && taskForm.get('specificProduct')?.touched">
-                  <div *ngIf="taskForm.get('specificProduct')?.invalid && taskForm.get('specificProduct')?.touched" 
+                  <label for="title" class="form-label">Product</label>
+                  <input type="text" class="form-control" id="title" 
+                         formControlName="title" placeholder="e.g., Tomatoes"
+                         [class.is-invalid]="taskForm.get('title')?.invalid && taskForm.get('title')?.touched">
+                  <div *ngIf="taskForm.get('title')?.invalid && taskForm.get('title')?.touched" 
                        class="invalid-feedback">
-                    <span *ngIf="taskForm.get('specificProduct')?.errors?.['required']">
+                    <span *ngIf="taskForm.get('title')?.errors?.['required']">
                       Please specify the product
                     </span>
-                    <span *ngIf="taskForm.get('specificProduct')?.errors?.['maxlength']">
+                    <span *ngIf="taskForm.get('title')?.errors?.['maxlength']">
                       Maximum 100 characters allowed
                     </span>
                   </div>
@@ -47,6 +47,7 @@
                 <textarea class="form-control" id="description" rows="3" 
                           formControlName="description" 
                           placeholder="Provide details about what you're looking for (variety, special requirements, etc.)"
+                          maxlength="1000"
                           [class.is-invalid]="taskForm.get('description')?.invalid && taskForm.get('description')?.touched"></textarea>
                 <div *ngIf="taskForm.get('description')?.invalid && taskForm.get('description')?.touched" 
                      class="invalid-feedback">
@@ -54,7 +55,7 @@
                     Please provide a description
                   </span>
                   <span *ngIf="taskForm.get('description')?.errors?.['maxlength']">
-                    Maximum 500 characters allowed
+                    Maximum 1000 characters allowed
                   </span>
                 </div>
                 <small class="text-muted">Describe in detail what you're looking for to help growers understand your needs</small>
