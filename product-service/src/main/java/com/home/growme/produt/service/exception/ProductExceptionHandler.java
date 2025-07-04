@@ -1,6 +1,7 @@
 package com.home.growme.produt.service.exception;
 
 import com.home.growme.common.module.exceptions.BaseExceptionHandler;
+import com.home.growme.common.module.exceptions.CategoryNotFoundException;
 import com.home.growme.common.module.exceptions.ErrorResponseDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,7 @@ public class ProductExceptionHandler extends BaseExceptionHandler {
             OwnerNotFoundException.class
     })
     public ResponseEntity<ErrorResponseDTO> handleNotFoundExceptions(RuntimeException ex, WebRequest request) {
-        return buildErrorResponse(ex, request, HttpStatus.NOT_FOUND, "PRODUCT_NOT_FOUND");
+        return buildErrorResponse(ex, request, HttpStatus.NOT_FOUND, "NOT_FOUND");
     }
 
     @ExceptionHandler(FileStorageException.class)

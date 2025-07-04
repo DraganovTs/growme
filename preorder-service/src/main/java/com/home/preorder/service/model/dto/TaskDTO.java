@@ -21,7 +21,6 @@ public class TaskDTO {
     private String description;
 
     @NotNull
-    private UUID categoryId;
     private String categoryName;
 
     private TaskStatus status;
