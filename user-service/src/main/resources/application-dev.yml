@@ -17,7 +17,7 @@ spring:
         generate_statistics: true
   sql:
     init:
-      mode: always
+      mode: never
       platform: mysql
       schema-locations: classpath:schema.sql
 

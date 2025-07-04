@@ -56,7 +56,8 @@ export class CreateTaskComponent implements OnInit{
     private taskService: TaskService,
     private keycloakService: KeycloakService,
     private router: Router,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private categoryService: CategoryService
   ) {
     // Set min harvest date to tomorrow
     const tomorrow = new Date();
@@ -67,6 +68,19 @@ export class CreateTaskComponent implements OnInit{
   ngOnInit(): void {
     this.initForm();
     this.checkAuthentication();
+    this.loadCategories();
+  }
+
+    private loadCategories(): void {
+    this.categoryService.getCategories().subscribe({
+      next: (data) => {
+        this.productTypes = data;
+      },
+      error: (err) => {
+        console.error('Failed to load categories', err);
+        this.toastr.error('Failed to load product categories. Please try again.');
+      }
+    });
   }
 
   private checkAuthentication(): void {

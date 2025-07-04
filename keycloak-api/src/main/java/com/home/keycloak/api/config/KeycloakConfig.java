@@ -11,16 +11,16 @@ import org.springframework.context.annotation.Configuration;
 public class KeycloakConfig {
 
     @Value("${KEYCLOAK_URL}")
-    private String serverUrl;
+    private String serverUrl  ;
 
     @Value("${KEYCLOAK_REALM}")
-    private String realm;
+    private String realm ;
 
     @Value("${KEYCLOAK_CLIENT_ID}")
-    private String clientId;
+    private String clientId ;
 
     @Value("${KEYCLOAK_CLIENT_SECRET}")
-    private String clientSecret;
+    private String clientSecret ;
 
     @Bean
     public Keycloak keycloak(){
