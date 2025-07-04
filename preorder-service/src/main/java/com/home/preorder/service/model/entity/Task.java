@@ -8,6 +8,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -52,6 +53,44 @@ public class Task {
 
     @Future(message = "Deadline must be in the future")
     private LocalDateTime deadline;
+
+    @NotNull(message = "Quantity is required")
+    @Min(value = 1, message = "Quantity must be at least 1")
+    @Max(value = 10000, message = "Quantity must be at most 10000")
+    private Integer quantity;
+    @NotBlank(message = "Unit is required")
+    @Size(max = 20, message = "Unit must be at most 20 characters")
+    private String unit;
+    @NotBlank(message = "Quality standard is required")
+    @Size(max = 50, message = "Quality standard must be at most 50 characters")
+    private String quality;
+    @NotNull(message = "Harvest date is required")
+    @Future(message = "Harvest date must be in the future")
+    @Column(name = "harvest_date")
+    private LocalDate harvestDate;
+    @NotNull(message = "Delivery date is required")
+    @Column(name = "delivery_date")
+    private LocalDate deliveryDate;
+    @Column(name = "flexible_dates")
+    private boolean flexibleDates;
+    @NotBlank(message = "Delivery location is required")
+    @Size(max = 100, message = "Delivery location must be at most 100 characters")
+    @Column(name = "delivery_location")
+    private String deliveryLocation;
+    @NotBlank(message = "Delivery method is required")
+    @Size(max = 50, message = "Delivery method must be at most 50 characters")
+    @Column(name = "delivery_method")
+    private String deliveryMethod;
+    @Column(name = "willing_to_ship")
+    private boolean willingToShip;
+    @NotBlank(message = "Price model is required")
+    @Size(max = 50, message = "Price model must be at most 50 characters")
+    @Column(name = "price_model")
+    private String priceModel;
+    @Column(name = "photos_required")
+    private boolean photosRequired;
+    @Column(name = "visit_farm")
+    private boolean visitFarm;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
