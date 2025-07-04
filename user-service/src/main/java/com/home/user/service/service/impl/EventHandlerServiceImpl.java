@@ -6,7 +6,7 @@ import com.home.user.service.model.entity.User;
 import com.home.user.service.repository.UserRepository;
 import com.home.user.service.service.EventHandlerService;
 import com.home.user.service.service.EventPublisherService;
-import com.home.user.service.service.UserUpdateService;
+import com.home.user.service.service.UserCommandService;
 import com.home.user.service.util.EventValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -26,15 +26,15 @@ public class EventHandlerServiceImpl implements EventHandlerService {
     private final UserRepository userRepository;
     private final EventPublisherService eventPublisherService;
     private final EventValidator eventValidator;
-    private final UserUpdateService userUpdateService;
+    private final UserCommandService userCommandService;
 
     public EventHandlerServiceImpl( UserRepository userRepository,
                                    EventPublisherService eventPublisherService, EventValidator eventValidator,
-                                   UserUpdateService userUpdateService) {
+                                   UserCommandService userCommandService) {
         this.userRepository = userRepository;
         this.eventPublisherService = eventPublisherService;
         this.eventValidator = eventValidator;
-        this.userUpdateService = userUpdateService;
+        this.userCommandService = userCommandService;
     }
 
 
@@ -72,7 +72,7 @@ public class EventHandlerServiceImpl implements EventHandlerService {
             log.debug("Processing product assignment from event {}", event);
             eventValidator.validateProductAssignment(event);
 
-            userUpdateService.addOwnedProduct(event.getUserId(), event.getProductId());
+            userCommandService.addOwnedProduct(event.getUserId(), event.getProductId());
             log.info("Successfully processed product assignment for user {}", event.getUserId());
 
         } catch (Exception e) {
@@ -89,7 +89,7 @@ public class EventHandlerServiceImpl implements EventHandlerService {
             log.debug("Processing product deletion from event {}", event);
             eventValidator.validateProductDeletion(event);
 
-            userUpdateService.deleteOwnedProduct(event.getUserId(),event.getProductId());
+            userCommandService.deleteOwnedProduct(event.getUserId(),event.getProductId());
             log.info("Successfully processed product deletion for user {}", event.getUserId());
 
         }catch (Exception e){
@@ -106,7 +106,7 @@ public class EventHandlerServiceImpl implements EventHandlerService {
             log.debug("Processing order completed from event {}", event);
             eventValidator.validateOrderCompleted(event);
 
-            userUpdateService.addOwnerOrder(event.getOrderUserId(),event.getOrderId());
+            userCommandService.addOwnerOrder(event.getOrderUserId(),event.getOrderId());
             log.info("Successfully added order: {} for user {}",event.getOrderId(), event.getOrderUserId());
 
         }catch (Exception e){

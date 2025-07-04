@@ -12,7 +12,7 @@ import java.util.UUID;
  * synchronization of user data, updates to user profiles, and management of user
  * associations, including owned products and order ownership.
  */
-public interface UserUpdateService {
+public interface UserCommandService {
     void syncUserFromKeycloak(@Valid KeycloakUserDTO keycloakUserDTO);
     UserDTO updateUser(UUID id,@Valid UserDTO userDTO);
     void addOwnedProduct(String userId, String productId);

@@ -6,18 +6,15 @@ import com.home.user.service.mapper.UserMapper;
 import com.home.user.service.model.dto.KeycloakUserDTO;
 import com.home.user.service.model.dto.UserDTO;
 import com.home.user.service.model.entity.User;
-import com.home.user.service.model.enums.AccountStatus;
 import com.home.user.service.repository.UserRepository;
 import com.home.user.service.service.EventPublisherService;
-import com.home.user.service.service.UserUpdateService;
+import com.home.user.service.service.UserCommandService;
 import com.home.user.service.util.UserValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -25,7 +22,7 @@ import java.util.UUID;
 @Slf4j
 @Service
 @Transactional
-public class UserUpdateServiceImpl implements UserUpdateService {
+public class UserCommandServiceImpl implements UserCommandService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
@@ -33,8 +30,8 @@ public class UserUpdateServiceImpl implements UserUpdateService {
     private final EventPublisherService eventPublisherService;
 
 
-    public UserUpdateServiceImpl(UserRepository userRepository, UserMapper userMapper,
-                                 UserValidator validator, EventPublisherService eventPublisherService) {
+    public UserCommandServiceImpl(UserRepository userRepository, UserMapper userMapper,
+                                  UserValidator validator, EventPublisherService eventPublisherService) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.validator = validator;

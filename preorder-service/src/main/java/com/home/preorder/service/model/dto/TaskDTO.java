@@ -2,6 +2,7 @@ package com.home.preorder.service.model.dto;
 
 import com.home.preorder.service.model.enums.TaskStatus;
 import jakarta.validation.constraints.*;
+import lombok.Builder;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
+@Builder
 public class TaskDTO {
     private UUID taskId;
 

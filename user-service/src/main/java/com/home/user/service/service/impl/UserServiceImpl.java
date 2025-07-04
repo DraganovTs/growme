@@ -8,7 +8,7 @@ import com.home.user.service.model.dto.UserDTO;
 import com.home.user.service.service.EmailService;
 import com.home.user.service.service.UserQueryService;
 import com.home.user.service.service.UserService;
-import com.home.user.service.service.UserUpdateService;
+import com.home.user.service.service.UserCommandService;
 import com.home.user.service.util.UserValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -22,14 +22,14 @@ import java.util.UUID;
 @Service
 public class UserServiceImpl implements UserService {
 
-    private final UserUpdateService userUpdateService;
+    private final UserCommandService userCommandService;
     private final UserQueryService userQueryService;
     private final EmailService emailService;
     private final UserValidator validator;
 
-    public UserServiceImpl(UserUpdateService userUpdateService, UserQueryService userQueryService,
+    public UserServiceImpl(UserCommandService userCommandService, UserQueryService userQueryService,
                            EmailService emailService, UserValidator validator) {
-        this.userUpdateService = userUpdateService;
+        this.userCommandService = userCommandService;
         this.userQueryService = userQueryService;
         this.emailService = emailService;
         this.validator = validator;
@@ -42,7 +42,7 @@ public class UserServiceImpl implements UserService {
         log.info("Initiating account creation for user: {}", keycloakUserDTO.getUserId());
 
         try {
-            userUpdateService.syncUserFromKeycloak(keycloakUserDTO);
+            userCommandService.syncUserFromKeycloak(keycloakUserDTO);
             emailService.sendAccountCompletionConfirmation(keycloakUserDTO.getEmail());
             log.info("Account created successfully for user: {}", keycloakUserDTO.getUserId());
         } catch (UserAlreadyExistException e) {
@@ -61,7 +61,7 @@ public class UserServiceImpl implements UserService {
         log.info("Processing update for user: {}", userId);
 
         try {
-            UserDTO updatedUser = userUpdateService.updateUser(userId, userDTO);
+            UserDTO updatedUser = userCommandService.updateUser(userId, userDTO);
             emailService.sendAccountUpdateConfirmation(updatedUser.getEmail());
             log.info("Account update completed for user: {}", userId);
         } catch (UserNotFoundException e) {
@@ -80,7 +80,7 @@ public class UserServiceImpl implements UserService {
 
         try {
             String email = userQueryService.getUserEmail(userId);
-            userUpdateService.deleteUser(userId);
+            userCommandService.deleteUser(userId);
             emailService.sendAccountDeletionConfirmation(email);
             log.info("Account deletion completed for user: {}", userId);
         } catch (UserNotFoundException e) {
@@ -97,7 +97,7 @@ public class UserServiceImpl implements UserService {
 
         try {
             String email = userQueryService.getUserEmail(UUID.fromString(userId));
-            userUpdateService.addOwnedProduct(userId, productId);
+            userCommandService.addOwnedProduct(userId, productId);
             emailService.sendProductAddForSellConfirmation(email);
             log.info("Product {} successfully added for user {}", productId, userId);
         } catch (UserNotFoundException e) {
@@ -125,7 +125,7 @@ public class UserServiceImpl implements UserService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
 
-        userUpdateService.syncUserData(request);
+        userCommandService.syncUserData(request);
     }
 
     @Override
