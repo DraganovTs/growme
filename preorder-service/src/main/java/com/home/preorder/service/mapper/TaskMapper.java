@@ -20,6 +20,8 @@ public class TaskMapper {
                 .harvestDate(taskDTO.getHarvestDate())
                 .deliveryDate(taskDTO.getDeliveryDate())
                 .flexibleDates(taskDTO.isFlexibleDates())
+                .deliveryLocation(taskDTO.getDeliveryLocation())
+                .deliveryMethod(taskDTO.getDeliveryMethod())
                 .willingToShip(taskDTO.isWillingToShip())
                 .priceModel(taskDTO.getPriceModel())
                 .photosRequired(taskDTO.isPhotosRequired())
@@ -28,7 +30,7 @@ public class TaskMapper {
     }
 
     public TaskDTO mapTaskToTaskDTO(Task save) {
-        return TaskDTO.builder()
+        TaskDTO mapped = TaskDTO.builder()
                 .taskId(save.getTaskId())
                 .title(save.getTitle())
                 .description(save.getDescription())
@@ -50,5 +52,8 @@ public class TaskMapper {
                 .photosRequired(save.isPhotosRequired())
                 .visitFarm(save.isVisitFarm())
                 .build();
+
+    return mapped;
     }
+
 }

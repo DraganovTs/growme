@@ -78,7 +78,7 @@ public class TaskDTO {
     @AssertTrue(message = "Delivery date must be after harvest date")
     public boolean isDeliveryDateValid() {
         if (harvestDate == null || deliveryDate == null) {
-            return true; // Let @NotNull handle these cases
+            return true;
         }
         return deliveryDate.isAfter(harvestDate) ||
                 (flexibleDates && !deliveryDate.isBefore(harvestDate));
