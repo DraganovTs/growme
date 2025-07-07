@@ -1,14 +1,17 @@
 package com.home.preorder.service.service.impl;
 
 import com.home.preorder.service.model.dto.TaskDTO;
+import com.home.preorder.service.model.dto.TaskResponseListDTO;
 import com.home.preorder.service.model.dto.TaskStatusUpdateRequestDTO;
 import com.home.preorder.service.service.PreorderService;
 import com.home.preorder.service.service.TaskCommandService;
 import com.home.preorder.service.service.TaskQueryService;
+import com.home.preorder.service.specification.TaskSpecParams;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -39,14 +42,14 @@ public class PreorderServiceImpl implements PreorderService {
     }
 
     @Override
-    public Page<TaskDTO> requestTaskByUser(UUID userId, Pageable pageable) {
-        return null;
+    public List<TaskDTO> requestTaskByUser(TaskSpecParams request) {
+        return taskQueryService.getTasksByUser(request);
     }
 
     @Override
-    public Page<TaskDTO> requestAllTasks(Pageable pageable) {
-        return null;
+    public TaskResponseListDTO requestAllTasks(TaskSpecParams request) {
+        return taskQueryService.getAllTasks(request);
     }
 
-    //todo
+
 }

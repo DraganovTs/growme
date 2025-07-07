@@ -2,14 +2,17 @@ package com.home.preorder.service.controller;
 
 
 import com.home.preorder.service.model.dto.TaskDTO;
+import com.home.preorder.service.model.dto.TaskResponseListDTO;
 import com.home.preorder.service.model.dto.TaskStatusUpdateRequestDTO;
 import com.home.preorder.service.service.PreorderService;
+import com.home.preorder.service.specification.TaskSpecParams;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -43,11 +46,20 @@ public class TaskController {
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<?> getTaskByUserId(@PathVariable String userId) {
-        return null;
+    public ResponseEntity<List<TaskDTO>> getTaskByUserId(@PathVariable String userId) {
+        TaskSpecParams params = new TaskSpecParams();
+        params.setUserId(userId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(preorderService.requestTaskByUser(params));
     }
 
-    //TODO
+    @GetMapping("/tasks")
+    public ResponseEntity<TaskResponseListDTO> getAllTasks(TaskSpecParams request){
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(preorderService.requestAllTasks(request));
+    }
+
+
 
 
 }

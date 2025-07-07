@@ -1,11 +1,11 @@
 package com.home.preorder.service.service;
 
 import com.home.preorder.service.model.dto.TaskDTO;
+import com.home.preorder.service.model.dto.TaskResponseListDTO;
 import com.home.preorder.service.model.dto.TaskStatusUpdateRequestDTO;
-import com.home.preorder.service.model.enums.TaskStatus;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import com.home.preorder.service.specification.TaskSpecParams;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface PreorderService {
@@ -17,7 +17,7 @@ public interface PreorderService {
 
     TaskDTO requestTaskById(String taskId);
 
-    Page<TaskDTO> requestTaskByUser(UUID userId, Pageable pageable);
+    List<TaskDTO> requestTaskByUser(TaskSpecParams request);
 
-    Page<TaskDTO> requestAllTasks(Pageable pageable);
+    TaskResponseListDTO requestAllTasks(TaskSpecParams request);
 }
