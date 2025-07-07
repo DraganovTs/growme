@@ -1,9 +1,10 @@
 package com.home.preorder.service.service.impl;
 
 import com.home.preorder.service.model.dto.TaskDTO;
-import com.home.preorder.service.model.enums.TaskStatus;
+import com.home.preorder.service.model.dto.TaskStatusUpdateRequestDTO;
 import com.home.preorder.service.service.PreorderService;
 import com.home.preorder.service.service.TaskCommandService;
+import com.home.preorder.service.service.TaskQueryService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -14,9 +15,11 @@ import java.util.UUID;
 public class PreorderServiceImpl implements PreorderService {
 
     private final TaskCommandService taskCommandService;
+    private final TaskQueryService taskQueryService;
 
-    public PreorderServiceImpl(TaskCommandService taskCommandService) {
+    public PreorderServiceImpl(TaskCommandService taskCommandService, TaskQueryService taskQueryService) {
         this.taskCommandService = taskCommandService;
+        this.taskQueryService = taskQueryService;
     }
 
 
@@ -26,17 +29,17 @@ public class PreorderServiceImpl implements PreorderService {
     }
 
     @Override
-    public TaskDTO requestUpdateTaskStatus(UUID taskId, TaskStatus taskStatus) {
-        return null;
+    public TaskDTO requestUpdateTaskStatus(String taskId, TaskStatusUpdateRequestDTO taskStatus) {
+        return taskCommandService.updateTaskStatus(taskId, taskStatus);
     }
 
     @Override
-    public TaskDTO requestGetTaskById(UUID taskId) {
-        return null;
+    public TaskDTO requestTaskById(String taskId) {
+        return taskQueryService.getTaskById(taskId);
     }
 
     @Override
-    public Page<TaskDTO> requestGetTaskByUser(UUID userId, Pageable pageable) {
+    public Page<TaskDTO> requestTaskByUser(UUID userId, Pageable pageable) {
         return null;
     }
 

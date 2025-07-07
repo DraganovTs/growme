@@ -2,12 +2,15 @@ package com.home.preorder.service.controller;
 
 
 import com.home.preorder.service.model.dto.TaskDTO;
+import com.home.preorder.service.model.dto.TaskStatusUpdateRequestDTO;
 import com.home.preorder.service.service.PreorderService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping(value = "/api/tasks", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -26,18 +29,20 @@ public class TaskController {
                 .body(preorderService.requestTaskCreation(taskDTO));
     }
 
-    @GetMapping("/{taskId}")
-    public ResponseEntity<?> getTask(@PathVariable String taskId) {
-        return null;
+    @GetMapping("/task/{taskId}")
+    public ResponseEntity<TaskDTO> getTask(@PathVariable String taskId) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(preorderService.requestTaskById(taskId));
     }
 
     @PutMapping("/{taskId}")
-    public ResponseEntity<?> updateTask(@PathVariable String taskId,
-                                        @RequestBody String status) {
-        return null;
+    public ResponseEntity<TaskDTO> updateTask(@PathVariable String taskId,
+                                        @RequestBody TaskStatusUpdateRequestDTO status) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(preorderService.requestUpdateTaskStatus(taskId,status));
     }
 
-    @GetMapping("/{userId}")
+    @GetMapping("/user/{userId}")
     public ResponseEntity<?> getTaskByUserId(@PathVariable String userId) {
         return null;
     }

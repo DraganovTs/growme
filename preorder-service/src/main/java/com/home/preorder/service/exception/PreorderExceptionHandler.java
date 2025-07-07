@@ -13,7 +13,8 @@ import org.springframework.web.context.request.WebRequest;
 public class PreorderExceptionHandler extends BaseExceptionHandler {
 
     @ExceptionHandler({
-            CategoryNotFoundException.class
+            CategoryNotFoundException.class,
+            TaskNotFoundException.class
     })
     public ResponseEntity<ErrorResponseDTO> handleNotFoundException(RuntimeException ex, WebRequest request){
         return buildErrorResponse(ex, request, HttpStatus.NOT_FOUND, "NOT_FOUND");
