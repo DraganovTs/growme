@@ -1,36 +1,35 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { BidService } from 'src/app/services/bid-service';
 import { KeycloakService } from 'src/app/services/keycloak.service';
 import { TaskService } from 'src/app/services/task-service';
+import { Task, Bid } from 'src/app/shared/model/task';
 
 @Component({
   selector: 'app-task-details',
   standalone: true,
-  imports: [CommonModule,ReactiveFormsModule],
+  imports: [CommonModule,ReactiveFormsModule,RouterModule],
   templateUrl: './task-details.component.html',
   styleUrl: './task-details.component.scss'
 })
 export class TaskDetailsComponent implements OnInit {
 
-  task: any;
-  bids: any[] = [];
+ task: Task | null = null;
+  bids: Bid[] = [];
   loading = true;
   isTaskOwner = false;
   isGrower = false;
   submittingBid = false;
-  
-  // For price range visualization
   lowestBidPrice = 0;
   highestBidPrice = 0;
 
   bidForm: FormGroup;
 
-  constructor(
+   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private taskService: TaskService,
@@ -48,13 +47,10 @@ export class TaskDetailsComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {
+   ngOnInit(): void {
     const taskId = this.route.snapshot.paramMap.get('id');
     if (taskId) {
       this.loadTask(taskId);
-      this.loadBids(taskId);
-      
-      // Check user roles
       this.isGrower = this.keycloakService.hasRole('GROWER');
     } else {
       this.toastr.error('No task ID provided');
@@ -62,53 +58,63 @@ export class TaskDetailsComponent implements OnInit {
     }
   }
 
- loadTask(taskId: string): void {
+  loadTask(taskId: string): void {
+    this.loading = true;
     this.taskService.getTask(taskId).subscribe({
       next: (task) => {
         this.task = task;
-        this.loading = false;
-        
-        // Check if current user is task owner
-        const currentUserId = this.keycloakService.getUserId();
-        if (currentUserId) {
-          this.isTaskOwner = task.userId === currentUserId;
-        }
-
-        // If task is cancelled or completed, don't load bids
-        if (['cancelled', 'completed'].includes(task.status)) {
-          return;
+        this.checkTaskOwnership();
+        if (this.shouldLoadBids()) {
+          this.loadBids(taskId);
+        } else {
+          this.loading = false;
         }
       },
       error: (error) => {
-        console.error('Error loading task:', error);
-        this.toastr.error('Failed to load task details');
-        this.loading = false;
-        this.router.navigate(['/tasks']);
+        this.handleTaskLoadError(error);
       }
     });
   }
 
-  loadBids(taskId: string): void {
-    if (this.task?.status === 'cancelled' || this.task?.status === 'completed') {
-      return;
+  private checkTaskOwnership(): void {
+    const currentUserId = this.keycloakService.getUserId();
+    if (currentUserId && this.task) {
+      this.isTaskOwner = this.task.userId === currentUserId;
     }
+  }
 
+  private shouldLoadBids(): boolean {
+    return this.task?.status !== 'COMPLETED' && this.task?.status !== 'CANCELLED';
+  }
+
+  private handleTaskLoadError(error: any): void {
+    console.error('Error loading task:', error);
+    this.toastr.error('Failed to load task details');
+    this.loading = false;
+    this.router.navigate(['/tasks']);
+  }
+
+  loadBids(taskId: string): void {
     this.bidService.getBidsForTask(taskId).subscribe({
       next: (bids) => {
         this.bids = bids;
-        
-        // Calculate price range for visualization
-        if (bids.length > 0) {
-          const prices = bids.map((b: any) => b.price);
-          this.lowestBidPrice = Math.min(...prices);
-          this.highestBidPrice = Math.max(...prices);
-        }
+        this.calculatePriceRange();
+        this.loading = false;
       },
       error: (error) => {
         console.error('Error loading bids:', error);
         this.toastr.warning('Failed to load bids for this task');
+        this.loading = false;
       }
     });
+  }
+
+  private calculatePriceRange(): void {
+    if (this.bids.length > 0) {
+      const prices = this.bids.map(b => b.price);
+      this.lowestBidPrice = Math.min(...prices);
+      this.highestBidPrice = Math.max(...prices);
+    }
   }
 
   submitBid(): void {
@@ -125,29 +131,41 @@ export class TaskDetailsComponent implements OnInit {
     }
 
     this.submittingBid = true;
-    
-    const bidData = {
-      ...this.bidForm.value,
-      taskId: this.task.id,
-      growerId: this.keycloakService.getUserId(),
-      growerName: this.keycloakService.getUsername() || 'Anonymous Grower',
-      status: 'pending',
-      createdAt: new Date().toISOString()
-    };
+    const bidData = this.createBidData();
 
     this.bidService.createBid(bidData).subscribe({
       next: (response) => {
-        this.submittingBid = false;
-        this.bids.unshift(response);
-        this.bidForm.reset();
-        this.toastr.success('Bid submitted successfully!');
+        this.handleBidSubmissionSuccess(response);
       },
       error: (error) => {
-        console.error('Error submitting bid:', error);
-        this.submittingBid = false;
-        this.toastr.error('Failed to submit bid. Please try again.');
+        this.handleBidSubmissionError(error);
       }
     });
+  }
+
+  private createBidData(): any {
+    return {
+      ...this.bidForm.value,
+      taskId: this.task?.id,
+      growerId: this.keycloakService.getUserId(),
+      growerName: this.keycloakService.getUsername() || 'Anonymous Grower',
+      status: 'PENDING',
+      createdAt: new Date().toISOString()
+    };
+  }
+
+  private handleBidSubmissionSuccess(response: any): void {
+    this.submittingBid = false;
+    this.bids.unshift(response);
+    this.bidForm.reset();
+    this.calculatePriceRange();
+    this.toastr.success('Bid submitted successfully!');
+  }
+
+  private handleBidSubmissionError(error: any): void {
+    console.error('Error submitting bid:', error);
+    this.submittingBid = false;
+    this.toastr.error('Failed to submit bid. Please try again.');
   }
 
   acceptBid(bidId: string): void {
@@ -155,41 +173,50 @@ export class TaskDetailsComponent implements OnInit {
       return;
     }
 
-    this.bidService.updateBidStatus(bidId, 'accepted').subscribe({
+    this.bidService.updateBidStatus(bidId, 'ACCEPTED').subscribe({
       next: () => {
-        // Update bid status in local array
-        const bid = this.bids.find(b => b.id === bidId);
-        if (bid) {
-          bid.status = 'accepted';
-        }
-        
-        // Update task status
-        this.taskService.updateTaskStatus(this.task.id, 'active').subscribe({
-          next: () => {
-            this.task.status = 'active';
-            this.toastr.success('Bid accepted successfully! The grower has been notified.');
-          },
-          error: (error) => {
-            console.error('Error updating task status:', error);
-            this.toastr.error('Failed to update task status');
-          }
-        });
+        this.updateBidStatus(bidId, 'ACCEPTED');
+        this.updateTaskStatus('ACTIVE');
       },
       error: (error) => {
-        console.error('Error accepting bid:', error);
-        this.toastr.error('Failed to accept bid');
+        this.handleBidAcceptError(error);
       }
     });
   }
 
-  rejectBid(bidId: string): void {
-    this.bidService.updateBidStatus(bidId, 'rejected').subscribe({
+  private updateBidStatus(bidId: string, status: string): void {
+    const bid = this.bids.find(b => b.id === bidId);
+    if (bid) {
+      bid.status = status as any;
+    }
+  }
+
+  private updateTaskStatus(status: string): void {
+    if (!this.task) return;
+    
+    this.taskService.updateTaskStatus(this.task.id, status).subscribe({
       next: () => {
-        // Update bid status in local array
-        const bid = this.bids.find(b => b.id === bidId);
-        if (bid) {
-          bid.status = 'rejected';
+        if (this.task) {
+          this.task.status = status as any;
         }
+        this.toastr.success('Bid accepted successfully! The grower has been notified.');
+      },
+      error: (error) => {
+        console.error('Error updating task status:', error);
+        this.toastr.error('Failed to update task status');
+      }
+    });
+  }
+
+  private handleBidAcceptError(error: any): void {
+    console.error('Error accepting bid:', error);
+    this.toastr.error('Failed to accept bid');
+  }
+
+  rejectBid(bidId: string): void {
+    this.bidService.updateBidStatus(bidId, 'REJECTED').subscribe({
+      next: () => {
+        this.updateBidStatus(bidId, 'REJECTED');
         this.toastr.info('Bid has been rejected');
       },
       error: (error) => {
@@ -204,11 +231,12 @@ export class TaskDetailsComponent implements OnInit {
       return;
     }
 
-    this.taskService.updateTaskStatus(this.task.id, 'cancelled').subscribe({
+    this.taskService.updateTaskStatus(this.task?.id || '', 'CANCELLED').subscribe({
       next: () => {
-        this.task.status = 'cancelled';
+        if (this.task) {
+          this.task.status = 'CANCELLED';
+        }
         this.toastr.info('Task has been cancelled');
-        // Optionally reject all bids
         this.rejectAllBids();
       },
       error: (error) => {
@@ -219,9 +247,9 @@ export class TaskDetailsComponent implements OnInit {
   }
 
   private rejectAllBids(): void {
-    const pendingBids = this.bids.filter(bid => bid.status === 'pending');
+    const pendingBids = this.bids.filter(bid => bid.status === 'PENDING');
     pendingBids.forEach(bid => {
-      this.bidService.updateBidStatus(bid.id, 'rejected').subscribe({
+      this.bidService.updateBidStatus(bid.id, 'REJECTED').subscribe({
         error: (error) => {
           console.error(`Error rejecting bid ${bid.id}:`, error);
         }
@@ -229,24 +257,17 @@ export class TaskDetailsComponent implements OnInit {
     });
   }
 
-  private markFormGroupTouched(formGroup: FormGroup) {
-    Object.values(formGroup.controls).forEach(control => {
-      control.markAsTouched();
-
-      if (control instanceof FormGroup) {
-        this.markFormGroupTouched(control);
-      }
-    });
-  }
 
   completeTask(): void {
     if (!confirm('Mark this task as completed?')) {
       return;
     }
 
-    this.taskService.updateTaskStatus(this.task.id, 'completed').subscribe({
+    this.taskService.updateTaskStatus(this.task?.id || '', 'COMPLETED').subscribe({
       next: () => {
-        this.task.status = 'completed';
+        if (this.task) {
+          this.task.status = 'COMPLETED';
+        }
         this.toastr.success('Task marked as completed');
       },
       error: (error) => {
@@ -257,7 +278,6 @@ export class TaskDetailsComponent implements OnInit {
   }
 
   contactGrower(): void {
-    // Implement contact logic
     this.toastr.info('Contact feature will be implemented soon');
   }
 
@@ -265,6 +285,15 @@ export class TaskDetailsComponent implements OnInit {
     this.router.navigate(['/tasks/create'], {
       state: {
         similarTask: this.task
+      }
+    });
+  }
+
+  private markFormGroupTouched(formGroup: FormGroup): void {
+    Object.values(formGroup.controls).forEach(control => {
+      control.markAsTouched();
+      if (control instanceof FormGroup) {
+        this.markFormGroupTouched(control);
       }
     });
   }
