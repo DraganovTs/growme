@@ -4,9 +4,9 @@ import lombok.Data;
 
 @Data
 public class TaskSpecParams {
-    private Integer pageSize;
+    private Integer pageSize = 10;
     private String search;
-    private String sort;
+    private String sort = "createdAtDesc";
     private String userId;
     private String status;
     private final int MaxPageSize = 20;

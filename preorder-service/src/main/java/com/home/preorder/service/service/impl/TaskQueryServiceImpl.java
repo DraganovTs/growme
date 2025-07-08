@@ -68,7 +68,7 @@ public class TaskQueryServiceImpl implements TaskQueryService {
         Specification<Task> spec = ((root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
-            predicates.add(criteriaBuilder.equal(root.get("userId"), request.getUserId()));
+            predicates.add(criteriaBuilder.equal(root.get("userId"), UUID.fromString(request.getUserId())));
 
             return criteriaBuilder.and(predicates.toArray(Predicate[]::new));
         });

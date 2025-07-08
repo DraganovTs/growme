@@ -53,13 +53,11 @@ public class TaskController {
                 .body(preorderService.requestTaskByUser(params));
     }
 
-    @GetMapping("/tasks")
+    @GetMapping()
     public ResponseEntity<TaskResponseListDTO> getAllTasks(TaskSpecParams request){
         return ResponseEntity.status(HttpStatus.OK)
                 .body(preorderService.requestAllTasks(request));
     }
-
-
 
 
 }
