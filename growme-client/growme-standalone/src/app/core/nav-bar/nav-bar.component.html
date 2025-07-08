@@ -21,6 +21,10 @@
            routerLink="/about" 
            [routerLinkActive]="'active'">About</a>
 
+        <a class="me-4 py-2 text-decoration-none text-dark hover-underline" 
+             routerLink="/tasks" 
+             [routerLinkActive]="'active'">Grow Tasks</a> 
+
         <!-- Show only if user is a seller -->
         <ng-container *ngIf="isSeller">
             <a class="me-4 py-2 text-decoration-none text-dark hover-underline" 

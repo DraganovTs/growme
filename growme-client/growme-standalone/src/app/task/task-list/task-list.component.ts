@@ -3,70 +3,68 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
+import { CategoryService } from 'src/app/services/category-service';
 import { KeycloakService } from 'src/app/services/keycloak.service';
 import { TaskService } from 'src/app/services/task-service';
+import { ICategory } from 'src/app/shared/model/product';
+import { TaskParams } from 'src/app/shared/model/taskparams';
 
 @Component({
   selector: 'app-task-list',
   standalone: true,
-  imports: [CommonModule,ReactiveFormsModule, FormsModule , RouterModule],
+  imports: [CommonModule,ReactiveFormsModule, FormsModule , RouterModule ],
   templateUrl: './task-list.component.html',
   styleUrl: './task-list.component.scss'
 })
 export class TaskListComponent implements OnInit{
 
-  tasks: any[] = [];
+    tasks: any[] = [];
   loading = false;
-  searchTerm = '';
-  selectedCategory = '';
-  sortBy = 'newest';
-  currentPage = 1;
-  pageSize = 9;
-  totalTasks = 0;
+  taskParams = new TaskParams();
+  totalCount = 0;
   totalPages = 1;
+  productTypes: ICategory[] = [];
 
-  categories = [
-    'vegetables',
-    'fruits',
-    'herbs',
-    'grains',
-    'wine',
-    'other'
+  statusOptions = [
+    'active',
+    'pending',
+    'completed',
+    'cancelled'
   ];
 
-   constructor(
+  constructor(
     private taskService: TaskService,
     private keycloakService: KeycloakService,
     private router: Router,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private categoryService: CategoryService
   ) {}
 
   ngOnInit(): void {
     this.loadTasks();
+    this.loadCategories();
+  }
+
+     private loadCategories(): void {
+    this.categoryService.getCategories().subscribe({
+      next: (data) => {
+        this.productTypes = data;
+      },
+      error: (err) => {
+        console.error('Failed to load categories', err);
+        this.toastr.error('Failed to load product categories. Please try again.');
+      }
+    });
   }
 
   loadTasks(): void {
     this.loading = true;
     
-    const params: any = {
-      page: this.currentPage,
-      limit: this.pageSize,
-      sort: this.sortBy
-    };
-
-    if (this.searchTerm) {
-      params.search = this.searchTerm;
-    }
-
-    if (this.selectedCategory) {
-      params.category = this.selectedCategory;
-    }
-
-    this.taskService.getTasks(params).subscribe({
-      next: (response: any) => {
-        this.tasks = response.tasks || response; // Adapt based on your API response structure
-        this.totalTasks = response.total || this.tasks.length;
-        this.totalPages = Math.ceil(this.totalTasks / this.pageSize);
+    this.taskService.getTasks(this.taskParams).subscribe({
+      next: (response) => {
+        this.tasks = response.dataList || [];
+        this.totalCount = response.totalCount || 0;
+        this.totalPages = Math.ceil(this.totalCount / this.taskParams.pageSize);
         this.loading = false;
       },
       error: (error) => {
@@ -78,15 +76,13 @@ export class TaskListComponent implements OnInit{
   }
 
   applyFilters(): void {
-    this.currentPage = 1; 
+    this.taskParams.pageIndex = 1;
     this.loadTasks();
   }
 
   changePage(page: number): void {
-    if (page < 1 || page > this.totalPages) {
-      return;
-    }
-    this.currentPage = page;
+    if (page < 1 || page > this.totalPages) return;
+    this.taskParams.pageIndex = page;
     this.loadTasks();
   }
 
@@ -98,7 +94,7 @@ export class TaskListComponent implements OnInit{
 
     if (this.totalPages > maxVisiblePages) {
       const halfVisible = Math.floor(maxVisiblePages / 2);
-      startPage = Math.max(1, this.currentPage - halfVisible);
+      startPage = Math.max(1, this.taskParams.pageIndex - halfVisible);
       endPage = Math.min(this.totalPages, startPage + maxVisiblePages - 1);
 
       if (endPage - startPage + 1 < maxVisiblePages) {
@@ -132,5 +128,3 @@ export class TaskListComponent implements OnInit{
     this.router.navigate(['/tasks/create']);
   }
 }
-
-

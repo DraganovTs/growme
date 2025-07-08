@@ -16,7 +16,7 @@ export class TaskService {
   ) { }
 
   createTask(taskData: any): Observable<any> {
-    // Add user ID from Keycloak to the task data
+    
     const userId = this.keycloakService.getUserId();
     if (!userId) {
       throw new Error('User not authenticated');
@@ -37,30 +37,16 @@ export class TaskService {
   }
 
     getTasks(params: any = {}): Observable<any> {
-    let httpParams = new HttpParams();
+    let httpParams = new HttpParams()
+      .set('pageIndex', params.pageIndex.toString())
+      .set('pageSize', params.pageSize.toString())
+      .set('sort', params.sort);
 
-    // Add pagination params
-    if (params.page) {
-      httpParams = httpParams.set('page', params.page.toString());
-    }
-    if (params.limit) {
-      httpParams = httpParams.set('limit', params.limit.toString());
-    }
+    if (params.userId) httpParams = httpParams.set('userId', params.userId);
+    if (params.status) httpParams = httpParams.set('status', params.status);
+    if (params.search) httpParams = httpParams.set('search', params.search);
 
-    // Add filtering params
-    if (params.search) {
-      httpParams = httpParams.set('search', params.search);
-    }
-    if (params.category) {
-      httpParams = httpParams.set('category', params.category);
-    }
-
-    // Add sorting params
-    if (params.sort) {
-      httpParams = httpParams.set('sort', params.sort);
-    }
-
-    return this.http.get(this.apiUrl, { params: httpParams });
+     return this.http.get<any>(this.apiUrl, { params: httpParams });
   }
 
   updateTaskStatus(taskId: string, status: string): Observable<any> {
