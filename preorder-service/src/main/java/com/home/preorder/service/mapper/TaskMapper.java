@@ -31,7 +31,7 @@ public class TaskMapper {
 
     public TaskDTO mapTaskToTaskDTO(Task save) {
         TaskDTO mapped = TaskDTO.builder()
-                .taskId(save.getTaskId())
+                .id(save.getTaskId())
                 .title(save.getTitle())
                 .description(save.getDescription())
                 .categoryName(save.getCategory().getCategoryName())

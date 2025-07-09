@@ -13,7 +13,7 @@ import java.util.UUID;
 @Data
 @Builder
 public class TaskDTO {
-    private UUID taskId;
+    private UUID id;
 
     @NotBlank
     @Size(max = 100)

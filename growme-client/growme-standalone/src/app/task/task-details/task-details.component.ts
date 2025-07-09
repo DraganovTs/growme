@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { Router } from '@angular/router';
@@ -17,6 +17,7 @@ import { Task, Bid } from 'src/app/shared/model/task';
   styleUrl: './task-details.component.scss'
 })
 export class TaskDetailsComponent implements OnInit {
+  private router = inject(Router);
 
  task: Task | null = null;
   bids: Bid[] = [];
@@ -31,7 +32,6 @@ export class TaskDetailsComponent implements OnInit {
 
    constructor(
     private route: ActivatedRoute,
-    private router: Router,
     private taskService: TaskService,
     private bidService: BidService,
     private keycloakService: KeycloakService,
@@ -47,8 +47,16 @@ export class TaskDetailsComponent implements OnInit {
     });
   }
 
-   ngOnInit(): void {
-    const taskId = this.route.snapshot.paramMap.get('id');
+ ngOnInit(): void {
+    console.log('Current route:', this.router.url);
+const id = this.route.snapshot.paramMap.get('id');
+  console.log('🚀 Snapshot ID:', id);
+
+  this.route.paramMap.subscribe(params => {
+        console.log('Route params:', params);
+    const taskId = params.get('id');
+    console.log('Task ID:', taskId); 
+
     if (taskId) {
       this.loadTask(taskId);
       this.isGrower = this.keycloakService.hasRole('GROWER');
@@ -56,12 +64,15 @@ export class TaskDetailsComponent implements OnInit {
       this.toastr.error('No task ID provided');
       this.router.navigate(['/tasks']);
     }
-  }
+  });
+}
+
 
   loadTask(taskId: string): void {
     this.loading = true;
     this.taskService.getTask(taskId).subscribe({
       next: (task) => {
+        console.log('Received task:', task);
         this.task = task;
         this.checkTaskOwnership();
         if (this.shouldLoadBids()) {

@@ -165,6 +165,7 @@ export class CreateTaskComponent implements OnInit{
 
     this.taskService.createTask(taskData).subscribe({
       next: (response) => {
+          console.log('Created Task Response:', response); 
         this.submitting = false;
         this.toastr.success('Grow task created successfully!');
         this.router.navigate(['/tasks', response.id]);
