@@ -1,0 +1,85 @@
+<div class="bid-card card mb-3 shadow-sm" [class.border-success]="bid.status === 'ACCEPTED'">
+  <div class="card-header d-flex justify-content-between align-items-center" [ngClass]="{
+    'bg-success text-white': bid.status === 'ACCEPTED',
+    'bg-light': bid.status !== 'ACCEPTED'
+  }">
+    <div>
+      <h5 class="mb-0">
+        <i class="fas fa-user me-2"></i>
+        {{ bid.growerName || 'Anonymous Grower' }}
+      </h5>
+      <small class="text-muted" *ngIf="bid.createdAt">
+        Submitted on {{ bid.createdAt | date:'mediumDate' }}
+      </small>
+    </div>
+    <span class="badge" [ngClass]="{
+      'bg-success': bid.status === 'ACCEPTED',
+      'bg-warning': bid.status === 'PENDING',
+      'bg-secondary': bid.status === 'REJECTED'
+    }">
+      {{ bid.status | titlecase }}
+    </span>
+  </div>
+
+  <div class="card-body">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="mb-3">
+          <h6 class="text-primary">Offer Details</h6>
+          <div class="d-flex justify-content-between">
+            <span>Price:</span>
+            <strong>${{ bid.price | number:'1.2-2' }}</strong>
+          </div>
+          <div class="d-flex justify-content-between" *ngIf="bid.deliveryIncluded">
+            <span>Delivery:</span>
+            <strong class="text-success">Included</strong>
+          </div>
+          <div class="d-flex justify-content-between" *ngIf="bid.deliveryMethod">
+            <span>Method:</span>
+            <strong>{{ bid.deliveryMethod | titlecase }}</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="mb-3">
+          <h6 class="text-primary">Timeline</h6>
+          <div class="d-flex justify-content-between" *ngIf="bid.proposedHarvestDate">
+            <span>Harvest Date:</span>
+            <strong>{{ bid.proposedHarvestDate | date:'mediumDate' }}</strong>
+          </div>
+          <div class="d-flex justify-content-between" *ngIf="bid.updatedAt && bid.status !== 'PENDING'">
+             <span>Status Updated:</span>
+             <strong>{{ bid.updatedAt | date:'shortDate' }}</strong>
+         </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-3" *ngIf="bid.message">
+      <h6 class="text-primary">Grower's Message</h6>
+      <p class="mb-0">{{ bid.message }}</p>
+    </div>
+
+    <div *ngIf="isTaskOwner && taskStatus === 'PENDING' && bid.status === 'PENDING'" 
+         class="d-flex gap-2 mt-3">
+      <button class="btn btn-sm btn-success flex-grow-1" 
+              (click)="acceptBid.emit(bid.id)">
+        <i class="fas fa-check me-1"></i> Accept Offer
+      </button>
+      <button class="btn btn-sm btn-outline-danger flex-grow-1" 
+              (click)="rejectBid.emit(bid.id)">
+        <i class="fas fa-times me-1"></i> Reject
+      </button>
+    </div>
+
+    <div *ngIf="bid.status === 'ACCEPTED'" class="alert alert-success mt-3 mb-0">
+      <i class="fas fa-check-circle me-2"></i>
+      This offer has been accepted. The grower has been notified.
+    </div>
+  </div>
+
+  <div class="card-footer bg-transparent text-end" *ngIf="bid.id">
+    <small class="text-muted">BID #{{ bid.id | slice:0:8 }}</small>
+  </div>
+</div>

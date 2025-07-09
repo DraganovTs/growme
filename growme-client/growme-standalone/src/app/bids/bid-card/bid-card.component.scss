@@ -1,0 +1,18 @@
+.bid-card {
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  }
+
+  .card-header {
+    transition: all 0.3s ease;
+  }
+
+  .bid-actions {
+    button {
+      min-width: 120px;
+    }
+  }
+}

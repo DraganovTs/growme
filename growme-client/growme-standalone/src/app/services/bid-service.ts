@@ -16,8 +16,9 @@ export class BidService {
   ) { }
 
   createBid(bidData: any): Observable<any> {
-    // Add user ID from Keycloak to the bid data
+    
     const userId = this.keycloakService.getUserId();
+    bidData.userId = userId;
     if (!userId) {
       throw new Error('User not authenticated');
     }
@@ -26,15 +27,15 @@ export class BidService {
   }
 
   getBidsForTask(taskId: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/task/${taskId}`);
+    return this.http.get(`${this.apiUrl}task/${taskId}`);
   }
 
   updateBidStatus(bidId: string, status: string): Observable<any> {
-    return this.http.patch(`${this.apiUrl}/${bidId}/status`, { status });
+    return this.http.patch(`${this.apiUrl}${bidId}/status`, { status });
   }
 
   getUserBids(userId: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/user/${userId}`);
+    return this.http.get(`${this.apiUrl}user/${userId}`);
   }
 
   getBidDetails(bidId: string): Observable<any> {

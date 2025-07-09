@@ -7,7 +7,8 @@ import { ToastrService } from 'ngx-toastr';
 import { BidService } from 'src/app/services/bid-service';
 import { KeycloakService } from 'src/app/services/keycloak.service';
 import { TaskService } from 'src/app/services/task-service';
-import { Task, Bid } from 'src/app/shared/model/task';
+import { Bid } from 'src/app/shared/model/bid';
+import { Task } from 'src/app/shared/model/task';
 
 @Component({
   selector: 'app-task-details',
@@ -48,9 +49,6 @@ export class TaskDetailsComponent implements OnInit {
   }
 
  ngOnInit(): void {
-    console.log('Current route:', this.router.url);
-const id = this.route.snapshot.paramMap.get('id');
-  console.log('🚀 Snapshot ID:', id);
 
   this.route.paramMap.subscribe(params => {
         console.log('Route params:', params);
