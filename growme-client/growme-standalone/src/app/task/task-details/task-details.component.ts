@@ -4,6 +4,7 @@ import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angula
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
+import { BidCardComponent } from 'src/app/bids/bid-card/bid-card.component';
 import { BidService } from 'src/app/services/bid-service';
 import { KeycloakService } from 'src/app/services/keycloak.service';
 import { TaskService } from 'src/app/services/task-service';
@@ -13,7 +14,7 @@ import { Task } from 'src/app/shared/model/task';
 @Component({
   selector: 'app-task-details',
   standalone: true,
-  imports: [CommonModule,ReactiveFormsModule,RouterModule],
+  imports: [CommonModule,ReactiveFormsModule,RouterModule , BidCardComponent],
   templateUrl: './task-details.component.html',
   styleUrl: './task-details.component.scss'
 })
@@ -104,27 +105,32 @@ export class TaskDetailsComponent implements OnInit {
   }
 
   loadBids(taskId: string): void {
-    this.bidService.getBidsForTask(taskId).subscribe({
-      next: (bids) => {
-        this.bids = bids;
-        this.calculatePriceRange();
-        this.loading = false;
-      },
-      error: (error) => {
-        console.error('Error loading bids:', error);
-        this.toastr.warning('Failed to load bids for this task');
-        this.loading = false;
-      }
-    });
-  }
+  this.bidService.getBidsForTask(taskId).subscribe({
+    next: (bids) => {
+      this.bids = bids;
+      this.calculatePriceRange();
+      this.loading = false;
+    },
+    error: (error) => {
+      console.error('Error loading bids:', error);
+      this.toastr.warning('Failed to load bids for this task');
+      this.loading = false;
+    }
+  });
+}
 
   private calculatePriceRange(): void {
-    if (this.bids.length > 0) {
-      const prices = this.bids.map(b => b.price);
-      this.lowestBidPrice = Math.min(...prices);
-      this.highestBidPrice = Math.max(...prices);
+  if (this.bids.length > 0) {
+    const prices = this.bids.map(b => b.price);
+    this.lowestBidPrice = Math.min(...prices);
+    this.highestBidPrice = Math.max(...prices);
+    
+    // Ensure we don't divide by zero
+    if (this.highestBidPrice === 0) {
+      this.highestBidPrice = 1; // Set to 1 to avoid division by zero
     }
   }
+}
 
   submitBid(): void {
     if (this.bidForm.invalid) {
@@ -178,20 +184,30 @@ export class TaskDetailsComponent implements OnInit {
   }
 
   acceptBid(bidId: string): void {
-    if (!confirm('Are you sure you want to accept this offer? This will close the task to other bids.')) {
-      return;
-    }
-
-    this.bidService.updateBidStatus(bidId, 'ACCEPTED').subscribe({
-      next: () => {
-        this.updateBidStatus(bidId, 'ACCEPTED');
-        this.updateTaskStatus('ACTIVE');
-      },
-      error: (error) => {
-        this.handleBidAcceptError(error);
+  if (!confirm('Are you sure you want to accept this offer?')) return;
+  
+  this.bidService.updateBidStatus(bidId, 'ACCEPTED').subscribe({
+    next: () => {
+      // Update the bid status locally
+      const bid = this.bids.find(b => b.id === bidId);
+      if (bid) {
+        bid.status = 'ACCEPTED';
       }
-    });
-  }
+      
+      // Update task status
+      this.updateTaskStatus('ACTIVE');
+      
+      // Recalculate price range
+      this.calculatePriceRange();
+      
+      this.toastr.success('Bid accepted successfully!');
+    },
+    error: (error) => {
+      this.toastr.error('Failed to accept bid');
+      console.error(error);
+    }
+  });
+}
 
   private updateBidStatus(bidId: string, status: string): void {
     const bid = this.bids.find(b => b.id === bidId);
@@ -223,17 +239,21 @@ export class TaskDetailsComponent implements OnInit {
   }
 
   rejectBid(bidId: string): void {
-    this.bidService.updateBidStatus(bidId, 'REJECTED').subscribe({
-      next: () => {
-        this.updateBidStatus(bidId, 'REJECTED');
-        this.toastr.info('Bid has been rejected');
-      },
-      error: (error) => {
-        console.error('Error rejecting bid:', error);
-        this.toastr.error('Failed to reject bid');
+  this.bidService.updateBidStatus(bidId, 'REJECTED').subscribe({
+    next: () => {
+      // Update the bid status locally
+      const bid = this.bids.find(b => b.id === bidId);
+      if (bid) {
+        bid.status = 'REJECTED';
       }
-    });
-  }
+      this.toastr.info('Bid rejected');
+    },
+    error: (error) => {
+      this.toastr.error('Failed to reject bid');
+      console.error(error);
+    }
+  });
+}
 
   cancelTask(): void {
     if (!confirm('Are you sure you want to cancel this task? All bids will be rejected.')) {

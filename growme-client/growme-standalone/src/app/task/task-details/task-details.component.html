@@ -65,70 +65,27 @@
 
           <!-- Bids Section -->
           <div class="mb-4">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-              <h5 class="text-primary border-bottom pb-2">Grower Offers</h5>
-              <span class="badge bg-primary">{{bids.length}} {{bids.length === 1 ? 'Offer' : 'Offers'}}</span>
-            </div>
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="text-primary border-bottom pb-2">Grower Offers</h5>
+    <span class="badge bg-primary">{{bids.length}} {{bids.length === 1 ? 'Offer' : 'Offers'}}</span>
+  </div>
 
-            <div *ngIf="bids.length === 0" class="alert alert-info">
-              No offers yet. Check back later!
-            </div>
+  <div *ngIf="bids.length === 0" class="alert alert-info">
+    No offers yet. Check back later!
+  </div>
 
-            <div class="accordion" id="bidsAccordion">
-              <div class="accordion-item" *ngFor="let bid of bids; let i = index">
-                <h2 class="accordion-header" [id]="'heading' + i">
-                  <button class="accordion-button collapsed" type="button" 
-                          data-bs-toggle="collapse" [attr.data-bs-target]="'#collapse' + i" 
-                          aria-expanded="false" [attr.aria-controls]="'collapse' + i">
-                    <div class="d-flex justify-content-between w-100 me-3">
-                      <span>
-                        <strong>{{bid.growerName}}</strong> - ${{bid.price | number:'1.2-2'}} 
-                        <span *ngIf="bid.deliveryIncluded" class="badge bg-success ms-2">Delivery Included</span>
-                      </span>
-                      <span class="badge" [ngClass]="{
-                        'bg-success': bid.status === 'ACCEPTED',
-                        'bg-warning': bid.status === 'PENDING',
-                        'bg-secondary': bid.status === 'REJECTED'
-                      }">
-                        {{bid.status | titlecase}}
-                      </span>
-                    </div>
-                  </button>
-                </h2>
-                <div [id]="'collapse' + i" class="accordion-collapse collapse" 
-                     [attr.aria-labelledby]="'heading' + i" data-bs-parent="#bidsAccordion">
-                  <div class="accordion-body">
-                    <p class="mb-3">{{bid.message}}</p>
-                    <ul class="list-group mb-3">
-                      <li class="list-group-item d-flex justify-content-between">
-                        <span class="fw-bold">Proposed Harvest Date:</span>
-                        <span>{{bid.proposedHarvestDate | date:'mediumDate'}}</span>
-                      </li>
-                      <li class="list-group-item d-flex justify-content-between">
-                        <span class="fw-bold">Delivery Method:</span>
-                        <span>{{bid.deliveryMethod | titlecase}}</span>
-                      </li>
-                    </ul>
-                    
-                    <div *ngIf="isTaskOwner && task.status === 'PENDING'" class="d-flex gap-2">
-                      <button class="btn btn-sm btn-success" (click)="acceptBid(bid.id)">
-                        <i class="fa fa-check me-1"></i>Accept Offer
-                      </button>
-                      <button class="btn btn-sm btn-danger" (click)="rejectBid(bid.id)">
-                        <i class="fa fa-times me-1"></i>Reject
-                      </button>
-                    </div>
-                    
-                    <div *ngIf="bid.status === 'ACCEPTED'" class="alert alert-success mt-2">
-                      <i class="fa fa-check-circle me-2"></i>
-                      You've accepted this offer. The grower has been notified.
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+  <div class="row row-cols-1 g-3">
+    <div class="col" *ngFor="let bid of bids">
+      <app-bid-card 
+        [bid]="bid"
+        [isTaskOwner]="isTaskOwner"
+        [taskStatus]="task?.status || ''"
+        (acceptBid)="acceptBid($event)"
+        (rejectBid)="rejectBid($event)">
+      </app-bid-card>
+    </div>
+  </div>
+</div>
 
         <!-- Right Column - Actions and Summary -->
         <div class="col-lg-4">
@@ -140,22 +97,25 @@
             <div class="card-body">
               <div class="mb-3">
                 <h6>Price Range</h6>
-                <div *ngIf="bids.length > 0">
-                  <div class="progress mb-2" style="height: 20px;">
-                    <div class="progress-bar bg-primary" role="progressbar" 
-                         [style.width]="(lowestBidPrice / highestBidPrice) * 100 + '%'">
-                      ${{lowestBidPrice | number:'1.2-2'}}
-                    </div>
-                  </div>
-                  <div class="d-flex justify-content-between">
-                    <small>Lowest: ${{lowestBidPrice | number:'1.2-2'}}</small>
-                    <small>Highest: ${{highestBidPrice | number:'1.2-2'}}</small>
-                  </div>
-                </div>
-                <div *ngIf="bids.length === 0" class="text-muted">
-                  No offers yet
-                </div>
-              </div>
+                 <div *ngIf="bids.length > 0">
+                 <div class="progress progress-bar-custom mb-2">
+                  <div class="progress-bar bg-primary" role="progressbar" 
+                   [style.width]="(lowestBidPrice / highestBidPrice) * 100 + '%'"
+                 [attr.aria-valuenow]="lowestBidPrice"
+                   aria-valuemin="0"
+                  [attr.aria-valuemax]="highestBidPrice">
+               ${{lowestBidPrice | number:'1.2-2'}}
+            </div>
+         </div>
+    <div class="d-flex justify-content-between">
+      <small>Lowest: ${{lowestBidPrice | number:'1.2-2'}}</small>
+      <small>Highest: ${{highestBidPrice | number:'1.2-2'}}</small>
+    </div>
+  </div>
+  <div *ngIf="bids.length === 0" class="text-muted">
+    No offers yet
+  </div>
+</div>
 
               <div *ngIf="task.maxPrice" class="mb-3">
                 <h6>Max Price</h6>
