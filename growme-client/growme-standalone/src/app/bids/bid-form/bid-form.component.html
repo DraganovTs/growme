@@ -1,1 +1,85 @@
-<p>bid-form works!</p>
+<form [formGroup]="bidForm" (ngSubmit)="onSubmit()" class="bid-form">
+  <div class="card shadow-sm">
+    <div class="card-header bg-light">
+      <h5 class="mb-0">Submit Your Offer</h5>
+    </div>
+    <div class="card-body">
+      <!-- Price Field -->
+      <div class="mb-3">
+        <label for="bidPrice" class="form-label">Your Price</label>
+        <div class="input-group">
+          <span class="input-group-text">$</span>
+          <input type="number" class="form-control" id="bidPrice" 
+                 formControlName="price" min="0.01" step="0.01"
+                 [class.is-invalid]="price?.invalid && (price?.dirty || price?.touched)">
+          <div *ngIf="price?.invalid && (price?.dirty || price?.touched)" class="invalid-feedback">
+            <div *ngIf="price?.errors?.['required']">Price is required</div>
+            <div *ngIf="price?.errors?.['min']">Minimum bid is $0.01</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Harvest Date Field -->
+      <div class="mb-3">
+        <label for="proposedHarvestDate" class="form-label">Proposed Harvest Date</label>
+        <input type="date" class="form-control" id="proposedHarvestDate"
+               formControlName="proposedHarvestDate" [min]="minHarvestDate"
+               [class.is-invalid]="proposedHarvestDate?.invalid && (proposedHarvestDate?.dirty || proposedHarvestDate?.touched)">
+        <div *ngIf="proposedHarvestDate?.invalid && (proposedHarvestDate?.dirty || proposedHarvestDate?.touched)" 
+             class="invalid-feedback">
+          Please select a valid harvest date
+        </div>
+      </div>
+
+      <!-- Delivery Method Field -->
+      <div class="mb-3">
+        <label for="deliveryMethod" class="form-label">Delivery Method</label>
+        <select class="form-select" id="deliveryMethod" formControlName="deliveryMethod"
+                [class.is-invalid]="deliveryMethod?.invalid && (deliveryMethod?.dirty || deliveryMethod?.touched)">
+          <option value="pickup">Customer Pickup</option>
+          <option value="delivery">I'll Deliver</option>
+          <option value="market">Meet at Farmers Market</option>
+        </select>
+      </div>
+
+      <!-- Delivery Included Checkbox -->
+      <div class="form-check mb-3">
+        <input class="form-check-input" type="checkbox" id="deliveryIncluded" 
+               formControlName="deliveryIncluded">
+        <label class="form-check-label" for="deliveryIncluded">
+          Delivery cost included in price
+        </label>
+      </div>
+
+      <!-- Message Field -->
+      <div class="mb-3">
+        <label for="bidMessage" class="form-label">Message to Buyer</label>
+        <textarea class="form-control" id="bidMessage" rows="4"
+                  formControlName="message" placeholder="Explain your offer and growing approach"
+                  [class.is-invalid]="message?.invalid && (message?.dirty || message?.touched)"></textarea>
+        <div *ngIf="message?.invalid && (message?.dirty || message?.touched)" class="invalid-feedback">
+          <div *ngIf="message?.errors?.['required']">Message is required</div>
+          <div *ngIf="message?.errors?.['minlength']">Minimum 20 characters required</div>
+          <div *ngIf="message?.errors?.['maxlength']">Maximum 500 characters allowed</div>
+        </div>
+        <small class="text-muted">{{ message?.value?.length || 0 }}/500 characters</small>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="d-flex justify-content-end gap-2">
+        <button type="button" class="btn btn-outline-secondary" 
+                (click)="onCancel()" [disabled]="submitting">
+          Cancel
+        </button>
+        <button type="submit" class="btn btn-primary" 
+                [disabled]="bidForm.invalid || submitting">
+          <span *ngIf="!submitting">Submit Offer</span>
+          <span *ngIf="submitting">
+            <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+            Submitting...
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+</form>

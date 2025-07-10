@@ -1,0 +1,26 @@
+.bid-form {
+  .card {
+    border-radius: 0.5rem;
+  }
+
+  .card-header {
+    font-weight: 600;
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 120px;
+  }
+
+  .character-count {
+    font-size: 0.8rem;
+    color: #6c757d;
+    text-align: right;
+    margin-top: -1rem;
+    margin-bottom: 1rem;
+  }
+
+  .btn-primary {
+    min-width: 120px;
+  }
+}
