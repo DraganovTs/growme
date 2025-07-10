@@ -40,8 +40,12 @@ export class TaskDetailsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    console.log('TaskDetails initialized');
+  console.log('isTaskOwner:', this.isTaskOwner);
+  console.log('isGrower:', this.isGrower);
     this.route.paramMap.subscribe(params => {
       const taskId = params.get('id');
+      console.log('Task ID from route:', taskId);
       if (taskId) {
         this.loadTask(taskId);
         this.isGrower = this.keycloakService.hasRole('SELLER');
@@ -117,25 +121,35 @@ export class TaskDetailsComponent implements OnInit {
   }
 
   handleBidSubmission(bidData: any): void {
-    this.submittingBid = true;
-    this.bidService.createBid({
-      ...bidData,
-      taskId: this.task?.id,
-      status: 'PENDING'
-    }).subscribe({
-      next: (response) => {
-        this.bids.unshift(response);
-        this.calculatePriceRange();
-        this.toastr.success('Bid submitted successfully!');
-        this.submittingBid = false;
-      },
-      error: (error) => {
-        this.toastr.error('Failed to submit bid');
-        console.error(error);
-        this.submittingBid = false;
-      }
-    });
-  }
+  console.log('PARENT received bid data:', bidData);
+  this.submittingBid = true;
+  
+  const completeBidData = {
+    ...bidData,
+    taskId: this.task?.id,
+    status: 'PENDING'
+  };
+  
+  console.log('Submitting bid:', completeBidData); 
+  
+  this.bidService.createBid(completeBidData).subscribe({
+    next: (response) => {
+      console.log('Bid submission success:', response); 
+      this.bids.unshift(response);
+      this.calculatePriceRange();
+      this.toastr.success('Bid submitted successfully!');
+      this.submittingBid = false;
+    },
+    error: (error) => {
+      console.error('Bid submission error:', error); 
+      this.toastr.error('Failed to submit bid');
+      this.submittingBid = false;
+    },
+    complete: () => {
+      console.log('Bid submission complete'); 
+    }
+  });
+}
 
   acceptBid(bidId: string): void {
     if (!confirm('Are you sure you want to accept this offer?')) return;

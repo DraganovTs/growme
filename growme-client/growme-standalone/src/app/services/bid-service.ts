@@ -1,6 +1,6 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { Observable } from "rxjs";
+import { Observable, tap } from "rxjs";
 import { environment } from "../environment/environments";
 import { KeycloakService } from "./keycloak.service";
 
@@ -18,12 +18,21 @@ export class BidService {
   createBid(bidData: any): Observable<any> {
     
     const userId = this.keycloakService.getUserId();
+    console.log('Creating bid with data:', bidData);
+     console.log('User ID:', userId); 
+
     bidData.userId = userId;
+    console.log('Final bid payload:', bidData);
     if (!userId) {
+      console.error('User not authenticated'); 
       throw new Error('User not authenticated');
     }
 
-    return this.http.post(this.apiUrl, bidData);
+  
+
+    return this.http.post(this.apiUrl, bidData).pipe(
+    tap(response => console.log('API response:', response)) 
+  );
   }
 
   getBidsForTask(taskId: string): Observable<any> {

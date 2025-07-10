@@ -12,12 +12,12 @@ import java.util.UUID;
 public class BidMapper {
 
 
-    public Bid mapCreateBidReuqestDTOToBid(CreateBidRequestDTO dto, UUID userId) {
+    public Bid mapCreateBidReuqestDTOToBid(CreateBidRequestDTO dto) {
         return Bid.builder()
                 .price(dto.getPrice())
                 .message(dto.getMessage())
                 .status(BidStatus.IN_PROGRESS)
-                .userId(userId)
+                .userId(dto.getUserId())
                 .build();
     }
 

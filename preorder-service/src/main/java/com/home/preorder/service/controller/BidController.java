@@ -25,9 +25,10 @@ public class BidController {
     }
 
     @PostMapping
-    public ResponseEntity<BidResponseDTO> createBid(@RequestBody @Valid CreateBidRequestDTO dto, @RequestParam UUID userId) {
+    public ResponseEntity<BidResponseDTO> createBid(@RequestBody @Valid CreateBidRequestDTO dto) {
+        System.out.println();
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(preorderService.requestCreateBid(dto, userId));
+                .body(preorderService.requestCreateBid(dto));
     }
 
 

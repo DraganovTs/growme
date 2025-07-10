@@ -20,7 +20,7 @@ public interface PreorderService {
     TaskResponseListDTO requestAllTasks(TaskSpecParams request);
 
     //Bid
-    BidResponseDTO requestCreateBid(CreateBidRequestDTO dto, UUID userId);
+    BidResponseDTO requestCreateBid(CreateBidRequestDTO dto);
     void requestWithdrawBid(UUID bidId, UUID userId);
     BidResponseDTO requestBidById(UUID bidId);
     List<BidResponseDTO> requestBidsForTask(UUID taskId);

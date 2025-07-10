@@ -38,18 +38,21 @@ export class BidFormComponent {
   }
 
   onSubmit() {
+    console.log('Form submit triggered');
     if (this.bidForm.invalid || this.submitting) return;
 
     this.submitting = true;
     const formValue = this.bidForm.value;
+     console.log('Form values:', formValue);
 
     const bidData = {
       ...formValue,
       taskId: this.taskId,
-      growerId: this.keycloakService.getUserId(),
-      growerName: this.keycloakService.getUsername() || 'Anonymous Grower'
+      userId: this.keycloakService.getUserId(),
+      userName: this.keycloakService.getUsername() || 'Anonymous Grower'
+      
     };
-
+    console.log('Emitting bid data:', bidData);
     this.bidSubmitted.emit(bidData);
   }
 

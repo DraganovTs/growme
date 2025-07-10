@@ -170,7 +170,12 @@
 
           <!-- Bid Form -->
           <ng-container *ngIf="!isTaskOwner && isGrower && (task?.status === 'PENDING' || task?.status === 'OPEN')">
-            <app-bid-form></app-bid-form>
+            <app-bid-form 
+             *ngIf="!isTaskOwner && isGrower && task?.status === 'OPEN'"
+              [taskId]="task!.id"
+              (bidSubmitted)="handleBidSubmission($event)"
+              (formCanceled)="submittingBid = false">
+            </app-bid-form>
           </ng-container>
 
 

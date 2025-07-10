@@ -28,12 +28,12 @@ public class BidCommandServiceImpl implements BidCommandService {
 
 
     @Override
-    public BidResponseDTO createBid(CreateBidRequestDTO dto, UUID userId) {
+    public BidResponseDTO createBid(CreateBidRequestDTO dto) {
 
         Task task = taskRepository.findById(dto.getTaskId())
                 .orElseThrow(() -> new TaskNotFoundException("Task not found whit Id: " + dto.getTaskId()));
 
-        Bid bid = bidMapper.mapCreateBidReuqestDTOToBid(dto , userId);
+        Bid bid = bidMapper.mapCreateBidReuqestDTOToBid(dto );
         bid.setTask(task);
 
 

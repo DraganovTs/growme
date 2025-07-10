@@ -13,24 +13,26 @@ import java.util.UUID;
 @Builder
 public class CreateBidRequestDTO {
     @NotNull(message = "Task reference is required")
-    UUID taskId;
+    private UUID taskId;
 
     @Positive(message = "Bid amount must be greater than zero")
     @DecimalMin(value = "0.01", message = "Minimum bid amount is $0.01")
     @Digits(integer = 10, fraction = 2, message = "Price must have up to 10 digits with 2 decimal places")
-    BigDecimal price;
+    private BigDecimal price;
 
     @NotBlank(message = "Please describe your offer to the buyer")
     @Size(min = 20, max = 500, message = "Message must be between 20-500 characters")
-    String message;
+    private String message;
 
     @NotNull(message = "Proposed harvest date is required")
     @Future(message = "Harvest date must be at least tomorrow")
     @FutureOrPresent(message = "Harvest date cannot be in the past")
-    LocalDate proposedHarvestDate;
+    private LocalDate proposedHarvestDate;
 
     @NotNull(message = "Please select how you'll deliver the produce")
-    DeliveryMethod deliveryMethod;
+    private DeliveryMethod deliveryMethod;
+
+    private UUID userId;
 
     boolean deliveryIncluded;
 }

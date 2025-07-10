@@ -54,8 +54,8 @@ public class PreorderServiceImpl implements PreorderService {
     //BID
 
     @Override
-    public BidResponseDTO requestCreateBid(CreateBidRequestDTO dto, UUID userId) {
-        return bidCommandService.createBid(dto, userId);
+    public BidResponseDTO requestCreateBid(CreateBidRequestDTO dto) {
+        return bidCommandService.createBid(dto);
     }
 
     @Override

@@ -6,4 +6,5 @@ public enum BidStatus {
     IN_PROGRESS,
     DELIVERED,
     PAID,
+    REJECTED
 }
