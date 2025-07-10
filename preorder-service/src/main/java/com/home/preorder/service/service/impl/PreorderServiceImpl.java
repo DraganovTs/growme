@@ -1,6 +1,7 @@
 package com.home.preorder.service.service.impl;
 
 import com.home.preorder.service.model.dto.*;
+import com.home.preorder.service.service.BidCommandService;
 import com.home.preorder.service.service.PreorderService;
 import com.home.preorder.service.service.TaskCommandService;
 import com.home.preorder.service.service.TaskQueryService;
@@ -15,10 +16,13 @@ public class PreorderServiceImpl implements PreorderService {
 
     private final TaskCommandService taskCommandService;
     private final TaskQueryService taskQueryService;
+    private final BidCommandService bidCommandService;
 
-    public PreorderServiceImpl(TaskCommandService taskCommandService, TaskQueryService taskQueryService) {
+    public PreorderServiceImpl(TaskCommandService taskCommandService, TaskQueryService taskQueryService,
+                               BidCommandService bidCommandService) {
         this.taskCommandService = taskCommandService;
         this.taskQueryService = taskQueryService;
+        this.bidCommandService = bidCommandService;
     }
 
 
@@ -51,7 +55,7 @@ public class PreorderServiceImpl implements PreorderService {
 
     @Override
     public BidResponseDTO requestCreateBid(CreateBidRequestDTO dto, UUID userId) {
-        return null;
+        return bidCommandService.createBid(dto, userId);
     }
 
     @Override

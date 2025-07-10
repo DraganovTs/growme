@@ -1,10 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { BidCardComponent } from 'src/app/bids/bid-card/bid-card.component';
 import { BidFormComponent } from 'src/app/bids/bid-form/bid-form.component';
 import { BidListComponent } from 'src/app/bids/bid-list/bid-list.component';
 import { BidService } from 'src/app/services/bid-service';
@@ -16,7 +15,7 @@ import { Task } from 'src/app/shared/model/task';
 @Component({
   selector: 'app-task-details',
   standalone: true,
-  imports: [CommonModule,ReactiveFormsModule,RouterModule , BidCardComponent , BidFormComponent , BidListComponent],
+  imports: [CommonModule,ReactiveFormsModule,RouterModule  , BidFormComponent , BidListComponent],
   templateUrl: './task-details.component.html',
   styleUrl: './task-details.component.scss'
 })
@@ -109,12 +108,12 @@ export class TaskDetailsComponent implements OnInit {
       const prices = this.bids.map(b => b.price);
       this.lowestBidPrice = Math.min(...prices);
       this.highestBidPrice = Math.max(...prices);
-      
+
       if (this.highestBidPrice === 0) {
         this.highestBidPrice = 1;
       }
     }
-  
+
   }
 
   handleBidSubmission(bidData: any): void {
@@ -140,7 +139,7 @@ export class TaskDetailsComponent implements OnInit {
 
   acceptBid(bidId: string): void {
     if (!confirm('Are you sure you want to accept this offer?')) return;
-    
+
     this.bidService.updateBidStatus(bidId, 'ACCEPTED').subscribe({
       next: () => {
         const bid = this.bids.find(b => b.id === bidId);
@@ -172,7 +171,7 @@ export class TaskDetailsComponent implements OnInit {
 
   private updateTaskStatus(status: string): void {
     if (!this.task) return;
-    
+
     this.taskService.updateTaskStatus(this.task.id, status).subscribe({
       next: () => {
         if (this.task) this.task.status = status as any;
