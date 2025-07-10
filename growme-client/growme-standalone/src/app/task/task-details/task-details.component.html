@@ -62,30 +62,24 @@
               </div>
             </div>
           </div>
-
+<!-- <div class="alert alert-info m-3" *ngIf="!loading">
+  <h6>Debug Information:</h6>
+  <ul>
+    <li>Is Grower: {{isGrower}}</li>
+    <li>Is Task Owner: {{isTaskOwner}}</li>
+    <li>Task Status: {{task?.status}}</li>
+    <li>Show Bid Form: {{!isTaskOwner && isGrower && task?.status === 'PENDING'}}</li>
+  </ul>
+</div> -->
           <!-- Bids Section -->
-          <div class="mb-4">
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <h5 class="text-primary border-bottom pb-2">Grower Offers</h5>
-    <span class="badge bg-primary">{{bids.length}} {{bids.length === 1 ? 'Offer' : 'Offers'}}</span>
-  </div>
-
-  <div *ngIf="bids.length === 0" class="alert alert-info">
-    No offers yet. Check back later!
-  </div>
-
-  <div class="row row-cols-1 g-3">
-    <div class="col" *ngFor="let bid of bids">
-      <app-bid-card 
-        [bid]="bid"
-        [isTaskOwner]="isTaskOwner"
-        [taskStatus]="task?.status || ''"
-        (acceptBid)="acceptBid($event)"
-        (rejectBid)="rejectBid($event)">
-      </app-bid-card>
-    </div>
-  </div>
-</div>
+          <app-bid-list 
+            [bids]="bids"
+            [isTaskOwner]="isTaskOwner"
+            [taskStatus]="task?.status || ''"
+            (acceptBid)="acceptBid($event)"
+            (rejectBid)="rejectBid($event)">
+          </app-bid-list>
+        </div>
 
         <!-- Right Column - Actions and Summary -->
         <div class="col-lg-4">
@@ -175,12 +169,19 @@
           </div>
 
           <!-- Bid Form -->
-          <app-bid-form 
-            *ngIf="!isTaskOwner && isGrower && task?.status === 'PENDING'"
-             [taskId]="task?.id|| ''"
-            (bidSubmitted)="handleBidSubmission($event)"
-           (formCanceled)="submittingBid = false">
-          </app-bid-form>
+          <ng-container *ngIf="!isTaskOwner && isGrower && (task?.status === 'PENDING' || task?.status === 'OPEN')">
+            <app-bid-form></app-bid-form>
+          </ng-container>
+
+
+              <ng-container *ngIf="isTaskOwner || !isGrower || (task?.status !== 'PENDING' && task?.status !== 'OPEN')">
+  <div class="alert alert-warning mt-3">
+    <p *ngIf="isTaskOwner">You can't bid on your own task.</p>
+    <p *ngIf="!isGrower">Only growers can submit bids.</p>
+    <p *ngIf="task?.status !== 'PENDING' && task?.status !== 'OPEN'">Bidding is closed for this task.</p>
+  </div>
+</ng-container>
+          
         </div>
       </div>
     </div>

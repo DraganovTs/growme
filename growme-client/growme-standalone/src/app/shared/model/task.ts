@@ -2,7 +2,7 @@ export interface Task {
   id: string;
   title: string;
   description: string;
-  status: 'PENDING' | 'ACTIVE' | 'COMPLETED' | 'CANCELLED';
+  status: 'PENDING' | 'ACTIVE' | 'COMPLETED' | 'CANCELLED' | 'OPEN';
   userId: string;
   user?: {
     username: string;

@@ -8,7 +8,7 @@ import { KeycloakService } from "./keycloak.service";
   providedIn: 'root'
 })
 export class BidService {
-  private apiUrl = `${environment.taskApi}/bids`;
+  private apiUrl = `${environment.taskApi}bids`;
 
   constructor(
     private http: HttpClient,
@@ -27,7 +27,7 @@ export class BidService {
   }
 
   getBidsForTask(taskId: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}task/${taskId}`);
+    return this.http.get(`${this.apiUrl}/task/${taskId}`);
   }
 
   updateBidStatus(bidId: string, status: string): Observable<any> {

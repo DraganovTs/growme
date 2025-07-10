@@ -1,14 +1,10 @@
 package com.home.preorder.service.service.impl;
 
-import com.home.preorder.service.model.dto.TaskDTO;
-import com.home.preorder.service.model.dto.TaskResponseListDTO;
-import com.home.preorder.service.model.dto.TaskStatusUpdateRequestDTO;
+import com.home.preorder.service.model.dto.*;
 import com.home.preorder.service.service.PreorderService;
 import com.home.preorder.service.service.TaskCommandService;
 import com.home.preorder.service.service.TaskQueryService;
 import com.home.preorder.service.specification.TaskSpecParams;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -49,6 +45,43 @@ public class PreorderServiceImpl implements PreorderService {
     @Override
     public TaskResponseListDTO requestAllTasks(TaskSpecParams request) {
         return taskQueryService.getAllTasks(request);
+    }
+
+    //BID
+
+    @Override
+    public BidResponseDTO requestCreateBid(CreateBidRequestDTO dto, UUID userId) {
+        return null;
+    }
+
+    @Override
+    public void requestWithdrawBid(UUID bidId, UUID userId) {
+
+    }
+
+    @Override
+    public BidResponseDTO requestBidById(UUID bidId) {
+        return null;
+    }
+
+    @Override
+    public List<BidResponseDTO> requestBidsForTask(UUID taskId) {
+        return List.of();
+    }
+
+    @Override
+    public List<BidResponseDTO> requestUserBids(UUID userId) {
+        return List.of();
+    }
+
+    @Override
+    public BidResponseDTO requestCounterOffer(UUID bidId, CounterOfferRequestDTO dto, UUID userId) {
+        return null;
+    }
+
+    @Override
+    public BidResponseDTO requestUpdateBidStatus(UUID bidId, UpdateBidStatusRequestDTO dto) {
+        return null;
     }
 
 

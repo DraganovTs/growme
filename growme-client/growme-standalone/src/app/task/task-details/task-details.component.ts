@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { BidCardComponent } from 'src/app/bids/bid-card/bid-card.component';
 import { BidFormComponent } from 'src/app/bids/bid-form/bid-form.component';
+import { BidListComponent } from 'src/app/bids/bid-list/bid-list.component';
 import { BidService } from 'src/app/services/bid-service';
 import { KeycloakService } from 'src/app/services/keycloak.service';
 import { TaskService } from 'src/app/services/task-service';
@@ -15,7 +16,7 @@ import { Task } from 'src/app/shared/model/task';
 @Component({
   selector: 'app-task-details',
   standalone: true,
-  imports: [CommonModule,ReactiveFormsModule,RouterModule , BidCardComponent , BidFormComponent],
+  imports: [CommonModule,ReactiveFormsModule,RouterModule , BidCardComponent , BidFormComponent , BidListComponent],
   templateUrl: './task-details.component.html',
   styleUrl: './task-details.component.scss'
 })
@@ -44,7 +45,7 @@ export class TaskDetailsComponent implements OnInit {
       const taskId = params.get('id');
       if (taskId) {
         this.loadTask(taskId);
-        this.isGrower = this.keycloakService.hasRole('GROWER');
+        this.isGrower = this.keycloakService.hasRole('SELLER');
       } else {
         this.toastr.error('No task ID provided');
         this.router.navigate(['/tasks']);
@@ -113,6 +114,7 @@ export class TaskDetailsComponent implements OnInit {
         this.highestBidPrice = 1;
       }
     }
+  
   }
 
   handleBidSubmission(bidData: any): void {
