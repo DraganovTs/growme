@@ -1,1 +1,22 @@
-<p>bid-list works!</p>
+<div class="bid-list">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="text-primary border-bottom pb-2">Grower Offers</h5>
+    <span class="badge bg-primary">{{bids.length}} {{bids.length === 1 ? 'Offer' : 'Offers'}}</span>
+  </div>
+
+  <div *ngIf="bids.length === 0" class="alert alert-info">
+    No offers yet. Check back later!
+  </div>
+
+  <div class="row row-cols-1 g-3">
+    <div class="col" *ngFor="let bid of bids; trackBy: trackById">
+      <app-bid-card 
+        [bid]="bid"
+        [isTaskOwner]="isTaskOwner"
+        [taskStatus]="taskStatus"
+        (acceptBid)="acceptBid.emit($event)"
+        (rejectBid)="rejectBid.emit($event)">
+      </app-bid-card>
+    </div>
+  </div>
+</div>
