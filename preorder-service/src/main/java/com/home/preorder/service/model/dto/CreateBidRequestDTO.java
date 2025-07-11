@@ -2,6 +2,7 @@ package com.home.preorder.service.model.dto;
 
 import com.home.preorder.service.model.enums.BidStatus;
 import com.home.preorder.service.model.enums.DeliveryMethod;
+import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.*;
 import lombok.Builder;
@@ -31,13 +32,14 @@ public class CreateBidRequestDTO {
     @FutureOrPresent(message = "Harvest date cannot be in the past")
     private LocalDate proposedHarvestDate; //ok
 
+    @Enumerated(EnumType.STRING)
     @NotNull(message = "Please select how you'll deliver the produce")
     private DeliveryMethod deliveryMethod; //ok
 
     @NotNull(message = "Bid must have user, please log in")
     private UUID userId;  //ok
 
-   private boolean deliveryIncluded; //ok
+    private boolean deliveryIncluded; //ok
 
     @Enumerated
     @NotNull(message = "Bid Status must be fill")

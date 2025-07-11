@@ -1,8 +1,9 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { Observable, tap } from "rxjs";
+import { catchError, Observable, tap, throwError } from "rxjs";
 import { environment } from "../environment/environments";
 import { KeycloakService } from "./keycloak.service";
+import { Bid } from "../shared/model/bid";
 
 @Injectable({
   providedIn: 'root'
@@ -15,27 +16,26 @@ export class BidService {
     private keycloakService: KeycloakService
   ) { }
 
-  createBid(bidData: any): Observable<any> {
+  createBid(bidData: any): Observable<Bid> {
   const userId = this.keycloakService.getUserId();
   if (!userId) {
-    throw new Error('User not authenticated');
+    return throwError(() => new Error('User not authenticated')); 
   }
 
-  
-  const requestBody = {
-    taskId: bidData.taskId,
-    price: Number(bidData.price).toFixed(2), 
-    message: bidData.message,
-    proposedHarvestDate: bidData.proposedHarvestDate,
-    deliveryMethod: bidData.deliveryMethod.toUpperCase(), 
-    deliveryIncluded: bidData.deliveryIncluded,
-    userId: userId,
-    status: 'PENDING', 
-    userName: bidData.userName || 'Anonymous Grower'
+  const payload = {
+    ...bidData,
+    price: Number(bidData.price).toFixed(2),
+    deliveryMethod: bidData.deliveryMethod.toUpperCase(),
+    userId,
+    status: 'PENDING'
   };
 
-  console.log('Final API payload:', requestBody);
-  return this.http.post(this.apiUrl, requestBody);
+  return this.http.post<Bid>(this.apiUrl, payload).pipe(
+    catchError(error => {
+      console.error('API Error:', error);
+      return throwError(() => error); 
+    })
+  );
 }
 
   getBidsForTask(taskId: string): Observable<any> {

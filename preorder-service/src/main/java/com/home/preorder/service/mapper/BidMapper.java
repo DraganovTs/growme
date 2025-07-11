@@ -4,6 +4,7 @@ import com.home.preorder.service.model.dto.BidResponseDTO;
 import com.home.preorder.service.model.dto.CreateBidRequestDTO;
 import com.home.preorder.service.model.entity.Bid;
 import com.home.preorder.service.model.enums.BidStatus;
+import com.home.preorder.service.model.enums.DeliveryMethod;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
@@ -16,8 +17,12 @@ public class BidMapper {
         return Bid.builder()
                 .price(dto.getPrice())
                 .message(dto.getMessage())
-                .status(BidStatus.IN_PROGRESS)
+                .proposedHarvestDate(dto.getProposedHarvestDate())
+                .deliveryMethod(DeliveryMethod.valueOf(dto.getDeliveryMethod().toString()))
                 .userId(dto.getUserId())
+                .deliveryIncluded(dto.isDeliveryIncluded())
+                .status(BidStatus.valueOf(dto.getStatus().toString()))
+                .userName(dto.getUserName())
                 .build();
     }
 

@@ -33,7 +33,7 @@ public class BidCommandServiceImpl implements BidCommandService {
         Task task = taskRepository.findById(dto.getTaskId())
                 .orElseThrow(() -> new TaskNotFoundException("Task not found whit Id: " + dto.getTaskId()));
 
-        Bid bid = bidMapper.mapCreateBidReuqestDTOToBid(dto );
+        Bid bid = bidMapper.mapCreateBidReuqestDTOToBid(dto);
         bid.setTask(task);
 
 

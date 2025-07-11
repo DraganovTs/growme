@@ -45,6 +45,10 @@ public class Bid {
     @Column(name = "user_id", nullable = false)
     private UUID userId;
 
+    @NotNull(message = "User name must be provided")
+    @Column(name = "user_name", nullable = false)
+    private String userName;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "task_id", nullable = false)
     private Task task;
@@ -63,6 +67,9 @@ public class Bid {
 
     @Column(name = "proposed_harvest_date")
     private LocalDate proposedHarvestDate;
+
+    @Column(name = "delivery_included")
+    private boolean deliveryIncluded;
 
     @PrePersist
     public void prePersist() {
