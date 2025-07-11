@@ -16,24 +16,27 @@ export class BidService {
   ) { }
 
   createBid(bidData: any): Observable<any> {
-    
-    const userId = this.keycloakService.getUserId();
-    console.log('Creating bid with data:', bidData);
-     console.log('User ID:', userId); 
-
-    bidData.userId = userId;
-    console.log('Final bid payload:', bidData);
-    if (!userId) {
-      console.error('User not authenticated'); 
-      throw new Error('User not authenticated');
-    }
+  const userId = this.keycloakService.getUserId();
+  if (!userId) {
+    throw new Error('User not authenticated');
+  }
 
   
+  const requestBody = {
+    taskId: bidData.taskId,
+    price: Number(bidData.price).toFixed(2), 
+    message: bidData.message,
+    proposedHarvestDate: bidData.proposedHarvestDate,
+    deliveryMethod: bidData.deliveryMethod.toUpperCase(), 
+    deliveryIncluded: bidData.deliveryIncluded,
+    userId: userId,
+    status: 'PENDING', 
+    userName: bidData.userName || 'Anonymous Grower'
+  };
 
-    return this.http.post(this.apiUrl, bidData).pipe(
-    tap(response => console.log('API response:', response)) 
-  );
-  }
+  console.log('Final API payload:', requestBody);
+  return this.http.post(this.apiUrl, requestBody);
+}
 
   getBidsForTask(taskId: string): Observable<any> {
     return this.http.get(`${this.apiUrl}/task/${taskId}`);

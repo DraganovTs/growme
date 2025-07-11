@@ -49,7 +49,8 @@ export class BidFormComponent {
       ...formValue,
       taskId: this.taskId,
       userId: this.keycloakService.getUserId(),
-      userName: this.keycloakService.getUsername() || 'Anonymous Grower'
+      userName: this.keycloakService.getUsername() || 'Anonymous Grower',
+      status: 'PENDING'
       
     };
     console.log('Emitting bid data:', bidData);

@@ -120,34 +120,27 @@ export class TaskDetailsComponent implements OnInit {
 
   }
 
-  handleBidSubmission(bidData: any): void {
-  console.log('PARENT received bid data:', bidData);
+ handleBidSubmission(bidData: any): void {
+  console.log('Processing bid:', bidData);
   this.submittingBid = true;
   
-  const completeBidData = {
-    ...bidData,
-    taskId: this.task?.id,
-    status: 'PENDING'
-  };
-  
-  console.log('Submitting bid:', completeBidData); 
-  
-  this.bidService.createBid(completeBidData).subscribe({
+  this.bidService.createBid(bidData).subscribe({
     next: (response) => {
-      console.log('Bid submission success:', response); 
+      console.log('Bid created:', response);
       this.bids.unshift(response);
-      this.calculatePriceRange();
-      this.toastr.success('Bid submitted successfully!');
-      this.submittingBid = false;
+      this.toastr.success('Bid submitted!');
     },
     error: (error) => {
-      console.error('Bid submission error:', error); 
-      this.toastr.error('Failed to submit bid');
-      this.submittingBid = false;
+      console.error('Full error:', error);
+      if (error.error?.errors) {
+        error.error.errors.forEach((err: any) => {
+          this.toastr.error(`${err.field}: ${err.message}`);
+        });
+      } else {
+        this.toastr.error('Bid submission failed');
+      }
     },
-    complete: () => {
-      console.log('Bid submission complete'); 
-    }
+    complete: () => this.submittingBid = false
   });
 }
 

@@ -1,6 +1,7 @@
 package com.home.preorder.service.model.entity;
 
 import com.home.preorder.service.model.enums.BidStatus;
+import com.home.preorder.service.model.enums.DeliveryMethod;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -8,6 +9,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -31,12 +33,12 @@ public class Bid {
     private BigDecimal price;
 
     @NotBlank(message = "Message must not be blank")
-    @Size(max = 500, message = "Message must be at most 500 characters")
+    @Size(min = 20, max = 500, message = "Message must be between 20 and 500 characters")
     @Column(nullable = false)
     private String message;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false , length = 20)
     private BidStatus status;
 
     @NotNull(message = "User ID must be provided")
@@ -54,6 +56,13 @@ public class Bid {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @Enumerated
+    @Column(name = "delivery_method", length = 20)
+    private DeliveryMethod deliveryMethod;
+
+    @Column(name = "proposed_harvest_date")
+    private LocalDate proposedHarvestDate;
 
     @PrePersist
     public void prePersist() {

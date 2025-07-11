@@ -2,9 +2,9 @@ export interface Bid {
   id: string;
   price: number;
   message: string;
-  status: 'PENDING' | 'ACCEPTED' | 'IN_PROGRESS' | 'DELIVERED' | 'PAID' |'REJECTED';
+  status: 'PENDING' | 'ACCEPTED' | 'CONFIRMED' | 'IN_PROGRESS' | 'READY' |'SHIPPED'  |'DELIVERED'  |'COMPLETED'  |'CANCELLED' |'REJECTED' |'EXPIRED';
   userId?: string;
-  growerName?: string;
+  userName?: string;
   taskId?: string;
   deliveryMethod?: 'PICKUP' | 'DELIVERY' | 'MARKET';
   deliveryIncluded?: boolean;
