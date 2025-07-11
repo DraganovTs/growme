@@ -38,8 +38,9 @@ public class BidController {
     }
 
     @GetMapping("/task/{taskId}")
-    public ResponseEntity<List<?>> getBidsForTask() {
-        return ResponseEntity.status(HttpStatus.OK).body(new ArrayList<>());
+    public ResponseEntity<List<BidResponseDTO>> getBidsForTask(@PathVariable UUID taskId) {
+        System.out.println();
+        return ResponseEntity.status(HttpStatus.OK).body(preorderService.requestBidsForTask(taskId));
     }
 
     @GetMapping("/my-bids")

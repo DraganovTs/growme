@@ -1,10 +1,7 @@
 package com.home.preorder.service.service.impl;
 
 import com.home.preorder.service.model.dto.*;
-import com.home.preorder.service.service.BidCommandService;
-import com.home.preorder.service.service.PreorderService;
-import com.home.preorder.service.service.TaskCommandService;
-import com.home.preorder.service.service.TaskQueryService;
+import com.home.preorder.service.service.*;
 import com.home.preorder.service.specification.TaskSpecParams;
 import org.springframework.stereotype.Service;
 
@@ -17,12 +14,14 @@ public class PreorderServiceImpl implements PreorderService {
     private final TaskCommandService taskCommandService;
     private final TaskQueryService taskQueryService;
     private final BidCommandService bidCommandService;
+    private final BidQueryService bidQueryService;
 
     public PreorderServiceImpl(TaskCommandService taskCommandService, TaskQueryService taskQueryService,
-                               BidCommandService bidCommandService) {
+                               BidCommandService bidCommandService, BidQueryService bidQueryService) {
         this.taskCommandService = taskCommandService;
         this.taskQueryService = taskQueryService;
         this.bidCommandService = bidCommandService;
+        this.bidQueryService = bidQueryService;
     }
 
 
@@ -70,7 +69,7 @@ public class PreorderServiceImpl implements PreorderService {
 
     @Override
     public List<BidResponseDTO> requestBidsForTask(UUID taskId) {
-        return List.of();
+        return bidQueryService.getBidsByTaskId(taskId);
     }
 
     @Override
