@@ -11,7 +11,7 @@ import com.home.preorder.service.repository.TaskRepository;
 import com.home.preorder.service.service.BidCommandService;
 import org.springframework.stereotype.Service;
 
-import java.util.UUID;
+
 
 @Service
 public class BidCommandServiceImpl implements BidCommandService {

@@ -7,7 +7,6 @@ import com.home.preorder.service.model.enums.BidStatus;
 import com.home.preorder.service.model.enums.DeliveryMethod;
 import org.springframework.stereotype.Component;
 
-import java.util.UUID;
 
 @Component
 public class BidMapper {
@@ -29,13 +28,18 @@ public class BidMapper {
     public BidResponseDTO mapBidToBidResponseDTO(Bid save) {
         return BidResponseDTO.builder()
                 .bidId(save.getBidId())
+                .taskId(save.getTask().getTaskId())
                 .price(save.getPrice())
                 .message(save.getMessage())
-                .status(save.getStatus())
-                .taskId(save.getTask().getTaskId())
+                .proposedHarvestDate(save.getProposedHarvestDate())
+                .deliveryMethod(save.getDeliveryMethod().toString())
+                .status(save.getStatus().toString())
                 .taskTitle(save.getTask().getTitle())
-                .growerId(save.getUserId())
-                .growerName("Test Name to add")
+                .userId(save.getUserId())
+                .userName(save.getUserName())
+                .deliveryIncluded(save.isDeliveryIncluded())
+                .createdAt(save.getCreatedAt())
+                .updatedAt(save.getUpdatedAt())
                 .build();
     }
 }

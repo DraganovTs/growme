@@ -1,6 +1,6 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { catchError, Observable, tap, throwError } from "rxjs";
+import { catchError, Observable, throwError } from "rxjs";
 import { environment } from "../environment/environments";
 import { KeycloakService } from "./keycloak.service";
 import { Bid } from "../shared/model/bid";
@@ -19,7 +19,7 @@ export class BidService {
   createBid(bidData: any): Observable<Bid> {
   const userId = this.keycloakService.getUserId();
   if (!userId) {
-    return throwError(() => new Error('User not authenticated')); 
+    return throwError(() => new Error('User not authenticated'));
   }
 
   const payload = {
@@ -33,7 +33,7 @@ export class BidService {
   return this.http.post<Bid>(this.apiUrl, payload).pipe(
     catchError(error => {
       console.error('API Error:', error);
-      return throwError(() => error); 
+      return throwError(() => error);
     })
   );
 }
