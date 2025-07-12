@@ -33,8 +33,9 @@ public class BidController {
 
 
     @GetMapping("/{bidId}")
-    public ResponseEntity<?> getBidById() {
-        return null;
+    public ResponseEntity<BidResponseDTO> getBidById(@PathVariable UUID bidId) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(preorderService.requestBidById(bidId));
     }
 
     @GetMapping("/task/{taskId}")
