@@ -1,5 +1,6 @@
 package com.home.preorder.service.service.impl;
 
+import com.home.preorder.service.exception.BidNotFoundException;
 import com.home.preorder.service.mapper.BidMapper;
 import com.home.preorder.service.model.dto.BidResponseDTO;
 import com.home.preorder.service.repository.BidRepository;
@@ -24,7 +25,7 @@ public class BidQueryServiceImpl implements BidQueryService {
     }
 
     @Override
-    @Cacheable(value = "taskBids" , key = "#taskId")
+    @Cacheable(value = "taskBids", key = "#taskId")
     public List<BidResponseDTO> getBidsByTaskId(UUID taskId) {
 
         return bidRepository.findAllByTaskId(taskId)
@@ -32,5 +33,11 @@ public class BidQueryServiceImpl implements BidQueryService {
                 .map(bidMapper::mapBidToBidResponseDTO)
                 .toList();
 
+    }
+
+    @Override
+    public BidResponseDTO getBidById(UUID bidId) {
+        return bidMapper.mapBidToBidResponseDTO(bidRepository.findById(bidId)
+                .orElseThrow(() -> new BidNotFoundException("Bid whit not found whit id: " + bidId)));
     }
 }

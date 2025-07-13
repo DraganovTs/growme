@@ -8,4 +8,6 @@ import java.util.UUID;
 public interface BidQueryService {
 
     List<BidResponseDTO> getBidsByTaskId(UUID taskId);
+
+    BidResponseDTO getBidById(UUID bidId);
 }

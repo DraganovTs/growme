@@ -64,7 +64,7 @@ public class PreorderServiceImpl implements PreorderService {
 
     @Override
     public BidResponseDTO requestBidById(UUID bidId) {
-        return null;
+        return bidQueryService.getBidById(bidId);
     }
 
     @Override

@@ -14,7 +14,8 @@ public class PreorderExceptionHandler extends BaseExceptionHandler {
 
     @ExceptionHandler({
             CategoryNotFoundException.class,
-            TaskNotFoundException.class
+            TaskNotFoundException.class,
+            BidNotFoundException.class
     })
     public ResponseEntity<ErrorResponseDTO> handleNotFoundException(RuntimeException ex, WebRequest request){
         return buildErrorResponse(ex, request, HttpStatus.NOT_FOUND, "NOT_FOUND");

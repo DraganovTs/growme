@@ -62,8 +62,9 @@ public class BidController {
 
 
     @DeleteMapping("/{bidId}")
-    public ResponseEntity<Void> withdrawBid() {
-        return null;
+    public ResponseEntity<Void> withdrawBid(@PathVariable UUID bidId, @RequestAttribute UUID userId) {
+        preorderService.requestWithdrawBid(bidId, userId);
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/{bidId}/counter-offer")
