@@ -3,6 +3,8 @@ package com.home.preorder.service.service.impl;
 import com.home.preorder.service.model.dto.*;
 import com.home.preorder.service.service.*;
 import com.home.preorder.service.specification.TaskSpecParams;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -59,7 +61,7 @@ public class PreorderServiceImpl implements PreorderService {
 
     @Override
     public void requestWithdrawBid(UUID bidId, UUID userId) {
-
+        bidCommandService.withdrawBid(bidId, userId);
     }
 
     @Override
@@ -68,23 +70,28 @@ public class PreorderServiceImpl implements PreorderService {
     }
 
     @Override
-    public List<BidResponseDTO> requestBidsForTask(UUID taskId) {
-        return bidQueryService.getBidsByTaskId(taskId);
+    public Page<BidResponseDTO> requestBidsForTask(UUID taskId, Pageable pageable) {
+        return bidQueryService.getBidsByTaskId(taskId, pageable);
     }
 
     @Override
-    public List<BidResponseDTO> requestUserBids(UUID userId) {
-        return List.of();
+    public Page<BidResponseDTO> requestUserBids(UUID userId, Pageable pageable) {
+        return bidQueryService.getUserBids(userId, pageable);
     }
 
     @Override
-    public BidResponseDTO requestCounterOffer(UUID bidId, CounterOfferRequestDTO dto, UUID userId) {
-        return null;
+    public BidResponseDTO requestCounterOffer(UUID bidId, CounterOfferRequestDTO dto) {
+        return bidCommandService.updateBidStatus(bidId, dto);
     }
 
     @Override
     public BidResponseDTO requestUpdateBidStatus(UUID bidId, UpdateBidStatusRequestDTO dto) {
-        return null;
+        return bidCommandService.updateBidStatus(bidId, dto);
+    }
+
+    @Override
+    public Page<BidResponseDTO> requestBidsRequiringAction(UUID userId, Pageable pageable) {
+        return bidQueryService.getBidsRequiringAction(userId, pageable);
     }
 
 

@@ -11,5 +11,6 @@ public enum BidStatus {
     COMPLETED,      // Final successful state
     CANCELLED,      // Either party cancelled before completion
     REJECTED,       // Buyer declined the offer
-    EXPIRED         // Auto-rejected after timeframe
+    EXPIRED,         // Auto-rejected after timeframe
+    COUNTER_OFFER
 }

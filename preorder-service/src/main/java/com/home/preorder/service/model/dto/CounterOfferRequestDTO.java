@@ -8,7 +8,7 @@ import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
 
 public record CounterOfferRequestDTO(
-        @Positive @DecimalMin("0.01")BigDecimal counterPrice,
+        @Positive @DecimalMin("0.01")BigDecimal counterOfferPrice,
         @NotBlank @Size(max = 500) String message
         ) {
 }

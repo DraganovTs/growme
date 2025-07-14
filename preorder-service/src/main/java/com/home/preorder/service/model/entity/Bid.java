@@ -71,6 +71,11 @@ public class Bid {
     @Column(name = "delivery_included")
     private boolean deliveryIncluded;
 
+    @Column(name = "counter_offer_price")
+    private BigDecimal counterOfferPrice;
+    @Column(name = "counter_offer_message")
+    private String counterOfferMessage;
+
     @PrePersist
     public void prePersist() {
         if (bidId == null) {
