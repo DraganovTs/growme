@@ -10,6 +10,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,4 +34,10 @@ public interface BidRepository extends JpaRepository<Bid, UUID>, JpaSpecificatio
 
     @Query("SELECT COUNT(b) > 0 FROM Bid b WHERE b.task.taskId = :taskId AND b.userId = :userId")
     boolean existsByTaskIdAndUserId(@Param("taskId") UUID taskId, @Param("userId") UUID userId);
+
+    @Query("SELECT b FROM Bid b WHERE b.status = :status AND b.createdAt < :threshold")
+    List<Bid> findAllByStatusAndCreatedAtBefore(
+            @Param("status") BidStatus status,
+            @Param("threshold") LocalDateTime threshold
+    );
 }

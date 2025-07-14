@@ -37,8 +37,7 @@ public class TaskCommandServiceImpl implements TaskCommandService {
         task.setCategory(category);
         task.setStatus(TaskStatus.OPEN);
         taskRepository.save(task);
-        TaskDTO answer = taskMapper.mapTaskToTaskDTO(task);
-        return answer;
+        return taskMapper.mapTaskToTaskDTO(task);
     }
 
     @Override
