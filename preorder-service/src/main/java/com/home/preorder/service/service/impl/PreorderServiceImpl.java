@@ -52,6 +52,11 @@ public class PreorderServiceImpl implements PreorderService {
         return taskQueryService.getAllTasks(request);
     }
 
+    @Override
+    public void requestCancelTask(UUID taskId , UUID userId) {
+        taskCommandService.cancelTask(taskId , userId);
+    }
+
     //BID
 
     @Override
@@ -80,8 +85,8 @@ public class PreorderServiceImpl implements PreorderService {
     }
 
     @Override
-    public BidResponseDTO requestCounterOffer(UUID bidId, CounterOfferRequestDTO dto) {
-        return bidCommandService.updateBidStatus(bidId, dto);
+    public BidResponseDTO requestCounterOffer(UUID bidId, CounterOfferRequestDTO dto, UUID userId) {
+        return bidCommandService.createCounterOffer(bidId, dto, userId);
     }
 
     @Override

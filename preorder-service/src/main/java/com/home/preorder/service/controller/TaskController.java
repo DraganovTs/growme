@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 
 @RestController
@@ -57,6 +58,13 @@ public class TaskController {
     public ResponseEntity<TaskResponseListDTO> getAllTasks(TaskSpecParams request){
         return ResponseEntity.status(HttpStatus.OK)
                 .body(preorderService.requestAllTasks(request));
+    }
+
+    @DeleteMapping("/{taskId}")
+    public ResponseEntity<Void>cancelTask(@PathVariable UUID taskId,
+    @RequestAttribute UUID userId){
+        preorderService.requestCancelTask(taskId , userId);
+        return ResponseEntity.noContent().build();
     }
 
 

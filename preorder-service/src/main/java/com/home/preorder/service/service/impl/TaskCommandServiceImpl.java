@@ -2,6 +2,7 @@ package com.home.preorder.service.service.impl;
 
 import com.home.preorder.service.exception.TaskNotFoundException;
 import com.home.preorder.service.exception.TaskStatusNotFoundException;
+import com.home.preorder.service.exception.UnauthorizedActionException;
 import com.home.preorder.service.mapper.TaskMapper;
 import com.home.preorder.service.model.dto.TaskDTO;
 import com.home.preorder.service.model.dto.TaskStatusUpdateRequestDTO;
@@ -55,7 +56,15 @@ public class TaskCommandServiceImpl implements TaskCommandService {
     }
 
     @Override
-    public void cancelTask(String taskId) {
+    public void cancelTask(UUID taskId , UUID userId) {
 
+        Task task = taskRepository.findById(taskId)
+                        .orElseThrow(() -> new TaskNotFoundException("Task not found whit Id : " + taskId));
+
+        if (!task.getUserId().equals(userId)){
+            throw new UnauthorizedActionException("User is not authorized to create counter offer for this bid");
+        }
+
+        taskRepository.deleteById(taskId);
     }
 }

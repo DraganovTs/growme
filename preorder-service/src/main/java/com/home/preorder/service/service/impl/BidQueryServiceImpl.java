@@ -28,11 +28,10 @@ public class BidQueryServiceImpl implements BidQueryService {
     }
 
     @Override
-    @Cacheable(value = "taskBids", key = "#taskId")
+    @Cacheable(value = "taskBids", key = "#taskId.toString().concat('-').concat(#pageable.pageNumber)")
     public Page<BidResponseDTO> getBidsByTaskId(UUID taskId, Pageable pageable) {
 
         return bidRepository.findAllByTaskId(taskId, pageable)
-                .stream()
                 .map(bidMapper::mapBidToBidResponseDTO);
 
     }

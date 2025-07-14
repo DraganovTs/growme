@@ -13,7 +13,7 @@ public interface PreorderService {
     //Task
     TaskDTO requestTaskCreation(TaskDTO taskDTO);
 
-    TaskDTO  requestUpdateTaskStatus(String taskId, TaskStatusUpdateRequestDTO taskStatus);
+    TaskDTO requestUpdateTaskStatus(String taskId, TaskStatusUpdateRequestDTO taskStatus);
 
     TaskDTO requestTaskById(String taskId);
 
@@ -21,13 +21,23 @@ public interface PreorderService {
 
     TaskResponseListDTO requestAllTasks(TaskSpecParams request);
 
+    void requestCancelTask(UUID taskId, UUID userId);
+
     //Bid
     BidResponseDTO requestCreateBid(CreateBidRequestDTO dto);
+
     void requestWithdrawBid(UUID bidId, UUID userId);
+
     BidResponseDTO requestBidById(UUID bidId);
-    Page<BidResponseDTO> requestBidsForTask(UUID taskId , Pageable pageable);
+
+    Page<BidResponseDTO> requestBidsForTask(UUID taskId, Pageable pageable);
+
     Page<BidResponseDTO> requestUserBids(UUID userId, Pageable pageable);
-    BidResponseDTO requestCounterOffer(UUID bidId, CounterOfferRequestDTO dto);
+
+    BidResponseDTO requestCounterOffer(UUID bidId, CounterOfferRequestDTO dto, UUID userId);
+
     BidResponseDTO requestUpdateBidStatus(UUID bidId, UpdateBidStatusRequestDTO dto);
+
     Page<BidResponseDTO> requestBidsRequiringAction(UUID userId, Pageable pageable);
+
 }

@@ -1,6 +1,5 @@
 package com.home.preorder.service.service.impl;
 
-import com.home.growme.common.module.exceptions.security.UnauthorizedAccessException;
 import com.home.preorder.service.exception.BidNotFoundException;
 import com.home.preorder.service.exception.InvalidBidStatusException;
 import com.home.preorder.service.exception.TaskNotFoundException;

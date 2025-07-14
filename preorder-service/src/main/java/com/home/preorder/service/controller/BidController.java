@@ -1,7 +1,9 @@
 package com.home.preorder.service.controller;
 
 import com.home.preorder.service.model.dto.BidResponseDTO;
+import com.home.preorder.service.model.dto.CounterOfferRequestDTO;
 import com.home.preorder.service.model.dto.CreateBidRequestDTO;
+import com.home.preorder.service.model.dto.UpdateBidStatusRequestDTO;
 import com.home.preorder.service.service.PreorderService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -49,21 +51,28 @@ public class BidController {
     }
 
     @GetMapping("/my-bids")
-    public ResponseEntity<Page<BidResponseDTO>> getUserBids(@PathVariable UUID userId,
+    public ResponseEntity<Page<BidResponseDTO>> getUserBids(@RequestAttribute UUID userId,
                                                             @PageableDefault(size = 20) Pageable pageable) {
+        System.out.println();
         return ResponseEntity.status(HttpStatus.OK)
                 .body(preorderService.requestUserBids(userId,pageable));
     }
 
 
     @PatchMapping("/{bidId}/status")
-    public ResponseEntity<?> updateBidStatus() {
-        return null;
+    public ResponseEntity<BidResponseDTO> updateBidStatus(@PathVariable UUID bidId,
+                                                          @RequestBody @Valid UpdateBidStatusRequestDTO dto) {
+        System.out.println();
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(preorderService.requestUpdateBidStatus(bidId, dto));
     }
 
     @GetMapping("/requires-action")
-    public ResponseEntity<List<?>> getBidsRequiringAction() {
-        return null;
+    public ResponseEntity<Page<BidResponseDTO>> getBidsRequiringAction(@RequestAttribute UUID userId,
+                                                                       @PageableDefault(size = 20)Pageable pageable) {
+        System.out.println();
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(preorderService.requestBidsRequiringAction(userId, pageable));
     }
 
 
@@ -74,10 +83,14 @@ public class BidController {
     }
 
     @PostMapping("/{bidId}/counter-offer")
-    public ResponseEntity<?> createCounterOffer() {
-        return null;
+    public ResponseEntity<BidResponseDTO> createCounterOffer(
+            @PathVariable UUID bidId,
+            @RequestBody @Valid CounterOfferRequestDTO dto,
+            @RequestAttribute UUID userId
+    ) {
+        System.out.println();
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(preorderService.requestCounterOffer(bidId,dto,userId));
     }
 
-
-    //TODO
 }
