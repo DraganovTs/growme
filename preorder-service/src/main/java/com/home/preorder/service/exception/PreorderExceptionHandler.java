@@ -20,4 +20,28 @@ public class PreorderExceptionHandler extends BaseExceptionHandler {
     public ResponseEntity<ErrorResponseDTO> handleNotFoundException(RuntimeException ex, WebRequest request){
         return buildErrorResponse(ex, request, HttpStatus.NOT_FOUND, "NOT_FOUND");
     }
+
+    @ExceptionHandler(InvalidBidStatusException.class)
+    public ResponseEntity<ErrorResponseDTO> handleInvalidBidStatusException(
+            InvalidBidStatusException ex, WebRequest request) {
+        return buildErrorResponse(ex, request, HttpStatus.BAD_REQUEST, "INVALID_BID_STATUS");
+    }
+
+    @ExceptionHandler(UnauthorizedActionException.class)
+    public ResponseEntity<ErrorResponseDTO> handleUnauthorizedActionException(
+            UnauthorizedActionException ex, WebRequest request) {
+        return buildErrorResponse(ex, request, HttpStatus.UNAUTHORIZED, "UNAUTHORIZED_ACTION");
+    }
+
+    @ExceptionHandler(BidExpiredException.class)
+    public ResponseEntity<ErrorResponseDTO> handleBidExpiredException(
+            BidExpiredException ex, WebRequest request) {
+        return buildErrorResponse(ex, request, HttpStatus.GONE, "BID_EXPIRED");
+    }
+
+    @ExceptionHandler(DuplicateBidException.class)
+    public ResponseEntity<ErrorResponseDTO> handleDuplicateBidException(
+            DuplicateBidException ex, WebRequest request) {
+        return buildErrorResponse(ex, request, HttpStatus.CONFLICT, "DUPLICATE_BID");
+    }
 }

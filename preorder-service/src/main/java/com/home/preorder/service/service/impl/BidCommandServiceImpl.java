@@ -1,9 +1,6 @@
 package com.home.preorder.service.service.impl;
 
-import com.home.preorder.service.exception.BidNotFoundException;
-import com.home.preorder.service.exception.InvalidBidStatusException;
-import com.home.preorder.service.exception.TaskNotFoundException;
-import com.home.preorder.service.exception.UnauthorizedActionException;
+import com.home.preorder.service.exception.*;
 import com.home.preorder.service.mapper.BidMapper;
 import com.home.preorder.service.model.dto.BidResponseDTO;
 import com.home.preorder.service.model.dto.CounterOfferRequestDTO;
@@ -12,6 +9,7 @@ import com.home.preorder.service.model.dto.UpdateBidStatusRequestDTO;
 import com.home.preorder.service.model.entity.Bid;
 import com.home.preorder.service.model.entity.Task;
 import com.home.preorder.service.model.enums.BidStatus;
+import com.home.preorder.service.model.enums.TaskStatus;
 import com.home.preorder.service.repository.BidRepository;
 import com.home.preorder.service.repository.TaskRepository;
 import com.home.preorder.service.service.BidCommandService;
@@ -40,6 +38,14 @@ public class BidCommandServiceImpl implements BidCommandService {
 
         Task task = taskRepository.findById(dto.getTaskId())
                 .orElseThrow(() -> new TaskNotFoundException("Task not found whit Id: " + dto.getTaskId()));
+
+        if (bidRepository.existsByTaskIdAndUserId(dto.getTaskId(),dto.getUserId())){
+            throw new DuplicateBidException("User has already placed a bid on this task");
+        }
+
+        if (task.getStatus() != TaskStatus.OPEN) {
+            throw new InvalidBidStatusException("Cannot place bid on a task that is not open");
+        }
 
         Bid bid = bidMapper.mapCreateBidReuqestDTOToBid(dto);
         bid.setTask(task);
