@@ -5,5 +5,6 @@ public enum TaskStatus {
     ASSIGNED,
     IN_PROGRESS,
     COMPLETED,
-    CANCELLED
+    CANCELLED,
+    ARCHIVED
 }
