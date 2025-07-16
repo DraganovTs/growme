@@ -3,7 +3,7 @@ import { ShopService } from '../services/shop.service';
 import { ICategory, IOwner, IProduct } from '../shared/model/product';
 import { CommonModule } from '@angular/common';
 import { PaginationModule } from 'ngx-bootstrap/pagination';
-import { ShopParams } from '../shared/model/shopparams';
+import { IShopParams } from '../shared/model/shopparams';
 import { ProductItemComponent } from "./product-item/product-item.component";
 
 @Component({
@@ -18,7 +18,7 @@ export class ShopComponent implements OnInit {
   products: IProduct[] = [];
   categories: ICategory[] = [];
   owners: IOwner[] = [];
-  shopParams: ShopParams;
+  shopParams: IShopParams;
   totalCount=0;
   sortOptions = [
     {name: 'Alphabetical', value: 'name'},
@@ -136,7 +136,7 @@ export class ShopComponent implements OnInit {
 
   onReset() {
     if(this.searchTerm) this.searchTerm.nativeElement.value='';
-    this.shopParams = new ShopParams();
+    this.shopParams = new IShopParams();
     this.shopService.setShopParams(this.shopParams);
     this.getProducts();
   }

@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { ICategory, IOwner, IProduct } from '../shared/model/product';
 import { environment } from '../environment/environments';
 import { IPagination } from '../shared/model/pagination';
-import { ShopParams } from '../shared/model/shopparams';
+import { IShopParams } from '../shared/model/shopparams';
 import { Observable, map } from 'rxjs';
 
 @Injectable({
@@ -11,7 +11,7 @@ import { Observable, map } from 'rxjs';
 })
 export class ShopService {
 
-  shopParams = new ShopParams();
+  shopParams = new IShopParams();
 pagination?: IPagination<IProduct[]>;
 
   constructor(private  http: HttpClient) { }
@@ -56,7 +56,7 @@ pagination?: IPagination<IProduct[]>;
     return this.http.get<IOwner[]>(environment.apiUrl +'owners/sorted-by-product-count');
   }
 
-  setShopParams(params: ShopParams) {
+  setShopParams(params: IShopParams) {
     this.shopParams = params;
   }
   getShopParams() {

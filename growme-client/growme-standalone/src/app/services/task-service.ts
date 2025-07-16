@@ -3,7 +3,7 @@ import { Injectable } from "@angular/core";
 import { catchError, Observable, tap, throwError } from "rxjs";
 import { environment } from "../environment/environments";
 import { KeycloakService } from "./keycloak.service";
-import { Task } from "../shared/model/task";
+import { ITask } from "../shared/model/task";
 
 @Injectable({
   providedIn: 'root'
@@ -33,12 +33,12 @@ export class TaskService {
     return this.http.post(`${this.apiUrl}`, completeTaskData);
   }
 
-   getTask(taskId: string): Observable<Task> {
+   getTask(taskId: string): Observable<ITask> {
    if (!taskId || taskId === 'undefined') {
     return throwError(() => new Error('Invalid task ID'));
   }
   console.log('Making request for task ID:', taskId);
-  return this.http.get<Task>(`${this.apiUrl}/task/${taskId}`).pipe(
+  return this.http.get<ITask>(`${this.apiUrl}/task/${taskId}`).pipe(
     tap(response => console.log('Task response:', response)),
     catchError(error => {
       console.error('Error fetching task:', error);
@@ -60,8 +60,8 @@ export class TaskService {
      return this.http.get<any>(this.apiUrl, { params: httpParams });
   }
 
-  updateTaskStatus(taskId: string, status: string): Observable<Task> {
-    return this.http.patch<Task>(
+  updateTaskStatus(taskId: string, status: string): Observable<ITask> {
+    return this.http.patch<ITask>(
       `${this.apiUrl}/task/${taskId}/status`, 
       { status }
     );

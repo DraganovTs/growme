@@ -1,4 +1,4 @@
-export class ShopParams {
+export class IShopParams {
     ownerId?: string = '';
     categoryId: string = '';
     sort: string = 'name';

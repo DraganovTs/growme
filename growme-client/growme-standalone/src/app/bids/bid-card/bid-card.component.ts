@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { Bid } from 'src/app/shared/model/bid';
+import { IBid } from 'src/app/shared/model/bid';
 
 @Component({
   standalone: true,
@@ -11,7 +11,7 @@ import { Bid } from 'src/app/shared/model/bid';
   styleUrl: './bid-card.component.scss'
 })
 export class BidCardComponent {
-  @Input() bid!: Bid;
+  @Input() bid!: IBid;
   @Input() isTaskOwner = false;
   @Input() taskStatus = '';
   

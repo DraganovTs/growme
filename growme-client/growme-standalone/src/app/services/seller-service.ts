@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { IPagination } from '../shared/model/pagination';
 import { IProduct } from '../shared/model/product';
-import { SellerParams } from '../shared/model/sellerparams';
+import { ISellerParams } from '../shared/model/sellerparams';
 import { environment } from '../environment/environments';
 import { catchError, delay, Observable, of, throwError } from 'rxjs';
 
@@ -11,7 +11,7 @@ import { catchError, delay, Observable, of, throwError } from 'rxjs';
 })
 export class SellerService {
   private baseUrl = environment.apiUrl;
-  private sellerParams = new SellerParams();
+  private sellerParams = new ISellerParams();
 
   constructor(private http: HttpClient) {}
 
@@ -42,7 +42,7 @@ export class SellerService {
     return params;
   }
  
-  setSellerParams(params: SellerParams) {
+  setSellerParams(params: ISellerParams) {
     this.sellerParams = params;
   }
 
@@ -51,7 +51,7 @@ export class SellerService {
   }
 
   resetSellerParams() {
-    this.sellerParams = new SellerParams();
+    this.sellerParams = new ISellerParams();
     return this.sellerParams;
   }
 

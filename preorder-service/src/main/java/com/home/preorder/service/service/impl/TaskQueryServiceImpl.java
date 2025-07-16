@@ -82,10 +82,6 @@ public class TaskQueryServiceImpl implements TaskQueryService {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public Page<TaskDTO> searchTasks(String query, String category, Pageable pageable) {
-        return null;
-    }
 
 
     private Sort getSorting(String sortParam) {

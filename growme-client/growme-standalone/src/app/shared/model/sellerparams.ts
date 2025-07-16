@@ -1,4 +1,4 @@
-export class SellerParams {
+export class ISellerParams {
   categoryId?: string;
   sort = 'name';
   pageIndex = 1;

@@ -75,12 +75,12 @@ public class PreorderServiceImpl implements PreorderService {
     }
 
     @Override
-    public Page<BidResponseDTO> requestBidsForTask(UUID taskId, Pageable pageable) {
+    public BidResponseListDTO requestBidsForTask(UUID taskId, Pageable pageable) {
         return bidQueryService.getBidsByTaskId(taskId, pageable);
     }
 
     @Override
-    public Page<BidResponseDTO> requestUserBids(UUID userId, Pageable pageable) {
+    public BidResponseListDTO requestUserBids(UUID userId, Pageable pageable) {
         return bidQueryService.getUserBids(userId, pageable);
     }
 
@@ -95,7 +95,7 @@ public class PreorderServiceImpl implements PreorderService {
     }
 
     @Override
-    public Page<BidResponseDTO> requestBidsRequiringAction(UUID userId, Pageable pageable) {
+    public BidResponseListDTO requestBidsRequiringAction(UUID userId, Pageable pageable) {
         return bidQueryService.getBidsRequiringAction(userId, pageable);
     }
 

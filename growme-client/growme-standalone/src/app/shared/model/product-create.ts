@@ -1,4 +1,4 @@
-export interface ProductCreateDTO {
+export interface IProductCreateDTO {
     name: string;
     brand?: string | null;
     description: string;
@@ -14,6 +14,6 @@ export interface ImageUploadResponse {
   }
 
 
-  export interface ProductUpdateDTO extends ProductCreateDTO {
+  export interface ProductUpdateDTO extends IProductCreateDTO {
     productId: string;
   }

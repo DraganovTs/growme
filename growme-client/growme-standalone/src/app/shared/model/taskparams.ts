@@ -1,4 +1,4 @@
-export class TaskParams{
+export class ITaskParams{
     userId?: string='';
     status?: string = '';
     sort: string = 'createdAtDesc'; 

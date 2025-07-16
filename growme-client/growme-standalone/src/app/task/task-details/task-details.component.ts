@@ -9,8 +9,8 @@ import { BidListComponent } from 'src/app/bids/bid-list/bid-list.component';
 import { BidService } from 'src/app/services/bid-service';
 import { KeycloakService } from 'src/app/services/keycloak.service';
 import { TaskService } from 'src/app/services/task-service';
-import { Bid } from 'src/app/shared/model/bid';
-import { Task } from 'src/app/shared/model/task';
+import { IBid } from 'src/app/shared/model/bid';
+import { ITask } from 'src/app/shared/model/task';
 
 @Component({
   selector: 'app-task-details',
@@ -22,8 +22,8 @@ import { Task } from 'src/app/shared/model/task';
 export class TaskDetailsComponent implements OnInit {
   private router = inject(Router);
 
-  task: Task | null = null;
-  bids: Bid[] = [];
+  task: ITask | null = null;
+  bids: IBid[] = [];
   loading = true;
   isTaskOwner = false;
   isGrower = false;
@@ -93,19 +93,19 @@ export class TaskDetailsComponent implements OnInit {
   }
 
   loadBids(taskId: string): void {
-    this.bidService.getBidsForTask(taskId).subscribe({
-      next: (bids) => {
-        this.bids = bids;
-        this.calculatePriceRange();
-        this.loading = false;
-      },
-      error: (error) => {
-        console.error('Error loading bids:', error);
-        this.toastr.warning('Failed to load bids for this task');
-        this.loading = false;
-      }
-    });
-  }
+  this.bidService.getBidsForTask(taskId).subscribe({
+    next: (response) => {
+      this.bids = response.dataList; 
+      this.calculatePriceRange();
+      this.loading = false;
+    },
+    error: (error) => {
+      console.error('Error loading bids:', error);
+      this.toastr.warning('Failed to load bids for this task');
+      this.loading = false;
+    }
+  });
+}
 
   private calculatePriceRange(): void {
     if (this.bids.length > 0) {

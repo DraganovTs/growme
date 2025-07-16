@@ -3,6 +3,8 @@ package com.home.preorder.service.service.impl;
 import com.home.preorder.service.exception.BidNotFoundException;
 import com.home.preorder.service.mapper.BidMapper;
 import com.home.preorder.service.model.dto.BidResponseDTO;
+import com.home.preorder.service.model.dto.BidResponseListDTO;
+import com.home.preorder.service.model.entity.Bid;
 import com.home.preorder.service.model.enums.BidStatus;
 import com.home.preorder.service.repository.BidRepository;
 import com.home.preorder.service.service.BidQueryService;
@@ -29,11 +31,16 @@ public class BidQueryServiceImpl implements BidQueryService {
 
     @Override
     @Cacheable(value = "taskBids", key = "#taskId.toString().concat('-').concat(#pageable.pageNumber)")
-    public Page<BidResponseDTO> getBidsByTaskId(UUID taskId, Pageable pageable) {
+    public BidResponseListDTO getBidsByTaskId(UUID taskId, Pageable pageable) {
 
-        return bidRepository.findAllByTaskId(taskId, pageable)
-                .map(bidMapper::mapBidToBidResponseDTO);
+       Page<Bid> bids = bidRepository.findAllByTaskId(taskId, pageable);
 
+         return BidResponseListDTO.builder()
+                 .totalPages(pageable.getPageSize())
+
+                 .build();
+
+         //TODO
     }
 
     @Override
@@ -43,17 +50,22 @@ public class BidQueryServiceImpl implements BidQueryService {
     }
 
     @Override
-    public Page<BidResponseDTO> getUserBids(UUID userId, Pageable pageable) {
-        return bidRepository.findAllByUserId(userId, pageable)
-                .map(bidMapper::mapBidToBidResponseDTO);
+    public BidResponseListDTO getUserBids(UUID userId, Pageable pageable) {
+         Page<Bid> bids = bidRepository.findAllByUserId(userId, pageable);
+         return null;
+        //TODO
+
     }
 
     @Override
-    public Page<BidResponseDTO> getBidsRequiringAction(UUID userId, Pageable pageable) {
-        return bidRepository.findAllByTaskUserIdAndStatusIn(
+    public BidResponseListDTO getBidsRequiringAction(UUID userId, Pageable pageable) {
+        Page<Bid> bids = bidRepository.findAllByTaskUserIdAndStatusIn(
                 userId,
                 List.of(BidStatus.PENDING, BidStatus.COUNTER_OFFER),
                 pageable
-        ).map(bidMapper::mapBidToBidResponseDTO);
+        );
+
+        return null;
+        //TODO
     }
 }

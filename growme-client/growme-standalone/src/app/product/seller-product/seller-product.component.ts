@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { KeycloakService } from '../../services/keycloak.service';
 import { ICategory, IProduct } from '../../shared/model/product';
-import { SellerParams } from '../../shared/model/sellerparams';
+import { ISellerParams } from '../../shared/model/sellerparams';
 import { CategoryService } from '../../services/category-service';
 import { ImageService } from '../../services/image-service';
 import { SellerProductItemComponent } from './seller-product-item/seller-product-item.component';
@@ -168,7 +168,7 @@ export class SellerProductComponent implements OnInit {
     this.router.navigate(['/seller/products/add']);
   }
 
-  get currentParams(): SellerParams {
+  get currentParams(): ISellerParams {
     return this.sellerService.getSellerParams();
   }
 

@@ -3,8 +3,8 @@ import { environment } from "../environment/environments";
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { IProduct, ProductResponseListDTO } from "../shared/model/product";
 import { Observable } from "rxjs";
-import { ProductCreateDTO, ProductUpdateDTO } from "../shared/model/product-create";
-import { SellerParams } from "../shared/model/sellerparams";
+import { IProductCreateDTO, ProductUpdateDTO } from "../shared/model/product-create";
+import { ISellerParams } from "../shared/model/sellerparams";
 
 @Injectable({
     providedIn: 'root'
@@ -20,7 +20,7 @@ export class ProductService {
         return this.http.get<IProduct[]>(this.apiUrl);
       }
 
-      addProduct(product: ProductCreateDTO): Observable<IProduct> {
+      addProduct(product: IProductCreateDTO): Observable<IProduct> {
         return this.http.post<IProduct>(this.apiUrl, product);
       }
 
@@ -36,7 +36,7 @@ export class ProductService {
         return this.http.delete<void>(`${this.apiUrl}/${id}`);
       }
 
-      getProductsBySeller(params: SellerParams): Observable<ProductResponseListDTO> {
+      getProductsBySeller(params: ISellerParams): Observable<ProductResponseListDTO> {
         const httpParams = new HttpParams()
           .set('categoryId', params.categoryId || '')
           .set('ownerId', params.ownerId || '')

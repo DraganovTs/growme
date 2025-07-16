@@ -11,7 +11,7 @@ import java.util.List;
 @Schema(name = "ProductResponseList", description = "Paginated product list response")
 @Data
 @Builder
-public class ProductResponseListDTO {
+public class ProductResponseListDTO  {
     @Schema(description = "Total number of pages", example = "5")
     private int totalPages;
     @Schema(description = "Total number of elements", example = "42")

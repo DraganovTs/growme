@@ -30,14 +30,14 @@ public interface PreorderService {
 
     BidResponseDTO requestBidById(UUID bidId);
 
-    Page<BidResponseDTO> requestBidsForTask(UUID taskId, Pageable pageable);
+    BidResponseListDTO requestBidsForTask(UUID taskId, Pageable pageable);
 
-    Page<BidResponseDTO> requestUserBids(UUID userId, Pageable pageable);
+    BidResponseListDTO requestUserBids(UUID userId, Pageable pageable);
 
     BidResponseDTO requestCounterOffer(UUID bidId, CounterOfferRequestDTO dto, UUID userId);
 
     BidResponseDTO requestUpdateBidStatus(UUID bidId, UpdateBidStatusRequestDTO dto);
 
-    Page<BidResponseDTO> requestBidsRequiringAction(UUID userId, Pageable pageable);
+    BidResponseListDTO requestBidsRequiringAction(UUID userId, Pageable pageable);
 
 }

@@ -1,9 +1,6 @@
 package com.home.preorder.service.controller;
 
-import com.home.preorder.service.model.dto.BidResponseDTO;
-import com.home.preorder.service.model.dto.CounterOfferRequestDTO;
-import com.home.preorder.service.model.dto.CreateBidRequestDTO;
-import com.home.preorder.service.model.dto.UpdateBidStatusRequestDTO;
+import com.home.preorder.service.model.dto.*;
 import com.home.preorder.service.service.PreorderService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -43,14 +40,14 @@ public class BidController {
     }
 
     @GetMapping("/task/{taskId}")
-    public ResponseEntity<Page<BidResponseDTO>> getBidsForTask(@PathVariable UUID taskId,
-                                                               @PageableDefault(size = 20)Pageable pageable) {
+    public ResponseEntity<BidResponseListDTO> getBidsForTask(@PathVariable UUID taskId,
+                                                              @PageableDefault(size = 20)Pageable pageable) {
         System.out.println();
         return ResponseEntity.status(HttpStatus.OK).body(preorderService.requestBidsForTask(taskId, pageable));
     }
 
     @GetMapping("/my-bids")
-    public ResponseEntity<Page<BidResponseDTO>> getUserBids(@RequestAttribute UUID userId,
+    public ResponseEntity<BidResponseListDTO> getUserBids(@RequestAttribute UUID userId,
                                                             @PageableDefault(size = 20) Pageable pageable) {
         System.out.println();
         return ResponseEntity.status(HttpStatus.OK)
@@ -67,7 +64,7 @@ public class BidController {
     }
 
     @GetMapping("/requires-action")
-    public ResponseEntity<Page<BidResponseDTO>> getBidsRequiringAction(@RequestAttribute UUID userId,
+    public ResponseEntity<BidResponseListDTO> getBidsRequiringAction(@RequestAttribute UUID userId,
                                                                        @PageableDefault(size = 20)Pageable pageable) {
         System.out.println();
         return ResponseEntity.status(HttpStatus.OK)

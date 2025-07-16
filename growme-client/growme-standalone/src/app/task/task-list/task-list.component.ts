@@ -7,7 +7,7 @@ import { CategoryService } from 'src/app/services/category-service';
 import { KeycloakService } from 'src/app/services/keycloak.service';
 import { TaskService } from 'src/app/services/task-service';
 import { ICategory } from 'src/app/shared/model/product';
-import { TaskParams } from 'src/app/shared/model/taskparams';
+import { ITaskParams } from 'src/app/shared/model/taskparams';
 
 @Component({
   selector: 'app-task-list',
@@ -20,7 +20,7 @@ export class TaskListComponent implements OnInit{
 
     tasks: any[] = [];
   loading = false;
-  taskParams = new TaskParams();
+  taskParams = new ITaskParams();
   totalCount = 0;
   totalPages = 1;
   productTypes: ICategory[] = [];
