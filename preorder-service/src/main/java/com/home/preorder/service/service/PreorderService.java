@@ -3,8 +3,6 @@ package com.home.preorder.service.service;
 import com.home.preorder.service.model.dto.*;
 import com.home.preorder.service.specification.BidSpecParams;
 import com.home.preorder.service.specification.TaskSpecParams;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.UUID;

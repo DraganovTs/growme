@@ -9,7 +9,6 @@ import com.home.preorder.service.model.enums.BidStatus;
 import com.home.preorder.service.repository.BidRepository;
 import com.home.preorder.service.service.BidQueryService;
 import com.home.preorder.service.specification.BidSpecParams;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;

@@ -4,8 +4,7 @@ import com.home.preorder.service.model.dto.BidResponseDTO;
 import com.home.preorder.service.model.dto.BidResponseListDTO;
 import com.home.preorder.service.specification.BidSpecParams;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+
 
 import java.util.UUID;
 

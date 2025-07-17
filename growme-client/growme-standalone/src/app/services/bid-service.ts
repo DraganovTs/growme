@@ -38,16 +38,18 @@ export class BidService {
   );
 }
 
-    getBidsForTask(taskId: string, pageParams?: any): Observable<BidResponseListDTO> {
-    let params = new HttpParams();
-    if (pageParams) {
-      Object.keys(pageParams).forEach(key => {
-        params = params.append(key, pageParams[key]);
-      });
-    }
-    
-    return this.http.get<BidResponseListDTO>(`${this.apiUrl}/task/${taskId}`, { params }).pipe(
+      getBidsForTask(taskId: string, params: any = {}): Observable<BidResponseListDTO> {
+    let httpParams = new HttpParams()
+      .set('pageIndex', params.pageIndex?.toString() || '1')
+      .set('pageSize', params.pageSize?.toString() || '10')
+      .set('sort', params.sort || 'createdAtDesc');
+
+    if (params.userId) httpParams = httpParams.set('userId', params.userId);
+    if (params.status) httpParams = httpParams.set('status', params.status);
+
+    return this.http.get<BidResponseListDTO>(`${this.apiUrl}/task/${taskId}`, { params: httpParams }).pipe(
       map(response => ({
+        ...response,
         dataList: response.dataList || [],
         totalCount: response.totalCount || 0,
         pageIndex: response.pageIndex || 0,
@@ -62,14 +64,104 @@ export class BidService {
   }
 
   updateBidStatus(bidId: string, status: string): Observable<IBid> {
-    return this.http.patch<IBid>(`${this.apiUrl}/${bidId}/status`, { status });
+    return this.http.patch<IBid>(`${this.apiUrl}/${bidId}/status`, { status }).pipe(
+      catchError(error => {
+        console.error('Error updating bid status:', error);
+        return throwError(() => error);
+      })
+    );
   }
 
-  getUserBids(userId: string): Observable<BidResponseListDTO> {
-    return this.http.get<BidResponseListDTO>(`${this.apiUrl}user/${userId}`);
+   getUserBids(params: any = {}): Observable<BidResponseListDTO> {
+    const userId = this.keycloakService.getUserId();
+    if (!userId) {
+      return throwError(() => new Error('User not authenticated'));
+    }
+
+    let httpParams = new HttpParams()
+      .set('pageIndex', params.pageIndex?.toString() || '1')
+      .set('pageSize', params.pageSize?.toString() || '10')
+      .set('sort', params.sort || 'createdAtDesc');
+
+    if (params.status) httpParams = httpParams.set('status', params.status);
+
+    return this.http.get<BidResponseListDTO>(`${this.apiUrl}/my-bids`, { params: httpParams }).pipe(
+      map(response => ({
+        ...response,
+        dataList: response.dataList || [],
+        totalCount: response.totalCount || 0,
+        pageIndex: response.pageIndex || 0,
+        pageSize: response.pageSize || 20,
+        totalPages: response.totalPages || 1
+      })),
+      catchError(error => {
+        console.error('Error fetching user bids:', error);
+        return throwError(() => error);
+      })
+    );
   }
 
-  getBidDetails(bidId: string): Observable<IBid> {
-    return this.http.get<IBid>(`${this.apiUrl}/${bidId}`);
+    getBidDetails(bidId: string): Observable<IBid> {
+    return this.http.get<IBid>(`${this.apiUrl}/${bidId}`).pipe(
+      catchError(error => {
+        console.error('Error fetching bid details:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  getBidsRequiringAction(params: any = {}): Observable<BidResponseListDTO> {
+    const userId = this.keycloakService.getUserId();
+    if (!userId) {
+      return throwError(() => new Error('User not authenticated'));
+    }
+
+    let httpParams = new HttpParams()
+      .set('pageIndex', params.pageIndex?.toString() || '1')
+      .set('pageSize', params.pageSize?.toString() || '10')
+      .set('sort', params.sort || 'createdAtDesc');
+
+    return this.http.get<BidResponseListDTO>(`${this.apiUrl}/requires-action`, { params: httpParams }).pipe(
+      map(response => ({
+        ...response,
+        dataList: response.dataList || [],
+        totalCount: response.totalCount || 0,
+        pageIndex: response.pageIndex || 0,
+        pageSize: response.pageSize || 20,
+        totalPages: response.totalPages || 1
+      })),
+      catchError(error => {
+        console.error('Error fetching bids requiring action:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  withdrawBid(bidId: string): Observable<void> {
+    const userId = this.keycloakService.getUserId();
+    if (!userId) {
+      return throwError(() => new Error('User not authenticated'));
+    }
+
+    return this.http.delete<void>(`${this.apiUrl}/${bidId}`).pipe(
+      catchError(error => {
+        console.error('Error withdrawing bid:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  createCounterOffer(bidId: string, counterOfferData: any): Observable<IBid> {
+    const userId = this.keycloakService.getUserId();
+    if (!userId) {
+      return throwError(() => new Error('User not authenticated'));
+    }
+
+    return this.http.post<IBid>(`${this.apiUrl}/${bidId}/counter-offer`, counterOfferData).pipe(
+      catchError(error => {
+        console.error('Error creating counter offer:', error);
+        return throwError(() => error);
+      })
+    );
   }
 }

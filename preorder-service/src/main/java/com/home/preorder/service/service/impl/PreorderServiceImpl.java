@@ -4,8 +4,6 @@ import com.home.preorder.service.model.dto.*;
 import com.home.preorder.service.service.*;
 import com.home.preorder.service.specification.BidSpecParams;
 import com.home.preorder.service.specification.TaskSpecParams;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
