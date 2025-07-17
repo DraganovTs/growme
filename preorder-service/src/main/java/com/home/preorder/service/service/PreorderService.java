@@ -1,6 +1,7 @@
 package com.home.preorder.service.service;
 
 import com.home.preorder.service.model.dto.*;
+import com.home.preorder.service.specification.BidSpecParams;
 import com.home.preorder.service.specification.TaskSpecParams;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,14 +31,14 @@ public interface PreorderService {
 
     BidResponseDTO requestBidById(UUID bidId);
 
-    BidResponseListDTO requestBidsForTask(UUID taskId, Pageable pageable);
+    BidResponseListDTO requestBidsForTask(UUID taskId, BidSpecParams request);
 
-    BidResponseListDTO requestUserBids(UUID userId, Pageable pageable);
+    BidResponseListDTO requestUserBids(UUID userId,  BidSpecParams request);
 
     BidResponseDTO requestCounterOffer(UUID bidId, CounterOfferRequestDTO dto, UUID userId);
 
     BidResponseDTO requestUpdateBidStatus(UUID bidId, UpdateBidStatusRequestDTO dto);
 
-    BidResponseListDTO requestBidsRequiringAction(UUID userId, Pageable pageable);
+    BidResponseListDTO requestBidsRequiringAction(UUID userId,  BidSpecParams request);
 
 }

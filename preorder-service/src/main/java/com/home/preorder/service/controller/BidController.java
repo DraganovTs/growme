@@ -2,6 +2,7 @@ package com.home.preorder.service.controller;
 
 import com.home.preorder.service.model.dto.*;
 import com.home.preorder.service.service.PreorderService;
+import com.home.preorder.service.specification.BidSpecParams;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -41,17 +42,17 @@ public class BidController {
 
     @GetMapping("/task/{taskId}")
     public ResponseEntity<BidResponseListDTO> getBidsForTask(@PathVariable UUID taskId,
-                                                              @PageableDefault(size = 20)Pageable pageable) {
+                                                             BidSpecParams request) {
         System.out.println();
-        return ResponseEntity.status(HttpStatus.OK).body(preorderService.requestBidsForTask(taskId, pageable));
+        return ResponseEntity.status(HttpStatus.OK).body(preorderService.requestBidsForTask(taskId, request));
     }
 
     @GetMapping("/my-bids")
     public ResponseEntity<BidResponseListDTO> getUserBids(@RequestAttribute UUID userId,
-                                                            @PageableDefault(size = 20) Pageable pageable) {
+                                                          BidSpecParams request) {
         System.out.println();
         return ResponseEntity.status(HttpStatus.OK)
-                .body(preorderService.requestUserBids(userId,pageable));
+                .body(preorderService.requestUserBids(userId,request));
     }
 
 
@@ -65,10 +66,10 @@ public class BidController {
 
     @GetMapping("/requires-action")
     public ResponseEntity<BidResponseListDTO> getBidsRequiringAction(@RequestAttribute UUID userId,
-                                                                       @PageableDefault(size = 20)Pageable pageable) {
+                                                                     BidSpecParams request) {
         System.out.println();
         return ResponseEntity.status(HttpStatus.OK)
-                .body(preorderService.requestBidsRequiringAction(userId, pageable));
+                .body(preorderService.requestBidsRequiringAction(userId, request));
     }
 
 

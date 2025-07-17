@@ -2,6 +2,7 @@ package com.home.preorder.service.repository;
 
 import com.home.preorder.service.model.entity.Bid;
 import com.home.preorder.service.model.enums.BidStatus;
+import com.home.preorder.service.specification.BidSpecParams;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
