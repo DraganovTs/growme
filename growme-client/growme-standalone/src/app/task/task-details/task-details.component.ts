@@ -13,6 +13,8 @@ import { BidStatus, IBid } from 'src/app/shared/model/bid';
 import { IBidParams } from 'src/app/shared/model/bidparams';
 import { ITask } from 'src/app/shared/model/task';
 import { BidCardComponent } from "src/app/bids/bid-card/bid-card.component";
+import { CounterOfferDialogComponent } from 'src/app/bids/counter-offer-dialog/counter-offer-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-task-details',
@@ -34,13 +36,15 @@ export class TaskDetailsComponent implements OnInit {
   highestBidPrice = 0;
   myBids: IBid[] = [];
   bidsRequiringAction: IBid[] = [];
+  showBidsRequiringAction = false;
 
   constructor(
     private route: ActivatedRoute,
     private taskService: TaskService,
     private bidService: BidService,
     private keycloakService: KeycloakService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -59,22 +63,31 @@ export class TaskDetailsComponent implements OnInit {
   }
 
   loadTask(taskId: string): void {
-    this.loading = true;
-    this.taskService.getTask(taskId).subscribe({
-      next: (task) => {
-        this.task = task;
-        this.checkTaskOwnership();
-        if (this.shouldLoadBids()) {
-          this.loadBids(taskId);
-        } else {
-          this.loading = false;
-        }
-      },
-      error: (error) => {
-        this.handleTaskLoadError(error);
+  this.loading = true;
+  this.taskService.getTask(taskId).subscribe({
+    next: (task) => {
+      this.task = task;
+      this.checkTaskOwnership();
+      this.showBidsRequiringAction = this.isTaskOwner;
+      
+      if (this.shouldLoadBids()) {
+        this.loadBids(taskId);
       }
-    });
-  }
+      
+      
+      if (this.isGrower && !this.isTaskOwner) {
+        this.loadMyBids();
+      } else if (this.isTaskOwner) {
+        this.loadBidsRequiringAction();
+      }
+      
+      this.loading = false;
+    },
+    error: (error) => {
+      this.handleTaskLoadError(error);
+    }
+  });
+}
 
   private checkTaskOwnership(): void {
     const currentUserId = this.keycloakService.getUserId();
@@ -191,7 +204,7 @@ export class TaskDetailsComponent implements OnInit {
   viewBidDetails(bidId: string): void {
     this.bidService.getBidDetails(bidId).subscribe({
       next: (bid) => {
-        // You could show this in a modal or detailed view
+       
         console.log('Bid details:', bid);
       },
       error: (error) => {
@@ -260,18 +273,27 @@ export class TaskDetailsComponent implements OnInit {
     });
   }
 
-  createCounterOffer(bidId: string, counterData: any): void {
-    this.bidService.createCounterOffer(bidId, counterData).subscribe({
-      next: (response) => {
-        this.updateBidInLists(response);
-        this.toastr.success('Counter offer created successfully');
-      },
-      error: (error) => {
-        this.toastr.error('Failed to create counter offer');
-        console.error(error);
-      }
-    });
-  }
+  createCounterOffer(bidId: string): void {
+  const dialogRef = this.dialog.open(CounterOfferDialogComponent, {
+    width: '500px',
+    data: { bidId: bidId }
+  });
+
+  dialogRef.afterClosed().subscribe(result => {
+    if (result) {
+      this.bidService.createCounterOffer(bidId, result).subscribe({
+        next: (updatedBid) => {
+          this.updateBidInLists(updatedBid);
+          this.toastr.success('Counter offer created successfully');
+        },
+        error: (error) => {
+          this.toastr.error('Failed to create counter offer');
+          console.error(error);
+        }
+      });
+    }
+  });
+}
 
   cancelTask(): void {
     if (!confirm('Are you sure you want to cancel this task? All bids will be rejected.')) return;

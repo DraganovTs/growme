@@ -1,0 +1,12 @@
+.counter-offer-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 8px;
+  background-color: #fafafa;
+}
+
+mat-form-field {
+  width: 100%;
+}

@@ -1,0 +1,36 @@
+<h2 mat-dialog-title class="mb-0">Make a Counter Offer</h2>
+<hr class="my-3" />
+
+
+<mat-dialog-content>
+  <form [formGroup]="counterForm" class="counter-offer-form">
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Your Price</mat-label>
+      <input matInput type="number" formControlName="price" required>
+      <span matPrefix>$&nbsp;</span>
+      <mat-error *ngIf="counterForm.get('price')?.hasError('required')">
+        Price is required
+      </mat-error>
+      <mat-error *ngIf="counterForm.get('price')?.hasError('min')">
+        Minimum price is $0.01
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Message to Grower</mat-label>
+      <textarea matInput formControlName="message" required rows="4"></textarea>
+      <mat-error *ngIf="counterForm.get('message')?.hasError('required')">
+        Message is required
+      </mat-error>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="mt-2">
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button mat-raised-button color="primary" 
+          [disabled]="counterForm.invalid" 
+          (click)="onSubmit()">
+    Submit Counter Offer
+  </button>
+</mat-dialog-actions>
