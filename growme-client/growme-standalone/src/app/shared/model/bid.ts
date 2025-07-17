@@ -1,5 +1,5 @@
 export interface IBid {
-  id: string;
+  bidId: string;
   price: number;
   message: string;
   status: BidStatus;

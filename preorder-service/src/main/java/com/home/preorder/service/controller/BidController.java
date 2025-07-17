@@ -45,7 +45,7 @@ public class BidController {
     }
 
     @GetMapping("/my-bids")
-    public ResponseEntity<BidResponseListDTO> getUserBids(@RequestAttribute UUID userId,
+    public ResponseEntity<BidResponseListDTO> getUserBids(@RequestParam UUID userId,
                                                           BidSpecParams request) {
         System.out.println();
         return ResponseEntity.status(HttpStatus.OK)
@@ -62,7 +62,7 @@ public class BidController {
     }
 
     @GetMapping("/requires-action")
-    public ResponseEntity<BidResponseListDTO> getBidsRequiringAction(@RequestAttribute UUID userId,
+    public ResponseEntity<BidResponseListDTO> getBidsRequiringAction(@RequestParam UUID userId,
                                                                      BidSpecParams request) {
         System.out.println();
         return ResponseEntity.status(HttpStatus.OK)
@@ -71,7 +71,8 @@ public class BidController {
 
 
     @DeleteMapping("/{bidId}")
-    public ResponseEntity<Void> withdrawBid(@PathVariable UUID bidId, @RequestAttribute UUID userId) {
+    public ResponseEntity<Void> withdrawBid(@PathVariable UUID bidId, @RequestParam UUID userId) {
+        System.out.println();
         preorderService.requestWithdrawBid(bidId, userId);
         return ResponseEntity.noContent().build();
     }

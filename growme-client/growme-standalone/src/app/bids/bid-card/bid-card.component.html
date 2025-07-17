@@ -64,11 +64,11 @@
     <div *ngIf="isTaskOwner && taskStatus === 'PENDING' && bid.status === 'PENDING'" 
          class="d-flex gap-2 mt-3">
       <button class="btn btn-sm btn-success flex-grow-1" 
-              (click)="acceptBid.emit(bid.id)">
+              (click)="acceptBid.emit(bid.bidId)">
         <i class="fas fa-check me-1"></i> Accept Offer
       </button>
       <button class="btn btn-sm btn-outline-danger flex-grow-1" 
-              (click)="rejectBid.emit(bid.id)">
+              (click)="rejectBid.emit(bid.bidId)">
         <i class="fas fa-times me-1"></i> Reject
       </button>
     </div>
@@ -79,7 +79,7 @@
     </div>
   </div>
 
-  <div class="card-footer bg-transparent text-end" *ngIf="bid.id">
-    <small class="text-muted">BID #{{ bid.id | slice:0:8 }}</small>
+  <div class="card-footer bg-transparent text-end" *ngIf="bid.bidId">
+    <small class="text-muted">BID #{{ bid.bidId | slice:0:8 }}</small>
   </div>
 </div>

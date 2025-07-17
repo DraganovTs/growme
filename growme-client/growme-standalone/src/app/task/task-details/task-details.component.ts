@@ -245,6 +245,7 @@ export class TaskDetailsComponent implements OnInit {
   }
 
   withdrawBid(bidId: string): void {
+    console.log('Withdrow bid whit id : ', bidId)
     if (!confirm('Are you sure you want to withdraw this bid?')) return;
 
     this.bidService.withdrawBid(bidId).subscribe({
@@ -291,7 +292,7 @@ export class TaskDetailsComponent implements OnInit {
   private updateBidStatusInLists(bidId: string, status: BidStatus): void {
   const updateStatus = (bid: IBid): IBid => ({
     ...bid,
-    status: bid.id === bidId ? status : bid.status
+    status: bid.bidId === bidId ? status : bid.status
   });
 
   this.bids = this.bids.map(updateStatus);
@@ -301,23 +302,23 @@ export class TaskDetailsComponent implements OnInit {
 }
 
   private removeBidFromLists(bidId: string): void {
-    this.bids = this.bids.filter(bid => bid.id !== bidId);
-    this.myBids = this.myBids.filter(bid => bid.id !== bidId);
-    this.bidsRequiringAction = this.bidsRequiringAction.filter(bid => bid.id !== bidId);
+    this.bids = this.bids.filter(bid => bid.bidId !== bidId);
+    this.myBids = this.myBids.filter(bid => bid.bidId !== bidId);
+    this.bidsRequiringAction = this.bidsRequiringAction.filter(bid => bid.bidId !== bidId);
     this.calculatePriceRange();
   }
 
   private rejectAllBids(): void {
     const pendingBids = this.bids.filter(bid => bid.status === 'PENDING');
     pendingBids.forEach(bid => {
-      this.bidService.updateBidStatus(bid.id, 'REJECTED').subscribe({
-        error: (error) => console.error(`Error rejecting bid ${bid.id}:`, error)
+      this.bidService.updateBidStatus(bid.bidId, 'REJECTED').subscribe({
+        error: (error) => console.error(`Error rejecting bid ${bid.bidId}:`, error)
       });
     });
   }
 
   private updateBidInLists(updatedBid: IBid): void {
-    const updateBid = (bid: IBid) => bid.id === updatedBid.id ? updatedBid : bid;
+    const updateBid = (bid: IBid) => bid.bidId === updatedBid.bidId ? updatedBid : bid;
     this.bids = this.bids.map(updateBid);
     this.myBids = this.myBids.map(updateBid);
     this.bidsRequiringAction = this.bidsRequiringAction.map(updateBid);

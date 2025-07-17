@@ -81,7 +81,8 @@ export class BidService {
     let httpParams = new HttpParams()
       .set('pageIndex', params.pageIndex?.toString() || '1')
       .set('pageSize', params.pageSize?.toString() || '10')
-      .set('sort', params.sort || 'createdAtDesc');
+      .set('sort', params.sort || 'createdAtDesc')
+      .set('userId', userId);
 
     if (params.status) httpParams = httpParams.set('status', params.status);
 
@@ -119,7 +120,8 @@ export class BidService {
     let httpParams = new HttpParams()
       .set('pageIndex', params.pageIndex?.toString() || '1')
       .set('pageSize', params.pageSize?.toString() || '10')
-      .set('sort', params.sort || 'createdAtDesc');
+      .set('sort', params.sort || 'createdAtDesc')
+      .set('userId',userId);
 
     return this.http.get<BidResponseListDTO>(`${this.apiUrl}/requires-action`, { params: httpParams }).pipe(
       map(response => ({
@@ -137,19 +139,25 @@ export class BidService {
     );
   }
 
-  withdrawBid(bidId: string): Observable<void> {
-    const userId = this.keycloakService.getUserId();
-    if (!userId) {
-      return throwError(() => new Error('User not authenticated'));
-    }
-
-    return this.http.delete<void>(`${this.apiUrl}/${bidId}`).pipe(
-      catchError(error => {
-        console.error('Error withdrawing bid:', error);
-        return throwError(() => error);
-      })
-    );
+ withdrawBid(bidId: string): Observable<void> {
+  const userId = this.keycloakService.getUserId();
+  if (!userId) {
+    return throwError(() => new Error('User not authenticated'));
   }
+
+  if (userId == null) {
+    console.log("userId is null!");
+}
+
+  const params = new HttpParams().set('userId', userId);
+
+  return this.http.delete<void>(`${this.apiUrl}/${bidId}`, { params }).pipe(
+    catchError(error => {
+      console.error('Error withdrawing bid:', error);
+      return throwError(() => error);
+    })
+  );
+}
 
   createCounterOffer(bidId: string, counterOfferData: any): Observable<IBid> {
     const userId = this.keycloakService.getUserId();

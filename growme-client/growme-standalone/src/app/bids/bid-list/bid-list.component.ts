@@ -19,6 +19,6 @@ export class BidListComponent {
   @Output() rejectBid = new EventEmitter<string>();
 
   trackById(index: number, bid: IBid): string {
-    return bid.id;
+    return bid.bidId;
   }
 }

@@ -60,7 +60,7 @@ public class BidCommandServiceImpl implements BidCommandService {
         Bid bid = bidRepository.findById(bidId)
                 .orElseThrow(() -> new BidNotFoundException("Bid not found with id: " + bidId));
 
-        if (bid.getUserId().equals(userId)) {
+        if (!bid.getUserId().equals(userId)) {
             throw new UnauthorizedActionException("User is not authorized to withdraw this bid");
         }
 

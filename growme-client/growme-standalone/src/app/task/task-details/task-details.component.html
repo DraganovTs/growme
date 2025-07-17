@@ -84,7 +84,7 @@
                 </app-bid-card>
                 <button *ngIf="bid.status === 'PENDING'" 
                         class="btn btn-sm btn-outline-danger mt-2 w-100"
-                        (click)="withdrawBid(bid.id)">
+                        (click)="withdrawBid(bid.bidId)">
                   <i class="fas fa-trash-alt me-1"></i> Withdraw Offer
                 </button>
               </div>
