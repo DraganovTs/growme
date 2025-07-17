@@ -62,16 +62,8 @@
               </div>
             </div>
           </div>
-<!-- <div class="alert alert-info m-3" *ngIf="!loading">
-  <h6>Debug Information:</h6>
-  <ul>
-    <li>Is Grower: {{isGrower}}</li>
-    <li>Is Task Owner: {{isTaskOwner}}</li>
-    <li>Task Status: {{task?.status}}</li>
-    <li>Show Bid Form: {{!isTaskOwner && isGrower && task?.status === 'PENDING'}}</li>
-  </ul>
-</div> -->
-          <!-- Bids Section -->
+
+          <!-- Main Bids Section -->
           <app-bid-list 
             [bids]="bids"
             [isTaskOwner]="isTaskOwner"
@@ -79,6 +71,37 @@
             (acceptBid)="acceptBid($event)"
             (rejectBid)="rejectBid($event)">
           </app-bid-list>
+
+          <!-- My Bids Section (visible to growers) -->
+          <div *ngIf="isGrower && myBids.length > 0" class="mt-5">
+            <h5 class="text-primary border-bottom pb-2">Your Offers</h5>
+            <div class="row row-cols-1 g-3">
+              <div class="col" *ngFor="let bid of myBids">
+                <app-bid-card 
+                  [bid]="bid"
+                  [isTaskOwner]="isTaskOwner"
+                  [taskStatus]="task?.status || ''">
+                </app-bid-card>
+                <button *ngIf="bid.status === 'PENDING'" 
+                        class="btn btn-sm btn-outline-danger mt-2 w-100"
+                        (click)="withdrawBid(bid.id)">
+                  <i class="fas fa-trash-alt me-1"></i> Withdraw Offer
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bids Requiring Action (visible to task owners) -->
+          <div *ngIf="isTaskOwner && bidsRequiringAction.length > 0" class="mt-5">
+            <h5 class="text-primary border-bottom pb-2">Bids Requiring Your Action</h5>
+            <app-bid-list 
+              [bids]="bidsRequiringAction"
+              [isTaskOwner]="isTaskOwner"
+              [taskStatus]="task?.status || ''"
+              (acceptBid)="acceptBid($event)"
+              (rejectBid)="rejectBid($event)">
+            </app-bid-list>
+          </div>
         </div>
 
         <!-- Right Column - Actions and Summary -->
@@ -91,25 +114,25 @@
             <div class="card-body">
               <div class="mb-3">
                 <h6>Price Range</h6>
-                 <div *ngIf="bids.length > 0">
-                 <div class="progress progress-bar-custom mb-2">
-                  <div class="progress-bar bg-primary" role="progressbar" 
-                   [style.width]="(lowestBidPrice / highestBidPrice) * 100 + '%'"
-                 [attr.aria-valuenow]="lowestBidPrice"
-                   aria-valuemin="0"
-                  [attr.aria-valuemax]="highestBidPrice">
-               ${{lowestBidPrice | number:'1.2-2'}}
-            </div>
-         </div>
-    <div class="d-flex justify-content-between">
-      <small>Lowest: ${{lowestBidPrice | number:'1.2-2'}}</small>
-      <small>Highest: ${{highestBidPrice | number:'1.2-2'}}</small>
-    </div>
-  </div>
-  <div *ngIf="bids.length === 0" class="text-muted">
-    No offers yet
-  </div>
-</div>
+                <div *ngIf="bids.length > 0">
+                  <div class="progress progress-bar-custom mb-2">
+                    <div class="progress-bar bg-primary" role="progressbar" 
+                        [style.width]="(lowestBidPrice / highestBidPrice) * 100 + '%'"
+                        [attr.aria-valuenow]="lowestBidPrice"
+                        aria-valuemin="0"
+                        [attr.aria-valuemax]="highestBidPrice">
+                      ${{lowestBidPrice | number:'1.2-2'}}
+                    </div>
+                  </div>
+                  <div class="d-flex justify-content-between">
+                    <small>Lowest: ${{lowestBidPrice | number:'1.2-2'}}</small>
+                    <small>Highest: ${{highestBidPrice | number:'1.2-2'}}</small>
+                  </div>
+                </div>
+                <div *ngIf="bids.length === 0" class="text-muted">
+                  No offers yet
+                </div>
+              </div>
 
               <div *ngIf="task.maxPrice" class="mb-3">
                 <h6>Max Price</h6>
@@ -119,7 +142,7 @@
           </div>
 
           <!-- Task Actions -->
-          <div *ngIf="isTaskOwner" class="card shadow-sm">
+          <div *ngIf="isTaskOwner" class="card shadow-sm mb-4">
             <div class="card-header bg-light">
               <h5 class="mb-0">Task Actions</h5>
             </div>
@@ -129,64 +152,63 @@
                   Your task is active and visible to growers.
                 </p>
                 <button class="btn btn-outline-danger w-100 mb-2" (click)="cancelTask()">
-                  <i class="fa fa-times me-2"></i>Cancel Task
+                  <i class="fas fa-times me-2"></i> Cancel Task
                 </button>
               </div>
 
               <div *ngIf="task.status === 'ACTIVE'">
                 <p class="text-success small mb-3">
-                  <i class="fa fa-check-circle me-2"></i>
+                  <i class="fas fa-check-circle me-2"></i>
                   You've accepted an offer.
                 </p>
                 <button class="btn btn-outline-primary w-100 mb-2" (click)="contactGrower()">
-                  <i class="fa fa-envelope me-2"></i>Contact Grower
+                  <i class="fas fa-envelope me-2"></i> Contact Grower
                 </button>
                 <button class="btn btn-outline-success w-100" (click)="completeTask()">
-                  <i class="fa fa-check-circle me-2"></i>Mark as Completed
+                  <i class="fas fa-check-circle me-2"></i> Mark as Completed
                 </button>
               </div>
 
               <div *ngIf="task.status === 'COMPLETED'">
                 <p class="text-success small mb-3">
-                  <i class="fa fa-check-circle me-2"></i>
+                  <i class="fas fa-check-circle me-2"></i>
                   This task has been completed.
                 </p>
                 <button class="btn btn-outline-secondary w-100" (click)="createSimilarTask()">
-                  <i class="fa fa-copy me-2"></i>Create Similar Task
+                  <i class="fas fa-copy me-2"></i> Create Similar Task
                 </button>
               </div>
 
               <div *ngIf="task.status === 'CANCELLED'">
                 <p class="text-danger small mb-3">
-                  <i class="fa fa-times-circle me-2"></i>
+                  <i class="fas fa-times-circle me-2"></i>
                   This task has been cancelled.
                 </p>
                 <button class="btn btn-outline-secondary w-100" (click)="createSimilarTask()">
-                  <i class="fa fa-copy me-2"></i>Create Similar Task
+                  <i class="fas fa-copy me-2"></i> Create Similar Task
                 </button>
               </div>
             </div>
           </div>
 
           <!-- Bid Form -->
-          <ng-container *ngIf="!isTaskOwner && isGrower && (task?.status === 'PENDING' || task?.status === 'OPEN')">
+          <div *ngIf="!isTaskOwner && isGrower && (task.status === 'PENDING' || task.status === 'OPEN')">
             <app-bid-form 
-             *ngIf="!isTaskOwner && isGrower && task?.status === 'OPEN'"
-              [taskId]="task!.id"
+              [taskId]="task.id"
               (bidSubmitted)="handleBidSubmission($event)"
               (formCanceled)="submittingBid = false">
             </app-bid-form>
-          </ng-container>
+          </div>
 
-
-              <ng-container *ngIf="isTaskOwner || !isGrower || (task?.status !== 'PENDING' && task?.status !== 'OPEN')">
-  <div class="alert alert-warning mt-3">
-    <p *ngIf="isTaskOwner">You can't bid on your own task.</p>
-    <p *ngIf="!isGrower">Only growers can submit bids.</p>
-    <p *ngIf="task?.status !== 'PENDING' && task?.status !== 'OPEN'">Bidding is closed for this task.</p>
-  </div>
-</ng-container>
-          
+          <!-- Bid Form Not Available Message -->
+          <div *ngIf="isTaskOwner || !isGrower || (task.status !== 'PENDING' && task.status !== 'OPEN')" 
+               class="alert alert-warning">
+            <p *ngIf="isTaskOwner"><i class="fas fa-info-circle me-2"></i>You can't bid on your own task.</p>
+            <p *ngIf="!isGrower"><i class="fas fa-info-circle me-2"></i>Only growers can submit bids.</p>
+            <p *ngIf="task.status !== 'PENDING' && task.status !== 'OPEN'">
+              <i class="fas fa-info-circle me-2"></i>Bidding is closed for this task.
+            </p>
+          </div>
         </div>
       </div>
     </div>

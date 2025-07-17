@@ -2,7 +2,7 @@ export interface IBid {
   id: string;
   price: number;
   message: string;
-  status: 'PENDING' | 'ACCEPTED' | 'CONFIRMED' | 'IN_PROGRESS' | 'READY' |'SHIPPED'  |'DELIVERED'  |'COMPLETED'  |'CANCELLED' |'REJECTED' |'EXPIRED' | 'COUNTER_OFFER';
+  status: BidStatus;
   userId?: string;
   userName?: string;
   taskId?: string;
@@ -21,3 +21,17 @@ export interface BidResponseListDTO {
     pageSize?: number;
     totalPages?: number;
 }
+
+export type BidStatus = 
+  | 'PENDING'
+  | 'ACCEPTED'
+  | 'REJECTED'
+  | 'COMPLETED'
+  | 'CANCELLED'
+  | 'CONFIRMED'
+  | 'IN_PROGRESS'
+  | 'READY'
+  | 'SHIPPED'
+  | 'DELIVERED'
+  | 'EXPIRED'
+  | 'COUNTER_OFFER';

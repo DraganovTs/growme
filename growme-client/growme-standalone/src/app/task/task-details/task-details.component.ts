@@ -9,13 +9,15 @@ import { BidListComponent } from 'src/app/bids/bid-list/bid-list.component';
 import { BidService } from 'src/app/services/bid-service';
 import { KeycloakService } from 'src/app/services/keycloak.service';
 import { TaskService } from 'src/app/services/task-service';
-import { IBid } from 'src/app/shared/model/bid';
+import { BidStatus, IBid } from 'src/app/shared/model/bid';
+import { IBidParams } from 'src/app/shared/model/bidparams';
 import { ITask } from 'src/app/shared/model/task';
+import { BidCardComponent } from "src/app/bids/bid-card/bid-card.component";
 
 @Component({
   selector: 'app-task-details',
   standalone: true,
-  imports: [CommonModule,ReactiveFormsModule,RouterModule  , BidFormComponent , BidListComponent],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, BidFormComponent, BidListComponent, BidCardComponent],
   templateUrl: './task-details.component.html',
   styleUrl: './task-details.component.scss'
 })
@@ -30,6 +32,8 @@ export class TaskDetailsComponent implements OnInit {
   submittingBid = false;
   lowestBidPrice = 0;
   highestBidPrice = 0;
+  myBids: IBid[] = [];
+  bidsRequiringAction: IBid[] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -40,15 +44,13 @@ export class TaskDetailsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    console.log('TaskDetails initialized');
-  console.log('isTaskOwner:', this.isTaskOwner);
-  console.log('isGrower:', this.isGrower);
     this.route.paramMap.subscribe(params => {
       const taskId = params.get('id');
-      console.log('Task ID from route:', taskId);
       if (taskId) {
         this.loadTask(taskId);
         this.isGrower = this.keycloakService.hasRole('SELLER');
+        this.loadMyBids(); 
+        this.loadBidsRequiringAction(); 
       } else {
         this.toastr.error('No task ID provided');
         this.router.navigate(['/tasks']);
@@ -93,19 +95,65 @@ export class TaskDetailsComponent implements OnInit {
   }
 
   loadBids(taskId: string): void {
-  this.bidService.getBidsForTask(taskId).subscribe({
-    next: (response) => {
-      this.bids = response.dataList; 
-      this.calculatePriceRange();
-      this.loading = false;
-    },
-    error: (error) => {
-      console.error('Error loading bids:', error);
-      this.toastr.warning('Failed to load bids for this task');
-      this.loading = false;
-    }
-  });
-}
+    const params = new IBidParams({
+      pageIndex: 1,
+      pageSize: 10,
+      sort: 'priceAsc'
+    });
+
+    this.bidService.getBidsForTask(taskId, params).subscribe({
+      next: (response) => {
+        this.bids = response.dataList;
+        this.calculatePriceRange();
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Error loading bids:', error);
+        this.toastr.warning('Failed to load bids for this task');
+        this.loading = false;
+      }
+    });
+  }
+
+  loadMyBids(): void {
+    const userId = this.keycloakService.getUserId();
+    if (!userId) return;
+
+    const params = new IBidParams({
+      pageIndex: 1,
+      pageSize: 10,
+      sort: 'createdAtDesc'
+    });
+
+    this.bidService.getUserBids(params).subscribe({
+      next: (response) => {
+        this.myBids = response.dataList;
+      },
+      error: (error) => {
+        console.error('Error loading user bids:', error);
+      }
+    });
+  }
+
+  loadBidsRequiringAction(): void {
+    const userId = this.keycloakService.getUserId();
+    if (!userId) return;
+
+    const params = new IBidParams({
+      pageIndex: 1,
+      pageSize: 10,
+      sort: 'createdAtDesc'
+    });
+
+    this.bidService.getBidsRequiringAction(params).subscribe({
+      next: (response) => {
+        this.bidsRequiringAction = response.dataList;
+      },
+      error: (error) => {
+        console.error('Error loading bids requiring action:', error);
+      }
+    });
+  }
 
   private calculatePriceRange(): void {
     if (this.bids.length > 0) {
@@ -120,35 +168,48 @@ export class TaskDetailsComponent implements OnInit {
 
   }
 
- handleBidSubmission(bidData: any) {
-  this.submittingBid = true;
-  
-  this.bidService.createBid(bidData).subscribe({
-    next: (response) => {
-      this.bids.unshift(response);
-      this.toastr.success('Bid submitted!');
-    },
-    error: (error) => {
-      console.error('Submission failed:', error);
-      this.toastr.error('Failed to submit bid');
-    },
-    complete: () => {
-      this.submittingBid = false; 
-    }
-  });
-}
+ handleBidSubmission(bidData: any): void {
+    this.submittingBid = true;
+    
+    this.bidService.createBid(bidData).subscribe({
+      next: (response) => {
+        this.bids.unshift(response);
+        this.myBids.unshift(response);
+        this.toastr.success('Bid submitted successfully!');
+        this.calculatePriceRange();
+      },
+      error: (error) => {
+        console.error('Submission failed:', error);
+        this.toastr.error('Failed to submit bid');
+      },
+      complete: () => {
+        this.submittingBid = false;
+      }
+    });
+  }
+
+  viewBidDetails(bidId: string): void {
+    this.bidService.getBidDetails(bidId).subscribe({
+      next: (bid) => {
+        // You could show this in a modal or detailed view
+        console.log('Bid details:', bid);
+      },
+      error: (error) => {
+        console.error('Error fetching bid details:', error);
+        this.toastr.error('Failed to load bid details');
+      }
+    });
+  }
 
   acceptBid(bidId: string): void {
     if (!confirm('Are you sure you want to accept this offer?')) return;
 
-    this.bidService.updateBidStatus(bidId, 'ACCEPTED').subscribe({
-      next: () => {
-        const bid = this.bids.find(b => b.id === bidId);
-        if (bid) bid.status = 'ACCEPTED';
-        this.updateTaskStatus('ACTIVE');
-        this.calculatePriceRange();
-        this.toastr.success('Bid accepted successfully!');
-      },
+  this.bidService.updateBidStatus(bidId, 'ACCEPTED').subscribe({
+    next: () => {
+      this.updateBidStatusInLists(bidId, 'ACCEPTED');
+      this.updateTaskStatus('ACTIVE');
+      this.toastr.success('Bid accepted successfully!');
+    },
       error: (error) => {
         this.toastr.error('Failed to accept bid');
         console.error(error);
@@ -158,11 +219,10 @@ export class TaskDetailsComponent implements OnInit {
 
   rejectBid(bidId: string): void {
     this.bidService.updateBidStatus(bidId, 'REJECTED').subscribe({
-      next: () => {
-        const bid = this.bids.find(b => b.id === bidId);
-        if (bid) bid.status = 'REJECTED';
-        this.toastr.info('Bid rejected');
-      },
+    next: () => {
+      this.updateBidStatusInLists(bidId, 'REJECTED');
+      this.toastr.info('Bid rejected');
+    },
       error: (error) => {
         this.toastr.error('Failed to reject bid');
         console.error(error);
@@ -184,6 +244,34 @@ export class TaskDetailsComponent implements OnInit {
     });
   }
 
+  withdrawBid(bidId: string): void {
+    if (!confirm('Are you sure you want to withdraw this bid?')) return;
+
+    this.bidService.withdrawBid(bidId).subscribe({
+      next: () => {
+        this.removeBidFromLists(bidId);
+        this.toastr.info('Bid withdrawn successfully');
+      },
+      error: (error) => {
+        this.toastr.error('Failed to withdraw bid');
+        console.error(error);
+      }
+    });
+  }
+
+  createCounterOffer(bidId: string, counterData: any): void {
+    this.bidService.createCounterOffer(bidId, counterData).subscribe({
+      next: (response) => {
+        this.updateBidInLists(response);
+        this.toastr.success('Counter offer created successfully');
+      },
+      error: (error) => {
+        this.toastr.error('Failed to create counter offer');
+        console.error(error);
+      }
+    });
+  }
+
   cancelTask(): void {
     if (!confirm('Are you sure you want to cancel this task? All bids will be rejected.')) return;
 
@@ -200,6 +288,25 @@ export class TaskDetailsComponent implements OnInit {
     });
   }
 
+  private updateBidStatusInLists(bidId: string, status: BidStatus): void {
+  const updateStatus = (bid: IBid): IBid => ({
+    ...bid,
+    status: bid.id === bidId ? status : bid.status
+  });
+
+  this.bids = this.bids.map(updateStatus);
+  this.myBids = this.myBids.map(updateStatus);
+  this.bidsRequiringAction = this.bidsRequiringAction.map(updateStatus);
+  this.calculatePriceRange();
+}
+
+  private removeBidFromLists(bidId: string): void {
+    this.bids = this.bids.filter(bid => bid.id !== bidId);
+    this.myBids = this.myBids.filter(bid => bid.id !== bidId);
+    this.bidsRequiringAction = this.bidsRequiringAction.filter(bid => bid.id !== bidId);
+    this.calculatePriceRange();
+  }
+
   private rejectAllBids(): void {
     const pendingBids = this.bids.filter(bid => bid.status === 'PENDING');
     pendingBids.forEach(bid => {
@@ -207,6 +314,13 @@ export class TaskDetailsComponent implements OnInit {
         error: (error) => console.error(`Error rejecting bid ${bid.id}:`, error)
       });
     });
+  }
+
+  private updateBidInLists(updatedBid: IBid): void {
+    const updateBid = (bid: IBid) => bid.id === updatedBid.id ? updatedBid : bid;
+    this.bids = this.bids.map(updateBid);
+    this.myBids = this.myBids.map(updateBid);
+    this.bidsRequiringAction = this.bidsRequiringAction.map(updateBid);
   }
 
   completeTask(): void {
