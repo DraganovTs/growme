@@ -3,7 +3,7 @@ import { Injectable } from "@angular/core";
 import { catchError, map, Observable, throwError } from "rxjs";
 import { environment } from "../environment/environments";
 import { KeycloakService } from "./keycloak.service";
-import { BidResponseListDTO, IBid } from "../shared/model/bid";
+import { BidResponseListDTO, BidStatus, IBid } from "../shared/model/bid";
 
 @Injectable({
   providedIn: 'root'
@@ -63,14 +63,27 @@ export class BidService {
     );
   }
 
-  updateBidStatus(bidId: string, status: string): Observable<IBid> {
-    return this.http.patch<IBid>(`${this.apiUrl}/${bidId}/status`, { status }).pipe(
-      catchError(error => {
-        console.error('Error updating bid status:', error);
-        return throwError(() => error);
-      })
-    );
-  }
+  updateBidStatus(bidId: string, status: BidStatus): Observable<IBid> {
+  const userId = this.keycloakService.getUserId();
+    if (!userId) {
+      return throwError(() => new Error('User not authenticated'));
+    }
+
+  const updateRequest = {
+    bidStatus: status,
+    userId: userId
+  };
+
+  return this.http.patch<IBid>(
+    `${this.apiUrl}/${bidId}/status`, 
+    updateRequest
+  ).pipe(
+    catchError(error => {
+      console.error('Error updating bid status:', error);
+      return throwError(() => error);
+    })
+  );
+}
 
    getUserBids(params: any = {}): Observable<BidResponseListDTO> {
     const userId = this.keycloakService.getUserId();

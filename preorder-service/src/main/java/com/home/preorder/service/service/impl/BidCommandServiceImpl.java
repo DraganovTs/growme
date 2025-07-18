@@ -100,7 +100,7 @@ public class BidCommandServiceImpl implements BidCommandService {
         Bid bid = bidRepository.findById(bidId)
                 .orElseThrow(() -> new BidNotFoundException("Bid not found with id: " + bidId));
 
-        if (bid.getTask().getUserId().equals(dto.userId())) {
+        if (bid.getUserId().equals(dto.userId())) {
             throw new UnauthorizedActionException("User is not authorized to update this bid's status");
         }
         bid.setStatus(dto.bidStatus());

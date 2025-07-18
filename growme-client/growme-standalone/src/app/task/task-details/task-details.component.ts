@@ -215,33 +215,33 @@ export class TaskDetailsComponent implements OnInit {
   }
 
   acceptBid(bidId: string): void {
-    if (!confirm('Are you sure you want to accept this offer?')) return;
+  if (!confirm('Are you sure you want to accept this offer?')) return;
 
   this.bidService.updateBidStatus(bidId, 'ACCEPTED').subscribe({
-    next: () => {
-      this.updateBidStatusInLists(bidId, 'ACCEPTED');
-      this.updateTaskStatus('ACTIVE');
+    next: (updatedBid) => {
+      this.updateBidInLists(updatedBid);
+      this.updateTaskStatus('ACTIVE'); 
       this.toastr.success('Bid accepted successfully!');
     },
-      error: (error) => {
-        this.toastr.error('Failed to accept bid');
-        console.error(error);
-      }
-    });
-  }
+    error: (error) => {
+      this.toastr.error('Failed to accept bid');
+      console.error(error);
+    }
+  });
+}
 
   rejectBid(bidId: string): void {
-    this.bidService.updateBidStatus(bidId, 'REJECTED').subscribe({
-    next: () => {
-      this.updateBidStatusInLists(bidId, 'REJECTED');
+  this.bidService.updateBidStatus(bidId, 'REJECTED').subscribe({
+    next: (updatedBid) => {
+      this.updateBidInLists(updatedBid);
       this.toastr.info('Bid rejected');
     },
-      error: (error) => {
-        this.toastr.error('Failed to reject bid');
-        console.error(error);
-      }
-    });
-  }
+    error: (error) => {
+      this.toastr.error('Failed to reject bid');
+      console.error(error);
+    }
+  });
+}
 
   private updateTaskStatus(status: string): void {
     if (!this.task) return;
@@ -311,15 +311,12 @@ export class TaskDetailsComponent implements OnInit {
     });
   }
 
-  private updateBidStatusInLists(bidId: string, status: BidStatus): void {
-  const updateStatus = (bid: IBid): IBid => ({
-    ...bid,
-    status: bid.bidId === bidId ? status : bid.status
-  });
-
-  this.bids = this.bids.map(updateStatus);
-  this.myBids = this.myBids.map(updateStatus);
-  this.bidsRequiringAction = this.bidsRequiringAction.map(updateStatus);
+  private updateBidInLists(updatedBid: IBid): void {
+  const updateBid = (bid: IBid) => bid.bidId === updatedBid.bidId ? updatedBid : bid;
+  
+  this.bids = this.bids.map(updateBid);
+  this.myBids = this.myBids.map(updateBid);
+  this.bidsRequiringAction = this.bidsRequiringAction.map(updateBid);
   this.calculatePriceRange();
 }
 
@@ -339,12 +336,7 @@ export class TaskDetailsComponent implements OnInit {
     });
   }
 
-  private updateBidInLists(updatedBid: IBid): void {
-    const updateBid = (bid: IBid) => bid.bidId === updatedBid.bidId ? updatedBid : bid;
-    this.bids = this.bids.map(updateBid);
-    this.myBids = this.myBids.map(updateBid);
-    this.bidsRequiringAction = this.bidsRequiringAction.map(updateBid);
-  }
+  
 
   completeTask(): void {
     if (!confirm('Mark this task as completed?')) return;
