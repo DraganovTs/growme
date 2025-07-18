@@ -2,7 +2,7 @@ export interface ITask {
   id: string;
   title: string;
   description: string;
-  status: 'PENDING' | 'ACTIVE' | 'COMPLETED' | 'CANCELLED' | 'OPEN';
+  status: TaskStatus;
   userId: string;
   user?: {
     username: string;
@@ -17,4 +17,12 @@ export interface ITask {
   updatedAt: string;
   
 }
+
+
+export type TaskStatus =
+  |'PENDING' 
+  | 'ACTIVE' 
+  | 'COMPLETED' 
+  | 'CANCELLED' 
+  | 'OPEN';
 
