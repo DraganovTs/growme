@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { IBid } from 'src/app/shared/model/bid';
+import { BidStatus, IBid } from 'src/app/shared/model/bid';
 
 @Component({
   standalone: true,
@@ -15,6 +15,21 @@ export class BidCardComponent {
   @Input() isTaskOwner = false;
   @Input() taskStatus = '';
   
-  @Output() acceptBid = new EventEmitter<string>();
+ @Output() acceptBid = new EventEmitter<string>();
   @Output() rejectBid = new EventEmitter<string>();
+  @Output() withdrawBid = new EventEmitter<string>();
+  @Output() counterOffer = new EventEmitter<IBid>();
+  @Output() acceptCounter = new EventEmitter<string>();
+
+
+  getStatusIcon(status: BidStatus): string {
+    switch(status) {
+      case 'ACCEPTED': return 'fa-check-circle';
+      case 'REJECTED': return 'fa-times-circle';
+      case 'COUNTER_OFFER': return 'fa-exchange-alt';
+      case 'WITHDRAWN': return 'fa-trash-alt';
+      case 'EXPIRED': return 'fa-clock';
+      default: return 'fa-hourglass-half';
+    }
+  }
 }

@@ -81,7 +81,7 @@ public class BidController {
     public ResponseEntity<BidResponseDTO> createCounterOffer(
             @PathVariable UUID bidId,
             @RequestBody @Valid CounterOfferRequestDTO dto,
-            @RequestAttribute UUID userId
+            @RequestParam UUID userId
     ) {
         System.out.println();
         return ResponseEntity.status(HttpStatus.OK)

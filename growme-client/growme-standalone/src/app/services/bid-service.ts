@@ -165,7 +165,9 @@ export class BidService {
       return throwError(() => new Error('User not authenticated'));
     }
 
-    return this.http.post<IBid>(`${this.apiUrl}/${bidId}/counter-offer`, counterOfferData).pipe(
+    const params = new HttpParams().set('userId' , userId);
+
+    return this.http.post<IBid>(`${this.apiUrl}/${bidId}/counter-offer`, counterOfferData , {params}).pipe(
       catchError(error => {
         console.error('Error creating counter offer:', error);
         return throwError(() => error);

@@ -10,6 +10,8 @@ export interface IBid {
   deliveryMethod?: 'PICKUP' | 'DELIVERY' | 'MARKET';
   deliveryIncluded?: boolean;
   proposedHarvestDate?: string ;
+  counterOfferPrice?: number;
+  counterOfferMessage?: string;
   createdAt?: string;
   updatedAt?: string; 
 }
@@ -23,15 +25,9 @@ export interface BidResponseListDTO {
 }
 
 export type BidStatus = 
-  | 'PENDING'
-  | 'ACCEPTED'
-  | 'REJECTED'
-  | 'COMPLETED'
-  | 'CANCELLED'
-  | 'CONFIRMED'
-  | 'IN_PROGRESS'
-  | 'READY'
-  | 'SHIPPED'
-  | 'DELIVERED'
-  | 'EXPIRED'
-  | 'COUNTER_OFFER';
+  | 'PENDING'       
+  | 'ACCEPTED'      
+  | 'REJECTED'      
+  | 'COUNTER_OFFER'  
+  | 'WITHDRAWN'
+  | 'EXPIRED';  

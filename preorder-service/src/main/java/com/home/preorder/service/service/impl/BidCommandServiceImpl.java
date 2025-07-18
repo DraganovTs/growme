@@ -78,7 +78,7 @@ public class BidCommandServiceImpl implements BidCommandService {
         Bid originalBid = bidRepository.findById(bidId)
                 .orElseThrow(() -> new BidNotFoundException("Bid not found with id: " + bidId));
 
-        if (originalBid.getTask().getUserId().equals(userId)) {
+        if (originalBid.getUserId().equals(userId)) {
             throw new UnauthorizedActionException("User is not authorized to create counter offer for this bid");
         }
 
