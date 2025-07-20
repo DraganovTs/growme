@@ -16,18 +16,21 @@ public class PreorderServiceImpl implements PreorderService {
     private final TaskQueryService taskQueryService;
     private final BidCommandService bidCommandService;
     private final BidQueryService bidQueryService;
+    private final EmailService emailService;
 
     public PreorderServiceImpl(TaskCommandService taskCommandService, TaskQueryService taskQueryService,
-                               BidCommandService bidCommandService, BidQueryService bidQueryService) {
+                               BidCommandService bidCommandService, BidQueryService bidQueryService, EmailService emailService) {
         this.taskCommandService = taskCommandService;
         this.taskQueryService = taskQueryService;
         this.bidCommandService = bidCommandService;
         this.bidQueryService = bidQueryService;
+        this.emailService = emailService;
     }
 
 
     @Override
     public TaskDTO requestTaskCreation(TaskDTO taskDTO) {
+        emailService.sendTaskCreationConfirmation("Test");
         return taskCommandService.createTask(taskDTO);
     }
 

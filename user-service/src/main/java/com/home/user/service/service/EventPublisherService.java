@@ -12,6 +12,5 @@ public interface EventPublisherService {
 
     void publishRoleAssignment(String userId, String role,String operationType);
     void publishUserCreated(UserCreatedEvent event);
-
     void publishEmailRequest(EmailRequestEvent event);
 }
