@@ -10,4 +10,6 @@ public interface TaskUserService {
     TaskUser findUserById(UUID id);
 
     void createUser(UserCreatedEvent event);
+
+    String findUserEmailByUserId(UUID taskUserId);
 }

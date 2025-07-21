@@ -30,11 +30,17 @@ public class TaskUserServiceImpl implements TaskUserService {
 
     @Override
     public void createUser(UserCreatedEvent event) {
-        if (taskUserRepository.existsById(UUID.fromString(event.getUserId()))){
+        if (taskUserRepository.existsById(UUID.fromString(event.getUserId()))) {
             throw new TaskUserAlreadyExistException(event.getUserId());
         }
 
         TaskUser taskUser = taskUserMapper.mapEventToTaskUser(event);
         taskUserRepository.save(taskUser);
+    }
+
+    @Override
+    public String findUserEmailByUserId(UUID taskUserId) {
+        TaskUser taskUser = findUserById(taskUserId);
+        return taskUser.getTaskUserEmail();
     }
 }

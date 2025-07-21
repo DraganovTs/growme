@@ -30,13 +30,16 @@ public class PreorderServiceImpl implements PreorderService {
 
     @Override
     public TaskDTO requestTaskCreation(TaskDTO taskDTO) {
-        emailService.sendTaskCreationConfirmation("Test");
-        return taskCommandService.createTask(taskDTO);
+        TaskDTO createdTask = taskCommandService.createTask(taskDTO);
+        emailService.sendTaskCreationConfirmation(taskDTO.getUserId());
+        return createdTask;
     }
 
     @Override
     public TaskDTO requestUpdateTaskStatus(String taskId, TaskStatusUpdateRequestDTO taskStatus) {
-        return taskCommandService.updateTaskStatus(taskId, taskStatus);
+        TaskDTO updatedTask = taskCommandService.updateTaskStatus(taskId, taskStatus);
+        emailService.sendBidStatusUpdateNotification(updatedTask.getUserId());
+        return updatedTask;
     }
 
     @Override
@@ -55,20 +58,24 @@ public class PreorderServiceImpl implements PreorderService {
     }
 
     @Override
-    public void requestCancelTask(UUID taskId , UUID userId) {
-        taskCommandService.cancelTask(taskId , userId);
+    public void requestCancelTask(UUID taskId, UUID userId) {
+        taskCommandService.cancelTask(taskId, userId);
+        emailService.sendTaskCancellationConfirmation(userId);
     }
 
     //BID
 
     @Override
     public BidResponseDTO requestCreateBid(CreateBidRequestDTO dto) {
-        return bidCommandService.createBid(dto);
+        BidResponseDTO createdBid = bidCommandService.createBid(dto);
+        emailService.sendBidCreationConfirmation(dto.getUserId());
+        return createdBid;
     }
 
     @Override
     public void requestWithdrawBid(UUID bidId, UUID userId) {
         bidCommandService.withdrawBid(bidId, userId);
+        emailService.sendBidWithdrawalConfirmation(userId);
     }
 
     @Override
@@ -82,23 +89,29 @@ public class PreorderServiceImpl implements PreorderService {
     }
 
     @Override
-    public BidResponseListDTO requestUserBids(UUID userId,  BidSpecParams request) {
+    public BidResponseListDTO requestUserBids(UUID userId, BidSpecParams request) {
         return bidQueryService.getUserBids(userId, request);
     }
 
     @Override
     public BidResponseDTO requestCounterOffer(UUID bidId, CounterOfferRequestDTO dto, UUID userId) {
-        return bidCommandService.createCounterOffer(bidId, dto, userId);
+        BidResponseDTO counterOffer = bidCommandService.createCounterOffer(bidId, dto, userId);
+        emailService.sendCounterOfferNotification(userId);
+        return counterOffer;
     }
 
     @Override
     public BidResponseDTO requestUpdateBidStatus(UUID bidId, UpdateBidStatusRequestDTO dto) {
-        return bidCommandService.updateBidStatus(bidId, dto);
+        BidResponseDTO updatedBid = bidCommandService.updateBidStatus(bidId, dto);
+        emailService.sendBidStatusUpdateNotification(dto.userId());
+        return updatedBid;
     }
 
     @Override
-    public BidResponseListDTO requestBidsRequiringAction(UUID userId,  BidSpecParams request) {
-        return bidQueryService.getBidsRequiringAction(userId, request);
+    public BidResponseListDTO requestBidsRequiringAction(UUID userId, BidSpecParams request) {
+        BidResponseListDTO bidRequiringAction = bidQueryService.getBidsRequiringAction(userId, request);
+        emailService.sendActionRequiredNotification(userId);
+        return bidRequiringAction;
     }
 
 

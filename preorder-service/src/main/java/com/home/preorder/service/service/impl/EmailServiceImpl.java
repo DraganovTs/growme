@@ -4,62 +4,75 @@ import com.home.growme.common.module.enums.EmailType;
 import com.home.growme.common.module.events.EmailRequestEvent;
 import com.home.preorder.service.service.EmailService;
 import com.home.preorder.service.service.EventPublisherService;
+import com.home.preorder.service.service.TaskUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 @Slf4j
 @Service
 public class EmailServiceImpl implements EmailService {
 
     private final EventPublisherService eventPublisherService;
+    private final TaskUserService taskUserService;
 
-    public EmailServiceImpl(EventPublisherService eventPublisherService) {
+    public EmailServiceImpl(EventPublisherService eventPublisherService, TaskUserService taskUserService) {
         this.eventPublisherService = eventPublisherService;
+        this.taskUserService = taskUserService;
     }
 
     @Override
-    public void sendTaskCreationConfirmation(String email) {
+    public void sendTaskCreationConfirmation(UUID taskUserId) {
+        String email = taskUserService.findUserEmailByUserId(taskUserId);
         publishEmailEvent(email, EmailType.TASK_CREATION_CONFIRMATION);
 
     }
 
     @Override
-    public void sendTaskStatusUpdateNotification(String email) {
+    public void sendTaskStatusUpdateNotification(UUID taskUserId) {
+        String email = taskUserService.findUserEmailByUserId(taskUserId);
         publishEmailEvent(email, EmailType.TASK_STATUS_UPDATE);
     }
 
     @Override
-    public void sendTaskCancellationConfirmation(String email) {
+    public void sendTaskCancellationConfirmation(UUID taskUserId) {
+        String email = taskUserService.findUserEmailByUserId(taskUserId);
         publishEmailEvent(email, EmailType.TASK_CANCELLATION_CONFIRMATION);
 
     }
 
     @Override
-    public void sendBidCreationConfirmation(String email) {
+    public void sendBidCreationConfirmation(UUID taskUserId) {
+        String email = taskUserService.findUserEmailByUserId(taskUserId);
         publishEmailEvent(email, EmailType.BID_CREATION_CONFIRMATION);
 
     }
 
     @Override
-    public void sendBidWithdrawalConfirmation(String email) {
+    public void sendBidWithdrawalConfirmation(UUID taskUserId) {
+        String email = taskUserService.findUserEmailByUserId(taskUserId);
         publishEmailEvent(email, EmailType.BID_WITHDRAWAL_CONFIRMATION);
 
     }
 
     @Override
-    public void sendCounterOfferNotification(String email) {
+    public void sendCounterOfferNotification(UUID taskUserId) {
+        String email = taskUserService.findUserEmailByUserId(taskUserId);
         publishEmailEvent(email, EmailType.COUNTER_OFFER_NOTIFICATION);
 
     }
 
     @Override
-    public void sendBidStatusUpdateNotification(String email) {
+    public void sendBidStatusUpdateNotification(UUID taskUserId) {
+        String email = taskUserService.findUserEmailByUserId(taskUserId);
         publishEmailEvent(email, EmailType.BID_STATUS_UPDATE);
 
     }
 
     @Override
-    public void sendActionRequiredNotification(String email) {
+    public void sendActionRequiredNotification(UUID taskUserId) {
+        String email = taskUserService.findUserEmailByUserId(taskUserId);
         publishEmailEvent(email, EmailType.BID_ACTION_REQUIRED);
 
     }
