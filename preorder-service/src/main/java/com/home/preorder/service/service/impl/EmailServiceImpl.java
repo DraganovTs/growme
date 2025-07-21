@@ -2,6 +2,7 @@ package com.home.preorder.service.service.impl;
 
 import com.home.growme.common.module.enums.EmailType;
 import com.home.growme.common.module.events.EmailRequestEvent;
+import com.home.growme.common.module.exceptions.EmailProcessingException;
 import com.home.preorder.service.service.EmailService;
 import com.home.preorder.service.service.EventPublisherService;
 import com.home.preorder.service.service.TaskUserService;
@@ -81,11 +82,11 @@ public class EmailServiceImpl implements EmailService {
     private void publishEmailEvent(String email, EmailType type) {
         try {
             EmailRequestEvent event = new EmailRequestEvent(email, type);
-//            eventPublisherService.publishEmailEvent(event);
+            eventPublisherService.publishEmailRequest(event);
             log.debug("Email request published for {}: {}", email, type);
         } catch (Exception e) {
             log.error("Failed to publish email request for {}: {}", email, type, e);
-//            throw new EmailProcessingException("Failed to process email request");
+            throw new EmailProcessingException("Failed to process email request");
         }
     }
 }

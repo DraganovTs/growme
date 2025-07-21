@@ -1,6 +1,5 @@
-package com.home.user.service.exception;
+package com.home.growme.common.module.exceptions;
 
-import com.home.growme.common.module.exceptions.BaseException;
 import org.springframework.http.HttpStatus;
 
 public class EmailProcessingException extends BaseException {

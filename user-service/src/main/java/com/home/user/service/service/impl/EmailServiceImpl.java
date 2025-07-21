@@ -2,7 +2,7 @@ package com.home.user.service.service.impl;
 
 import com.home.growme.common.module.enums.EmailType;
 import com.home.growme.common.module.events.EmailRequestEvent;
-import com.home.user.service.exception.EmailProcessingException;
+import com.home.growme.common.module.exceptions.EmailProcessingException;
 import com.home.user.service.service.EmailService;
 import com.home.user.service.service.EventPublisherService;
 import lombok.extern.slf4j.Slf4j;
