@@ -38,7 +38,7 @@ public class PreorderServiceImpl implements PreorderService {
     @Override
     public TaskDTO requestUpdateTaskStatus(String taskId, TaskStatusUpdateRequestDTO taskStatus) {
         TaskDTO updatedTask = taskCommandService.updateTaskStatus(taskId, taskStatus);
-        emailService.sendBidStatusUpdateNotification(updatedTask.getUserId());
+        emailService.sendTaskStatusUpdateNotification(updatedTask.getUserId());
         return updatedTask;
     }
 
