@@ -21,14 +21,14 @@ import java.util.UUID;
 public class TaskUser {
     @Id
     @Column(name = "task_user_id")
-    private UUID ownerId;
+    private UUID taskUserId;
     @NotBlank(message = "User name must not be blank")
     @Size(max = 30, message = "User name must be at most 30 characters")
     @Column(name = "task_user_name")
-    private String ownerName;
+    private String taskUserName;
     @Email(message = "User email should be valid")
     @NotBlank(message = "User email must not be blank")
     @Size(max = 30, message = "User email must be at most 30 characters")
     @Column(name = "task_user_email")
-    private String ownerEmail;
+    private String taskUserEmail;
 }
