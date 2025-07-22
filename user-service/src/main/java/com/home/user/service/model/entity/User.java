@@ -72,10 +72,10 @@ public class User {
     @ElementCollection
     @CollectionTable(name = "user_owned_products", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "product_id")
-    private List<UUID> ownedProductIds;
+    private List<UUID> ownedProductIds = new ArrayList<>();
 
     @ElementCollection
     @CollectionTable(name = "user_purchased_orders", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "order_id")
-    private List<UUID> purchasedOrderIds;
+    private List<UUID> purchasedOrderIds = new ArrayList<>();
 }

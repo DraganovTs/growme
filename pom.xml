@@ -47,6 +47,8 @@
         <jib.maven.plugin>3.4.5</jib.maven.plugin>
         <spring.cloud.starter.circuitbreaker-reactor-resilience4j.version>3.3.0</spring.cloud.starter.circuitbreaker-reactor-resilience4j.version>
         <spring-boot-starter-data-redis-reactive.version>3.2.2</spring-boot-starter-data-redis-reactive.version>
+        <junit.version>5.10.1</junit.version>
+        <mockito-junit-jupiter.version>5.11.0</mockito-junit-jupiter.version>
     </properties>
 
     <dependencyManagement>
@@ -222,6 +224,22 @@
                 <artifactId>common-module</artifactId>
                 <version>${project.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>org.junit</groupId>
+                <artifactId>junit-bom</artifactId>
+                <version>${junit.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-junit-jupiter</artifactId>
+                <version>${mockito-junit-jupiter.version}</version>
+                <scope>test</scope>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
