@@ -24,9 +24,9 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+@DisplayName("User Query Service Tests")
 @ExtendWith(MockitoExtension.class)
 public class UserQueryServiceImplTests {
 
@@ -245,6 +245,7 @@ public class UserQueryServiceImplTests {
             assertFalse(userQueryService.existsByEmail("email"));
         }
 
+
         @Test
         void shouldReturnTrueIfUsernameExists() {
             when(userRepository.existsByUsername("user")).thenReturn(true);
@@ -258,6 +259,7 @@ public class UserQueryServiceImplTests {
 
             assertFalse(userQueryService.existsByUsername("user"));
         }
+
 
         @Test
         void shouldReturnTrueIfIdExists() {
