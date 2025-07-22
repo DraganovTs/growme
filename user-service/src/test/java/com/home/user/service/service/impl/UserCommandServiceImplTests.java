@@ -8,7 +8,6 @@ import com.home.user.service.model.entity.User;
 import com.home.user.service.repository.UserRepository;
 import com.home.user.service.service.EventPublisherService;
 import com.home.user.service.util.UserValidator;
-import org.checkerframework.checker.units.qual.A;
 import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

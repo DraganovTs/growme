@@ -1,17 +1,12 @@
 package com.home.user.service.model.entity;
 
 import com.home.user.service.model.enums.AccountStatus;
-import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
-
+import java.util.*;
 
 
 @Entity
@@ -78,4 +73,18 @@ public class User {
     @CollectionTable(name = "user_purchased_orders", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "order_id")
     private List<UUID> purchasedOrderIds = new ArrayList<>();
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return userId.equals(user.userId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(userId);
+    }
 }
