@@ -65,6 +65,25 @@ public class UserTests {
             assertTrue(violations.stream()
                     .anyMatch(v -> v.getMessage().contains("Username must be between 4 and 20 characters")));
         }
+
+        @Test
+        @DisplayName("Should fail when email is null")
+        void shouldFailWhenEmailIsNull() {
+            User user = userBuilder.email(null).build();
+            Set<ConstraintViolation<User>> violations = validator.validate(user);
+            assertFalse(violations.isEmpty());
+        }
+
+        @Test
+        @DisplayName("Should fail when email is invalid")
+        void shouldFailWhenEmailIsInvalid() {
+            User user = userBuilder.email("invalid-email").build();
+            Set<ConstraintViolation<User>> violations = validator.validate(user);
+
+            assertFalse(violations.isEmpty());
+            assertTrue(violations.stream()
+                    .anyMatch(v -> v.getMessage().equals("Invalid email format")));
+        }
     }
 
     @Nested
@@ -85,10 +104,20 @@ public class UserTests {
             User user = new User();
             Date initialUpdatedAt = user.getUpdatedAt();
 
-            Thread.sleep(1); // Ensure time difference
+            Thread.sleep(1);
             user.setUsername("newUsername");
 
+
+            user.onUpdate();
+
             assertTrue(user.getUpdatedAt().after(initialUpdatedAt));
+        }
+
+        @Test
+        @DisplayName("Should set default account status to PENDING")
+        void shouldSetDefaultAccountStatus() {
+            User user = new User();
+            assertEquals(AccountStatus.PENDING, user.getAccountStatus());
         }
     }
 

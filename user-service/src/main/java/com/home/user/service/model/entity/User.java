@@ -31,6 +31,7 @@ public class User {
     @Email(message = "Invalid email format")
     private String email;
 
+    @Builder.Default
     @ElementCollection
     @CollectionTable(name = "user_owned_roles", joinColumns = @JoinColumn(name = "user_id"))
     private List<String> roles = new ArrayList<>();
@@ -64,15 +65,29 @@ public class User {
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt = new Date();
 
+    @Builder.Default
     @ElementCollection
     @CollectionTable(name = "user_owned_products", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "product_id")
     private List<UUID> ownedProductIds = new ArrayList<>();
 
+    @Builder.Default
     @ElementCollection
     @CollectionTable(name = "user_purchased_orders", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "order_id")
     private List<UUID> purchasedOrderIds = new ArrayList<>();
+
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = new Date();
+        this.updatedAt = new Date();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = new Date();
+    }
 
 
     @Override
