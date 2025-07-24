@@ -56,5 +56,6 @@ public class AddressDto {
             requiredMode = Schema.RequiredMode.REQUIRED
     )
     @NotBlank(message = "Zip code is required")
+    @Size(min = 2, max = 8, message = "Zip code must be between 2-8 characters")
     private String zipCode;
 }

@@ -2,9 +2,7 @@ package com.home.user.service.model.dto;
 
 import com.home.user.service.model.enums.AccountStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Builder;
 import lombok.Data;
 
@@ -29,6 +27,7 @@ public class KeycloakUserDTO {
             requiredMode = Schema.RequiredMode.REQUIRED
     )
     @NotBlank(message = "User ID is required")
+    @Pattern(regexp = "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$" , message = "Id in UUID format")
     private String userId;
 
     @Schema(
@@ -50,7 +49,7 @@ public class KeycloakUserDTO {
             requiredMode = Schema.RequiredMode.REQUIRED
     )
     @NotBlank(message = "Email is required")
-    @Email(message = "Email should be valid")
+    @Email(message = "Invalid email format")
     private String email;
 
     @Schema(
@@ -59,5 +58,6 @@ public class KeycloakUserDTO {
             example = "ACTIVE",
             defaultValue = "PENDING"
     )
+    @NotNull(message = "Account status is required")
     private AccountStatus accountStatus;
 }
