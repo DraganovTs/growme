@@ -75,7 +75,7 @@ public class UserDTO {
     )
     @Valid
     @NotNull(message = "Address is required")
-    private AddressDto address;
+    private AddressDTO address;
 
     @Schema(
             description = "Assigned user roles",
@@ -90,5 +90,6 @@ public class UserDTO {
             implementation = AccountStatus.class,
             defaultValue = "ACTIVE"
     )
+    @NotNull(message = "Account status is required")
     private AccountStatus accountStatus;
 }

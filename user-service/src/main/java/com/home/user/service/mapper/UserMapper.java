@@ -4,7 +4,7 @@ package com.home.user.service.mapper;
 import com.home.growme.common.module.dto.AddressInfo;
 import com.home.growme.common.module.dto.UserInfo;
 import com.home.user.service.exception.NotValidUserRoleException;
-import com.home.user.service.model.dto.AddressDto;
+import com.home.user.service.model.dto.AddressDTO;
 import com.home.user.service.model.dto.KeycloakUserDTO;
 import com.home.user.service.model.dto.UserDTO;
 import com.home.user.service.model.entity.Address;
@@ -85,7 +85,7 @@ public class UserMapper {
                 .build();
     }
 
-    private Address mapAddressDTOToAddress(AddressDto addressDto) {
+    private Address mapAddressDTOToAddress(AddressDTO addressDto) {
         return Address.builder()
                 .street(addressDto.getStreet())
                 .city(addressDto.getCity())
@@ -94,8 +94,8 @@ public class UserMapper {
                 .build();
     }
 
-    private AddressDto mapAddressToAddressDTO(Address address) {
-        return AddressDto.builder()
+    private AddressDTO mapAddressToAddressDTO(Address address) {
+        return AddressDTO.builder()
                 .street(address.getStreet())
                 .city(address.getCity())
                 .state(address.getState())

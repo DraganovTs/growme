@@ -19,14 +19,14 @@ public class AddressDTOTests {
 
 
     private Validator validator;
-    private AddressDto.AddressDtoBuilder validBuilder;
+    private AddressDTO.AddressDTOBuilder validBuilder;
 
     @BeforeEach
     void setUp() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
 
-        validBuilder = AddressDto.builder()
+        validBuilder = AddressDTO.builder()
                 .street("123 Main St")
                 .city("San Francisco")
                 .state("CA")
@@ -36,8 +36,8 @@ public class AddressDTOTests {
     @Test
     @DisplayName("Should validate a correct address")
     void shouldValidateCorrectAddress() {
-        AddressDto address = validBuilder.build();
-        Set<ConstraintViolation<AddressDto>> violations = validator.validate(address);
+        AddressDTO address = validBuilder.build();
+        Set<ConstraintViolation<AddressDTO>> violations = validator.validate(address);
         assertTrue(violations.isEmpty(), "Expected no validation errors");
     }
 
@@ -47,23 +47,23 @@ public class AddressDTOTests {
 
         @Test
         void shouldPassWhenStreetIsValid() {
-            AddressDto address = validBuilder.street("Baker Street 221B").build();
-            Set<ConstraintViolation<AddressDto>> violations = validator.validate(address);
+            AddressDTO address = validBuilder.street("Baker Street 221B").build();
+            Set<ConstraintViolation<AddressDTO>> violations = validator.validate(address);
             assertTrue(violations.isEmpty(), "Expected no violations for valid street");
         }
 
         @Test
         void shouldFailWhenStreetIsBlank() {
-            AddressDto address = validBuilder.street("").build();
-            Set<ConstraintViolation<AddressDto>> violations = validator.validate(address);
+            AddressDTO address = validBuilder.street("").build();
+            Set<ConstraintViolation<AddressDTO>> violations = validator.validate(address);
             assertFalse(violations.isEmpty());
             assertTrue(violations.stream().anyMatch(v -> v.getMessage().contains("Street is required")));
         }
 
         @Test
         void shouldFailWhenStreetTooLong() {
-            AddressDto address = validBuilder.street("a".repeat(31)).build();
-            Set<ConstraintViolation<AddressDto>> violations = validator.validate(address);
+            AddressDTO address = validBuilder.street("a".repeat(31)).build();
+            Set<ConstraintViolation<AddressDTO>> violations = validator.validate(address);
             assertFalse(violations.isEmpty());
             assertTrue(violations.stream().anyMatch(v -> v.getMessage().contains("Street cannot exceed")));
         }
@@ -75,23 +75,23 @@ public class AddressDTOTests {
 
         @Test
         void shouldPassWhenCityIsValid() {
-            AddressDto address = validBuilder.city("New York").build();
-            Set<ConstraintViolation<AddressDto>> violations = validator.validate(address);
+            AddressDTO address = validBuilder.city("New York").build();
+            Set<ConstraintViolation<AddressDTO>> violations = validator.validate(address);
             assertTrue(violations.isEmpty(), "Expected no violations for valid city");
         }
 
         @Test
         void shouldFailWhenCityIsBlank() {
-            AddressDto address = validBuilder.city("").build();
-            Set<ConstraintViolation<AddressDto>> violations = validator.validate(address);
+            AddressDTO address = validBuilder.city("").build();
+            Set<ConstraintViolation<AddressDTO>> violations = validator.validate(address);
             assertFalse(violations.isEmpty());
             assertTrue(violations.stream().anyMatch(v -> v.getMessage().contains("City is required")));
         }
 
         @Test
         void shouldFailWhenCityTooLong() {
-            AddressDto address = validBuilder.city("a".repeat(31)).build();
-            Set<ConstraintViolation<AddressDto>> violations = validator.validate(address);
+            AddressDTO address = validBuilder.city("a".repeat(31)).build();
+            Set<ConstraintViolation<AddressDTO>> violations = validator.validate(address);
             assertFalse(violations.isEmpty());
             assertTrue(violations.stream().anyMatch(v -> v.getMessage().contains("City cannot exceed")));
         }
@@ -102,38 +102,38 @@ public class AddressDTOTests {
     class StateValidation {
         @Test
         void shouldPassWhenStateHasMinLength() {
-            AddressDto address = validBuilder.state("NY").build(); // Assuming min is 2
-            Set<ConstraintViolation<AddressDto>> violations = validator.validate(address);
+            AddressDTO address = validBuilder.state("NY").build(); // Assuming min is 2
+            Set<ConstraintViolation<AddressDTO>> violations = validator.validate(address);
             assertTrue(violations.isEmpty(), "Expected no violations for 2-char state");
         }
 
         @Test
         void shouldPassWhenStateHasMaxLength() {
-            AddressDto address = validBuilder.state("A".repeat(20)).build(); // Assuming max is 20
-            Set<ConstraintViolation<AddressDto>> violations = validator.validate(address);
+            AddressDTO address = validBuilder.state("A".repeat(20)).build(); // Assuming max is 20
+            Set<ConstraintViolation<AddressDTO>> violations = validator.validate(address);
             assertTrue(violations.isEmpty(), "Expected no violations for 20-char state");
         }
 
         @Test
         void shouldFailWhenStateIsBlank() {
-            AddressDto address = validBuilder.state("").build();
-            Set<ConstraintViolation<AddressDto>> violations = validator.validate(address);
+            AddressDTO address = validBuilder.state("").build();
+            Set<ConstraintViolation<AddressDTO>> violations = validator.validate(address);
             assertFalse(violations.isEmpty());
             assertTrue(violations.stream().anyMatch(v -> v.getMessage().contains("State is required")));
         }
 
         @Test
         void shouldFailWhenStateTooShort() {
-            AddressDto address = validBuilder.state("A").build();
-            Set<ConstraintViolation<AddressDto>> violations = validator.validate(address);
+            AddressDTO address = validBuilder.state("A").build();
+            Set<ConstraintViolation<AddressDTO>> violations = validator.validate(address);
             assertFalse(violations.isEmpty());
             assertTrue(violations.stream().anyMatch(v -> v.getMessage().contains("State must be between")));
         }
 
         @Test
         void shouldFailWhenStateTooLong() {
-            AddressDto address = validBuilder.state("A".repeat(21)).build();
-            Set<ConstraintViolation<AddressDto>> violations = validator.validate(address);
+            AddressDTO address = validBuilder.state("A".repeat(21)).build();
+            Set<ConstraintViolation<AddressDTO>> violations = validator.validate(address);
             assertFalse(violations.isEmpty());
             assertTrue(violations.stream().anyMatch(v -> v.getMessage().contains("State must be between")));
         }
@@ -144,29 +144,29 @@ public class AddressDTOTests {
     class ZipCodeValidation {
         @Test
         void shouldPassWhenZipCodeIsValid() {
-            AddressDto address = validBuilder.zipCode("94105").build();
-            Set<ConstraintViolation<AddressDto>> violations = validator.validate(address);
+            AddressDTO address = validBuilder.zipCode("94105").build();
+            Set<ConstraintViolation<AddressDTO>> violations = validator.validate(address);
             assertTrue(violations.isEmpty(), "Expected no violations for valid zip code");
         }
 
         @Test
         void shouldPassWhenZipCodeHasMinLength() {
-            AddressDto address = validBuilder.zipCode("94").build();
-            Set<ConstraintViolation<AddressDto>> violations = validator.validate(address);
+            AddressDTO address = validBuilder.zipCode("94").build();
+            Set<ConstraintViolation<AddressDTO>> violations = validator.validate(address);
             assertTrue(violations.isEmpty(), "Expected no violations for valid zip code");
         }
 
         @Test
         void shouldPassWhenZipCodeHasMaxLength() {
-            AddressDto address = validBuilder.zipCode("12345678").build();
-            Set<ConstraintViolation<AddressDto>> violations = validator.validate(address);
+            AddressDTO address = validBuilder.zipCode("12345678").build();
+            Set<ConstraintViolation<AddressDTO>> violations = validator.validate(address);
             assertTrue(violations.isEmpty(), "Expected no violations for valid zip code");
         }
 
         @Test
         void shouldFailWhenZipCodeIsBlank() {
-            AddressDto address = validBuilder.zipCode("").build();
-            Set<ConstraintViolation<AddressDto>> violations = validator.validate(address);
+            AddressDTO address = validBuilder.zipCode("").build();
+            Set<ConstraintViolation<AddressDTO>> violations = validator.validate(address);
             assertFalse(violations.isEmpty());
             assertTrue(violations.stream().anyMatch(v -> v.getMessage().contains("Zip code is required")));
         }
