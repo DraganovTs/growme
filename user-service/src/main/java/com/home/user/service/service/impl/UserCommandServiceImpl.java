@@ -74,8 +74,7 @@ public class UserCommandServiceImpl implements UserCommandService {
             log.debug("Publishing role assignments for user: {}", userId);
             userDTO.getRoles().forEach(role -> eventPublisherService.publishRoleAssignment(
                     userId.toString(),
-                    role,
-                    "UPDATE"));
+                    role));
         }
 
 

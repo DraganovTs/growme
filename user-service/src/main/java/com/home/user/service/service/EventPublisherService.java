@@ -10,7 +10,7 @@ import com.home.growme.common.module.events.UserCreatedEvent;
  */
 public interface EventPublisherService {
 
-    void publishRoleAssignment(String userId, String role,String operationType);
+    void publishRoleAssignment(String userId, String role);
     void publishUserCreated(UserCreatedEvent event);
     void publishEmailRequest(EmailRequestEvent event);
 }
