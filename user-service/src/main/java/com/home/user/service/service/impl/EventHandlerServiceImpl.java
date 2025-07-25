@@ -1,6 +1,7 @@
 package com.home.user.service.service.impl;
 
 import com.home.growme.common.module.events.*;
+import com.home.user.service.exception.UserAlreadyExistException;
 import com.home.user.service.exception.UserNotFoundException;
 import com.home.user.service.model.entity.User;
 import com.home.user.service.repository.UserRepository;
@@ -54,7 +55,7 @@ public class EventHandlerServiceImpl implements EventHandlerService {
                             user.getEmail());
 
                     eventPublisherService.publishUserCreated(event);
-            }
+            } else throw new UserAlreadyExistException("User exist whit that Id: " + result.getUserId());
 
         } catch (UserNotFoundException e) {
             log.error("User not found for role assignment: {}", result.getUserId(), e);
