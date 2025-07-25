@@ -42,16 +42,7 @@ public class UserMapper {
     }
 
 
-    private String extractValidRole(List<String> keycloakRoles) {
 
-        final Set<String> ALLOWED_ROLES = Set.of("BUYER", "SELLER", "ADMIN");
-
-
-        return keycloakRoles.stream()
-                .filter(ALLOWED_ROLES::contains)
-                .findFirst()
-                .orElseThrow(() -> new NotValidUserRoleException("No valid role found"));
-    }
 
     public User updateUserInitialAccount(User user, UserDTO userDTO) {
 
