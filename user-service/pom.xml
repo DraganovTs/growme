@@ -84,7 +84,6 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
             <exclusions>
-                <!-- Exclude JUnit 4 if you want to avoid conflicts -->
                 <exclusion>
                     <groupId>junit</groupId>
                     <artifactId>junit</artifactId>
