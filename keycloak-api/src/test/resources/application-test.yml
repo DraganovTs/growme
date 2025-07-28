@@ -1,7 +1,21 @@
 spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: "http://mock-issuer"  # Mock issuer URI
+        enabled: false  # Disable OAuth2 resource server
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
+      - org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAuth2ClientAutoConfiguration
+      - org.springframework.boot.autoconfigure.security.oauth2.resource.servlet.OAuth2ResourceServerAutoConfiguration
+  keycloak:
+    enabled: false  # Disable Keycloak auto-configuration
   cloud:
     config:
       enabled: false
   kafka:
+    bootstrap-servers: mock:9092  # Mock Kafka server
     listener:
       auto-startup: false

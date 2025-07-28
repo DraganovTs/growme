@@ -99,7 +99,7 @@ public class KeycloakUserServiceImpl implements KeycloakUserService {
         }
     }
 
-    private UserRepresentation createUserRepresentation(UserRegistrationRecord registration) {
+    protected UserRepresentation createUserRepresentation(UserRegistrationRecord registration) {
         UserRepresentation user = new UserRepresentation();
         user.setEnabled(true);
         user.setUsername(registration.username());
@@ -111,7 +111,7 @@ public class KeycloakUserServiceImpl implements KeycloakUserService {
         return user;
     }
 
-    private List<CredentialRepresentation> createCredentials(String password) {
+    protected List<CredentialRepresentation> createCredentials(String password) {
         CredentialRepresentation credentials = new CredentialRepresentation();
         credentials.setType(OAuth2Constants.PASSWORD);
         credentials.setValue(password);
