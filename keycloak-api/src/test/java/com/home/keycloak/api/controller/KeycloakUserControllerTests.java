@@ -5,19 +5,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.home.keycloak.api.model.dto.UserRegistrationRecord;
 import com.home.keycloak.api.service.KeycloakUserService;
 import jakarta.ws.rs.core.MediaType;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -60,7 +58,7 @@ public class KeycloakUserControllerTests {
     static class DisableSecurityConfig {
         @Bean
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-            http.csrf(csrf-> csrf.disable())
+            http.csrf(AbstractHttpConfigurer::disable)
                     .authorizeHttpRequests(auth->auth.anyRequest().permitAll());
             return http.build();
         }

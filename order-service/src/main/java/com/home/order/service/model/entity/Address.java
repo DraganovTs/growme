@@ -3,6 +3,7 @@ package com.home.order.service.model.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -40,12 +41,12 @@ public class Address {
 
 
     public Address(String firstName, String lastName, String street, String city, String state, String zipCode) {
-        this.firstName = Objects.requireNonNull(firstName);
-        this.lastName = Objects.requireNonNull(lastName);
-        this.street = Objects.requireNonNull(street);
-        this.city = Objects.requireNonNull(city);
-        this.state = Objects.requireNonNull(state);
-        this.zipCode = Objects.requireNonNull(zipCode);
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.street = street;
+        this.city = city;
+        this.state = state;
+        this.zipCode = zipCode;
     }
 
     @Override
