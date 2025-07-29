@@ -88,4 +88,44 @@ public class AddressTests {
         assertFalse(violations.isEmpty());
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("zipCode")));
     }
+
+    @Test
+    @DisplayName("Should be equal when all fields match")
+    void shouldBeEqualWhenAllFieldsMatch() {
+        Address address1 = buildValidAddress();
+        Address address2 = buildValidAddress();
+        assertTrue(address1.equals(address2));
+        assertTrue(address1.hashCode() == address2.hashCode());
+    }
+
+    @Test
+    @DisplayName("Should not be equal when one field differs")
+    void shouldNotBeEqualWhenFieldsDiffer() {
+        Address address1 = buildValidAddress();
+        Address address2 = new Address("Jane", "Doe", "123 Main Street", "Springfield", "IL", "62704");
+        assertFalse(address1.equals(address2));
+        assertFalse(address1.hashCode() == address2.hashCode());
+    }
+
+    @Test
+    @DisplayName("Should not be equal when compared with null")
+    void shouldNotBeEqualWhenComparedWithNull() {
+        Address address = buildValidAddress();
+        assertFalse(address.equals(null));
+    }
+
+    @Test
+    @DisplayName("Should not be equal when compared with different class")
+    void shouldNotBeEqualWhenComparedWithDifferentClass() {
+        Address address = buildValidAddress();
+        Object other = new Object();
+        assertFalse(address.equals(other));
+    }
+
+    @Test
+    @DisplayName("Should be equal to itself")
+    void shouldBeEqualToItself() {
+        Address address = buildValidAddress();
+        assertTrue(address.equals(address));
+    }
 }

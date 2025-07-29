@@ -104,4 +104,48 @@ public class ProductItemOrderedTests {
         assertFalse(violations.isEmpty());
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("imageUrl")));
     }
+
+    @Test
+    @DisplayName("Should be equal when all fields match")
+    void shouldBeEqualWhenAllFieldsMatch() {
+        UUID id = UUID.randomUUID();
+        ProductItemOrdered item1 = new ProductItemOrdered(id, "Green Apple", "http://example.com/apple.jpg");
+        ProductItemOrdered item2 = new ProductItemOrdered(id, "Green Apple", "http://example.com/apple.jpg");
+
+        assertTrue(item1.equals(item2));
+        assertTrue(item1.hashCode() == item2.hashCode());
+    }
+
+    @Test
+    @DisplayName("Should not be equal when one field differs")
+    void shouldNotBeEqualWhenFieldsDiffer() {
+        UUID id = UUID.randomUUID();
+        ProductItemOrdered item1 = new ProductItemOrdered(id, "Green Apple", "http://example.com/apple.jpg");
+        ProductItemOrdered item2 = new ProductItemOrdered(id, "Red Apple", "http://example.com/apple.jpg");
+
+        assertFalse(item1.equals(item2));
+        assertFalse(item1.hashCode() == item2.hashCode());
+    }
+
+    @Test
+    @DisplayName("Should be equal to itself")
+    void shouldBeEqualToItself() {
+        ProductItemOrdered item = createValidProductItemOrdered();
+        assertTrue(item.equals(item));
+    }
+
+    @Test
+    @DisplayName("Should not be equal when compared with null")
+    void shouldNotBeEqualToNull() {
+        ProductItemOrdered item = createValidProductItemOrdered();
+        assertFalse(item.equals(null));
+    }
+
+    @Test
+    @DisplayName("Should not be equal when compared to different class")
+    void shouldNotBeEqualToDifferentClass() {
+        ProductItemOrdered item = createValidProductItemOrdered();
+        Object other = new Object();
+        assertFalse(item.equals(other));
+    }
 }
