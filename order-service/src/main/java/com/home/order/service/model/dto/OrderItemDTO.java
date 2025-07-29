@@ -1,10 +1,7 @@
 package com.home.order.service.model.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Builder;
 import lombok.Data;
 
@@ -28,6 +25,7 @@ public class OrderItemDTO {
     private double unitPrice;
     @Schema(description = "Quantity ordered", example = "3")
     @Min(value = 1, message = "Quantity must be at least 1")
+    @NotNull(message = "Quantity must be not null")
     private Integer quantity;
 
 }
