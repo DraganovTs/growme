@@ -4,6 +4,8 @@ import jakarta.annotation.Nonnull;
 import jakarta.persistence.Embeddable;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -13,6 +15,7 @@ import java.util.UUID;
 @Embeddable
 @NoArgsConstructor
 @Getter
+@Builder
 public class ProductItemOrdered {
 
     @NotNull(message = "Product item ID is required")

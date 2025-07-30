@@ -1,5 +1,7 @@
 package com.home.order.service.service.impl;
 
+import com.home.growme.common.module.dto.BasketItemDTO;
+import com.home.growme.common.module.dto.ProductValidationResult;
 import com.home.growme.common.module.events.PaymentIntentResponseEvent;
 import com.home.order.service.exception.*;
 import com.home.order.service.feign.ProductServiceClient;
@@ -23,6 +25,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.ResponseEntity;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -30,7 +33,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.CompletionException;
+import java.util.concurrent.CompletableFuture;
+
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -81,6 +85,16 @@ public class OrderServiceImplTests {
         correlationId = TEST_CORRELATION_ID;
         paymentIntentId = TEST_PAYMENT_INTENT_ID;
         userEmail = TEST_USER_EMAIL;
+        orderService = new OrderServiceImpl(
+                basketRepository,
+                deliveryMethodRepository,
+                productServiceClient,
+                basketMapper,
+                eventPublisherService,
+                orderRepository,
+                orderMapper,
+                ownerService
+        );
     }
 
     private Basket createTestBasket() {
@@ -124,9 +138,9 @@ public class OrderServiceImplTests {
 
     private Order createTestOrder() {
         Address address = createTestAddress();
-        OrderItem orderItem = createTestOrderItem();
+        OrderItem orderItem = createTestOrderItem(null);
 
-        return Order.builder()
+        Order order = Order.builder()
                 .orderId(orderId)
                 .buyerEmail(TEST_USER_EMAIL)
                 .shipToAddress(address)
@@ -137,6 +151,10 @@ public class OrderServiceImplTests {
                 .paymentIntentId(TEST_PAYMENT_INTENT_ID)
                 .orderDate(Instant.now())
                 .build();
+
+
+        orderItem.setOrder(order);
+        return order;
     }
 
     private Address createTestAddress() {
@@ -150,20 +168,31 @@ public class OrderServiceImplTests {
                 .build();
     }
 
-    private OrderItem createTestOrderItem() {
+    private OrderItem createTestOrderItem(Order order) {
+        ProductItemOrdered productItemOrdered = createTestProductItemOrdered();
         return OrderItem.builder()
                 .orderItemId(UUID.randomUUID())
-                .productId("product-1")
+                .itemOrdered(productItemOrdered)
                 .quantity(TEST_ITEM_QUANTITY)
                 .price(TEST_ITEM_PRICE)
+                .order(order)
                 .build();
     }
 
     private Owner createTestOwner() {
         return Owner.builder()
                 .ownerId(UUID.randomUUID())
-                .email(TEST_USER_EMAIL)
+                .ownerName("ownerName")
+                .ownerEmail(TEST_USER_EMAIL)
                 .orders(new ArrayList<>(List.of(testOrder)))
+                .build();
+    }
+
+    private ProductItemOrdered createTestProductItemOrdered() {
+        return ProductItemOrdered.builder()
+                .productItemId(UUID.randomUUID())
+                .productName("product-1")
+                .imageUrl("image-1")
                 .build();
     }
 
@@ -176,18 +205,40 @@ public class OrderServiceImplTests {
         @DisplayName("Should create new payment intent successfully")
         void shouldCreateNewPaymentIntentSuccessfully() {
             testBasket.setPaymentIntentId(null);
+
+            // 1. Mock repository
             when(basketRepository.findById(basketId)).thenReturn(Optional.of(testBasket));
+            when(basketRepository.save(any())).thenReturn(testBasket);
+
+            // 2. Mock productServiceClient (THIS WAS MISSING)
             when(productServiceClient.validateBasketItems(any(), any()))
-                .thenReturn(List.of(new ProductServiceClient.ValidationResult("product-1", true)));
-            when(deliveryMethodRepository.findById(1)).thenReturn(Optional.of(testDeliveryMethod));
+                    .thenReturn(ResponseEntity.ok(List.of(
+                            new ProductValidationResult(
+                                    testBasket.getItems().get(0).getProductId(),
+                                    true,
+                                    "Valid"
+                            )
+                    )));
 
-            PaymentIntentResponseEvent response = new PaymentIntentResponseEvent(paymentIntentId, "client-secret");
-            when(eventPublisherService.sendCreatePaymentIntent(basketId, BigDecimal.valueOf(27.97))).thenReturn(response);
+            // 3. Mock delivery method
+            when(deliveryMethodRepository.findById(TEST_DELIVERY_METHOD_ID))
+                    .thenReturn(Optional.of(testDeliveryMethod));
 
+            // 4. Mock payment service response
+            PaymentIntentResponseEvent response = new PaymentIntentResponseEvent(
+                    correlationId, paymentIntentId, "client-secret", "completed"
+            );
+            when(eventPublisherService.sendCreatePaymentIntent(basketId, BigDecimal.valueOf(27.97)))
+                    .thenReturn(CompletableFuture.completedFuture(response));
+
+            // 5. Call method under test
             Basket result = orderService.createOrUpdatePaymentIntent(basketId, correlationId);
 
+            // 6. Assertions
             assertEquals(paymentIntentId, result.getPaymentIntentId());
             assertEquals("client-secret", result.getClientSecret());
+
+            // 7. Verify
             verify(basketRepository).save(testBasket);
         }
 
@@ -195,18 +246,36 @@ public class OrderServiceImplTests {
         @DisplayName("Should update existing payment intent successfully")
         void shouldUpdateExistingPaymentIntentSuccessfully() {
             testBasket.setPaymentIntentId(paymentIntentId);
-            when(basketRepository.findById(basketId)).thenReturn(Optional.of(testBasket));
-            when(productServiceClient.validateBasketItems(any(), any()))
-                .thenReturn(List.of(new ProductServiceClient.ValidationResult("product-1", true)));
-            when(deliveryMethodRepository.findById(1)).thenReturn(Optional.of(testDeliveryMethod));
 
-            PaymentIntentResponseEvent response = new PaymentIntentResponseEvent("updated-intent-id", "updated-secret");
-            when(eventPublisherService.sendUpdatePaymentIntent(basketId, BigDecimal.valueOf(27.97))).thenReturn(response);
+            when(basketRepository.findById(basketId)).thenReturn(Optional.of(testBasket));
+            when(basketRepository.save(any())).thenReturn(testBasket);
+
+            when(productServiceClient.validateBasketItems(any(), any()))
+                    .thenReturn(ResponseEntity.ok(List.of(
+                            new ProductValidationResult(
+                                    testBasket.getItems().get(0).getProductId(),
+                                    true,
+                                    "Valid"
+                            )
+                    )));
+
+            when(deliveryMethodRepository.findById(TEST_DELIVERY_METHOD_ID))
+                    .thenReturn(Optional.of(testDeliveryMethod));
+
+            PaymentIntentResponseEvent response = new PaymentIntentResponseEvent(
+                    correlationId,
+                    "updated-intent-id",
+                    "updated-secret",
+                    "completed"
+            );
+            when(eventPublisherService.sendUpdatePaymentIntent(basketId, BigDecimal.valueOf(27.97)))
+                    .thenReturn(CompletableFuture.completedFuture(response));
 
             Basket result = orderService.createOrUpdatePaymentIntent(basketId, correlationId);
 
             assertEquals("updated-intent-id", result.getPaymentIntentId());
             assertEquals("updated-secret", result.getClientSecret());
+
             verify(basketRepository).save(testBasket);
         }
 
@@ -223,7 +292,11 @@ public class OrderServiceImplTests {
         @DisplayName("Should throw InvalidProductException when basket contains invalid items")
         void shouldThrowInvalidProductExceptionWhenBasketContainsInvalidItems() {
             when(basketRepository.findById(basketId)).thenReturn(Optional.of(testBasket));
-            when(productServiceClient.validateBasketItems(any(), any())).thenReturn(List.of(new ProductServiceClient.ValidationResult("product-1", false)));
+
+            when(productServiceClient.validateBasketItems(any(), any()))
+                    .thenReturn(ResponseEntity.ok(List.of(
+                            new ProductValidationResult(testBasket.getItems().get(0).getProductId(), false, "Invalid")
+                    )));
 
             assertThrows(InvalidProductException.class,
                     () -> orderService.createOrUpdatePaymentIntent(basketId, correlationId));
@@ -233,10 +306,17 @@ public class OrderServiceImplTests {
         @DisplayName("Should throw PaymentProcessingException when payment intent creation fails")
         void shouldThrowPaymentProcessingExceptionWhenPaymentIntentCreationFails() {
             when(basketRepository.findById(basketId)).thenReturn(Optional.of(testBasket));
+
             when(productServiceClient.validateBasketItems(any(), any()))
-                .thenReturn(List.of(new ProductServiceClient.ValidationResult("product-1", true)));
-            when(deliveryMethodRepository.findById(1)).thenReturn(Optional.of(testDeliveryMethod));
-            when(eventPublisherService.sendCreatePaymentIntent(any(), any())).thenThrow(new CompletionException("Payment failed", new RuntimeException()));
+                    .thenReturn(ResponseEntity.ok(List.of(
+                            new ProductValidationResult(testBasket.getItems().get(0).getProductId(), true, "Valid")
+                    )));
+
+            when(deliveryMethodRepository.findById(TEST_DELIVERY_METHOD_ID))
+                    .thenReturn(Optional.of(testDeliveryMethod));
+
+            when(eventPublisherService.sendCreatePaymentIntent(any(), any()))
+                    .thenReturn(CompletableFuture.failedFuture(new RuntimeException("Payment failed")));
 
             assertThrows(PaymentProcessingException.class,
                     () -> orderService.createOrUpdatePaymentIntent(basketId, correlationId));
@@ -250,16 +330,43 @@ public class OrderServiceImplTests {
         @Test
         @DisplayName("Should create new order successfully")
         void shouldCreateNewOrderSuccessfully() {
+
             testBasket.setPaymentIntentId(paymentIntentId);
+            testOrder.setOwner(testOwner);
+            testOwner.setOrders(List.of(testOrder));
+
+
+            BasketItem basketItem = BasketItem.builder()
+                    .productId(UUID.randomUUID())
+                    .quantity(2)
+                    .price(BigDecimal.valueOf(10.99))
+                    .build();
+            testBasket.setItems(List.of(basketItem));
+
+
             when(basketRepository.findById(basketId)).thenReturn(Optional.of(testBasket));
+
+
+            List<BasketItemDTO> expectedDtos = List.of(
+                    new BasketItemDTO(basketItem.getProductId(), basketItem.getQuantity(),basketItem.getPrice())
+            );
+
+
             when(orderRepository.findByPaymentIntentId(paymentIntentId)).thenReturn(Optional.empty());
-            when(deliveryMethodRepository.findById(1)).thenReturn(Optional.of(testDeliveryMethod));
+            when(deliveryMethodRepository.findById(TEST_DELIVERY_METHOD_ID))
+                    .thenReturn(Optional.of(testDeliveryMethod));
             when(ownerService.findOwnerByEmail(userEmail)).thenReturn(testOwner);
             when(orderRepository.save(any())).thenReturn(testOrder);
 
+
             Order result = orderService.createOrUpdateOrder(testOrderDTO, correlationId);
 
+
             assertNotNull(result);
+
+            verify(basketRepository).findById(basketId);
+            verify(deliveryMethodRepository).findById(TEST_DELIVERY_METHOD_ID);
+            verify(ownerService).findOwnerByEmail(userEmail);
             verify(orderRepository).save(any());
             verify(eventPublisherService).publishCompletedOrder(any());
         }
@@ -267,8 +374,11 @@ public class OrderServiceImplTests {
         @Test
         @DisplayName("Should throw IllegalStateException when order already exists")
         void shouldThrowIllegalStateExceptionWhenOrderAlreadyExists() {
+
+            testBasket.setPaymentIntentId(paymentIntentId);
             when(basketRepository.findById(basketId)).thenReturn(Optional.of(testBasket));
             when(orderRepository.findByPaymentIntentId(paymentIntentId)).thenReturn(Optional.of(testOrder));
+
 
             assertThrows(IllegalStateException.class,
                     () -> orderService.createOrUpdateOrder(testOrderDTO, correlationId));
@@ -286,9 +396,13 @@ public class OrderServiceImplTests {
         @Test
         @DisplayName("Should throw DeliveryMethodNotFoundException when delivery method not found")
         void shouldThrowDeliveryMethodNotFoundExceptionWhenDeliveryMethodNotFound() {
+
+            testBasket.setPaymentIntentId(paymentIntentId);
             when(basketRepository.findById(basketId)).thenReturn(Optional.of(testBasket));
             when(orderRepository.findByPaymentIntentId(paymentIntentId)).thenReturn(Optional.empty());
-            when(deliveryMethodRepository.findById(1)).thenReturn(Optional.empty());
+            when(deliveryMethodRepository.findById(TEST_DELIVERY_METHOD_ID)).thenReturn(Optional.empty());
+
+
 
             assertThrows(DeliveryMethodNotFoundException.class,
                     () -> orderService.createOrUpdateOrder(testOrderDTO, correlationId));
@@ -359,10 +473,10 @@ public class OrderServiceImplTests {
         void shouldUpdateOrderStatusSuccessfully() {
             when(orderRepository.findByPaymentIntentId(paymentIntentId)).thenReturn(Optional.of(testOrder));
 
-            assertDoesNotThrow(() -> orderService.updateOrderStatusByPaymentIntentId(paymentIntentId, OrderStatus.COMPLETED));
+            assertDoesNotThrow(() -> orderService.updateOrderStatusByPaymentIntentId(paymentIntentId, OrderStatus.PAYMENT_RECEIVED));
 
             verify(orderRepository).save(testOrder);
-            assertEquals(OrderStatus.COMPLETED, testOrder.getStatus());
+            assertEquals(OrderStatus.PAYMENT_RECEIVED, testOrder.getStatus());
         }
 
         @Test
@@ -371,7 +485,7 @@ public class OrderServiceImplTests {
             when(orderRepository.findByPaymentIntentId(paymentIntentId)).thenReturn(Optional.empty());
 
             assertThrows(OrderNotfoundException.class,
-                    () -> orderService.updateOrderStatusByPaymentIntentId(paymentIntentId, OrderStatus.COMPLETED));
+                    () -> orderService.updateOrderStatusByPaymentIntentId(paymentIntentId, OrderStatus.PAYMENT_RECEIVED));
         }
     }
 }
