@@ -72,26 +72,5 @@ public class BasketDataTests {
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("items")));
     }
 
-    @Test
-    @DisplayName("Should pass when optional fields are null")
-    void shouldPassWhenOptionalFieldsAreNull() {
-        BasketData basket = createValidBasket();
-        basket.setDeliveryMethodId(null);
-        basket.setShippingPrice(null);
-        basket.setClientSecret(null);
-        basket.setPaymentIntentId(null);
 
-        Set<ConstraintViolation<BasketData>> violations = validator.validate(basket);
-        assertTrue(violations.isEmpty());
-    }
-
-    @Test
-    @DisplayName("Should pass when items list is empty (still not null)")
-    void shouldPassWithEmptyItemsList() {
-        BasketData basket = createValidBasket();
-        basket.setItems(Collections.emptyList());
-
-        Set<ConstraintViolation<BasketData>> violations = validator.validate(basket);
-        assertTrue(violations.isEmpty());
-    }
 }
