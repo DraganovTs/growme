@@ -124,7 +124,7 @@ public class CorrelationServiceImpl implements CorrelationService {
                 .orElse(null);
     }
 
-    private void updateBasketPaymentIntent(String basketId, String paymentIntentId) {
+    protected void updateBasketPaymentIntent(String basketId, String paymentIntentId) {
         try {
             Basket basket = basketRepository.findById(basketId)
                     .orElseThrow(() -> new BasketNotFoundException(basketId));

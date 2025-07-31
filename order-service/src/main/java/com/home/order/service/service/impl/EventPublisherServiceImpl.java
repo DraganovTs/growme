@@ -2,7 +2,6 @@ package com.home.order.service.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.home.growme.common.module.dto.OrderItemDTO;
 import com.home.growme.common.module.dto.UserInfo;
 import com.home.growme.common.module.events.OrderCompletedEvent;
 import com.home.growme.common.module.events.OrderConfirmationEmailEvent;
@@ -18,10 +17,8 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import static com.home.growme.common.module.config.kafka.topic.KafkaTopics.*;
 

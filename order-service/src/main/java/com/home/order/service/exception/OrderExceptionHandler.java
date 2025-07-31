@@ -5,9 +5,14 @@ import com.home.growme.common.module.exceptions.ErrorResponseDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
+
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 
 @Slf4j
@@ -60,5 +65,25 @@ public class OrderExceptionHandler extends BaseExceptionHandler {
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 "ORDER_SERVICE_ERROR",
                 "An unexpected error occurred in order service");
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponseDTO> handleValidationException(MethodArgumentNotValidException ex, WebRequest request) {
+        Map<String, String> fieldErrors = new HashMap<>();
+
+        ex.getBindingResult().getFieldErrors().forEach(error ->
+                fieldErrors.put(error.getField(), error.getDefaultMessage())
+        );
+
+        String message = "Validation failed for one or more fields";
+        ErrorResponseDTO errorResponse = ErrorResponseDTO.builder()
+                .apiPath(request.getDescription(false).replace("uri=", ""))
+                .status(HttpStatus.BAD_REQUEST)
+                .errorCode("VALIDATION_ERROR")
+                .message(message)
+                .timestamp(LocalDateTime.now())
+                .build();
+
+        return ResponseEntity.badRequest().body(errorResponse);
     }
 }

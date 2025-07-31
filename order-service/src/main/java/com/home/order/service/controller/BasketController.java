@@ -48,7 +48,7 @@ public class BasketController {
                     content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class)))
     })
     @PostMapping
-    public ResponseEntity<BasketData> createOrUpdateBasket(@Valid @RequestBody BasketData basketData){
+    public ResponseEntity<BasketData> createOrUpdateBasket(@RequestBody @Valid BasketData basketData){
         BasketData savedBasked = basketService.createOrUpdateBasket(basketData);
         return ResponseEntity.ok(savedBasked);
     }
