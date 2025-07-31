@@ -89,7 +89,7 @@ public class EventPublisherServiceImpl implements EventPublisherService {
                     }).exceptionally(ex -> {
                         log.error("Publish failed for event: {}", event, ex);
                         // TODO: Add error metrics
-                        throw new EventPublishingException("Failed to publish role assignment");
+                        return null;
 
                     });
         } catch (Exception e) {
