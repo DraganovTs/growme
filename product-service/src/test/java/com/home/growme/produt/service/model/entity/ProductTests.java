@@ -20,7 +20,6 @@ public class ProductTests {
     private static final String VALID_DESCRIPTION = "Valid description";
     private static final BigDecimal VALID_PRICE = new BigDecimal("10.00");
     private static final int MAX_NAME_LENGTH = 30;
-    private static final int MAX_DESCRIPTION_LENGTH = 500;
 
     private Validator validator;
     private Category testCategory;
