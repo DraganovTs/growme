@@ -53,6 +53,7 @@ public class Product {
     private Date lastUpdated;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "category_id", nullable = false)
+    @NotNull(message = "category cannot be null")
     private Category category;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "owner_id")
