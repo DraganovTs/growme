@@ -137,4 +137,25 @@ public class ProductTests {
                     () -> product.reduceStock(5));
         }
     }
+
+    @Nested
+    @DisplayName("Generate ID Tests")
+    class GenerateIdTests {
+        @Test
+        @DisplayName("Should generate UUID if productId is null")
+        void shouldGenerateUUIDIfProductIdIsNull() {
+            Product product = validProductBuilder().productId(null).build();
+            product.generateId();
+            assertNotNull(product.getProductId());
+        }
+
+        @Test
+        @DisplayName("Should not overwrite existing productId")
+        void shouldNotOverwriteExistingProductId() {
+            UUID existingId = UUID.randomUUID();
+            Product product = validProductBuilder().productId(existingId).build();
+            product.generateId();
+            assertEquals(existingId, product.getProductId());
+        }
+    }
 }
