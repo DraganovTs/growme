@@ -29,12 +29,13 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Category updateCategory(UUID categoryId, CategoryDTO categoryDto) {
+        //TODO
         return null;
     }
 
     @Override
     public void deleteCategory(UUID categoryId) {
-
+        //TODO
     }
 
     @Override
@@ -45,5 +46,6 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public List<CategoryWithProductsDTO> getCategoriesProducts() {
         return List.of();
+        //TODO
     }
 }

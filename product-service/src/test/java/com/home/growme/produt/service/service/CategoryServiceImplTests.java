@@ -108,5 +108,108 @@ public class CategoryServiceImplTests {
         }
     }
 
+    @Nested
+    class GetAllCategoriesTests {
+        @Test
+        @DisplayName("Should return list of category DTOs")
+        void shouldReturnAllCategories() {
+            List<Category> categories = List.of(category);
+            when(categoryRepository.findAll()).thenReturn(categories);
+            when(categoryMapper.mapCategoryToCategoryDTO(any(Category.class))).thenReturn(categoryDTO);
+
+            List<CategoryDTO> result = categoryService.getAllCategories();
+
+            assertEquals(1, result.size());
+            assertEquals(TEST_CATEGORY_NAME, result.get(0).getCategoryName());
+            verify(categoryRepository).findAll();
+            verify(categoryMapper).mapCategoryToCategoryDTO(category);
+        }
+
+        @Test
+        @DisplayName("Should return empty list when no categories found")
+        void shouldReturnEmptyListWhenNoCategoriesExist() {
+            when(categoryRepository.findAll()).thenReturn(List.of());
+
+            List<CategoryDTO> result = categoryService.getAllCategories();
+
+            assertTrue(result.isEmpty());
+            verify(categoryRepository).findAll();
+            verify(categoryMapper, never()).mapCategoryToCategoryDTO(any());
+        }
+    }
+
+    @Nested
+    class GetCategoriesProductsTests {
+        @Test
+        @DisplayName("Should return empty list as default implementation")
+        void shouldReturnEmptyListOfCategoryWithProducts() {
+            List<?> result = categoryService.getCategoriesProducts();
+            assertNotNull(result);
+            assertTrue(result.isEmpty());
+        }
+    }
+
+    @Nested
+    class DefensiveTests {
+        @Test
+        @DisplayName("Should throw NullPointerException if mapping DTO to entity fails")
+        void shouldThrowWhenCategoryMappingFails() {
+            when(categoryMapper.mapCategoryDTOToCategory(any())).thenThrow(new NullPointerException("Mapper failed"));
+
+            assertThrows(NullPointerException.class, () -> categoryService.createCategory(categoryDTO));
+        }
+    }
+//
+//    @Nested
+//    class UpdateCategoryTests {
+//        @Test
+//        @DisplayName("Should update existing category")
+//        void shouldUpdateCategory() {
+//            when(categoryRepository.findById(categoryId)).thenReturn(java.util.Optional.of(category));
+//            when(categoryRepository.save(any(Category.class))).thenReturn(category);
+//
+//            Category updated = categoryService.updateCategory(categoryId, categoryDTO);
+//
+//            assertEquals(TEST_CATEGORY_NAME, updated.getCategoryName());
+//            verify(categoryRepository).findById(categoryId);
+//            verify(categoryRepository).save(category);
+//        }
+//
+//        @Test
+//        @DisplayName("Should throw if category to update not found")
+//        void shouldThrowWhenCategoryNotFoundForUpdate() {
+//            when(categoryRepository.findById(categoryId)).thenReturn(java.util.Optional.empty());
+//
+//            Exception ex = assertThrows(IllegalArgumentException.class, () -> categoryService.updateCategory(categoryId, categoryDTO));
+//
+//            assertTrue(ex.getMessage().contains("Category not found"));
+//            verify(categoryRepository).findById(categoryId);
+//            verify(categoryRepository, never()).save(any());
+//        }
+//    }
+//
+//    @Nested
+//    class DeleteCategoryTests {
+//        @Test
+//        @DisplayName("Should delete category when it exists")
+//        void shouldDeleteCategory() {
+//            when(categoryRepository.existsById(categoryId)).thenReturn(true);
+//
+//            categoryService.deleteCategory(categoryId);
+//
+//            verify(categoryRepository).deleteById(categoryId);
+//        }
+//
+//        @Test
+//        @DisplayName("Should throw if category to delete not found")
+//        void shouldThrowWhenCategoryNotFoundForDelete() {
+//            when(categoryRepository.existsById(categoryId)).thenReturn(false);
+//
+//            Exception ex = assertThrows(IllegalArgumentException.class, () -> categoryService.deleteCategory(categoryId));
+//
+//            assertTrue(ex.getMessage().contains("Category not found"));
+//            verify(categoryRepository, never()).deleteById(any());
+//        }
+//    }
 
 }
