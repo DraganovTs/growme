@@ -2,7 +2,7 @@ package com.home.growme.produt.service.controller;
 
 import com.home.growme.common.module.exceptions.ErrorResponseDTO;
 import com.home.growme.produt.service.model.dto.CategoryDTO;
-import com.home.growme.produt.service.model.dto.CategoryWhitProductsDTO;
+import com.home.growme.produt.service.model.dto.CategoryWithProductsDTO;
 import com.home.growme.produt.service.service.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -66,13 +66,13 @@ public class CategoryController {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "List of categories with products retrieved successfully",
-                    content = @Content(schema = @Schema(implementation = CategoryWhitProductsDTO.class))),
+                    content = @Content(schema = @Schema(implementation = CategoryWithProductsDTO.class))),
             @ApiResponse(responseCode = "500", description = "Server error", content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class)))
     })
     @GetMapping("/allCategoriesWhitProducts")
-    public ResponseEntity<List<CategoryWhitProductsDTO>> findAllWithProducts() {
-        List<CategoryWhitProductsDTO> categoryWhitProductsDTOList = categoryService.getCategoriesProducts();
-        return ResponseEntity.ok(categoryWhitProductsDTOList);
+    public ResponseEntity<List<CategoryWithProductsDTO>> findAllWithProducts() {
+        List<CategoryWithProductsDTO> categoryWithProductsDTOList = categoryService.getCategoriesProducts();
+        return ResponseEntity.ok(categoryWithProductsDTOList);
     }
 
     @Operation(

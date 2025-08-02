@@ -2,7 +2,7 @@ package com.home.growme.produt.service.service.impl;
 
 import com.home.growme.produt.service.mapper.CategoryMapper;
 import com.home.growme.produt.service.model.dto.CategoryDTO;
-import com.home.growme.produt.service.model.dto.CategoryWhitProductsDTO;
+import com.home.growme.produt.service.model.dto.CategoryWithProductsDTO;
 import com.home.growme.produt.service.model.entity.Category;
 import com.home.growme.produt.service.repository.CategoryRepository;
 import com.home.growme.produt.service.service.CategoryService;
@@ -43,7 +43,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public List<CategoryWhitProductsDTO> getCategoriesProducts() {
+    public List<CategoryWithProductsDTO> getCategoriesProducts() {
         return List.of();
     }
 }

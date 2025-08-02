@@ -1,7 +1,7 @@
 package com.home.growme.produt.service.service;
 
 import com.home.growme.produt.service.model.dto.CategoryDTO;
-import com.home.growme.produt.service.model.dto.CategoryWhitProductsDTO;
+import com.home.growme.produt.service.model.dto.CategoryWithProductsDTO;
 import com.home.growme.produt.service.model.entity.Category;
 
 import java.util.List;
@@ -18,6 +18,6 @@ public interface CategoryService {
     Category updateCategory(UUID categoryId, CategoryDTO categoryDto);
     void deleteCategory(UUID categoryId);
     List<CategoryDTO> getAllCategories();
-    List<CategoryWhitProductsDTO> getCategoriesProducts();
+    List<CategoryWithProductsDTO> getCategoriesProducts();
 
 }
