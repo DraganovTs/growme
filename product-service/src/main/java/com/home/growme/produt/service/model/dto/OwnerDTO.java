@@ -3,8 +3,10 @@ package com.home.growme.produt.service.model.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 /**
@@ -13,6 +15,8 @@ import java.util.UUID;
  */
 @Schema(name = "Owner", description = "Represents the product owner or seller")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class OwnerDTO {
     @Schema(

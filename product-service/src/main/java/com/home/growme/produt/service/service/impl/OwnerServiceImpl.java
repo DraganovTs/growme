@@ -33,7 +33,7 @@ public class OwnerServiceImpl implements OwnerService {
         List<Owner> owners = ownerRepository.findAll();
 
         return owners.stream()
-                .map(productMapper::maOwnerToOwnerDTO).limit(8).collect(Collectors.toList());
+                .map(productMapper::mapOwnerToOwnerDTO).limit(8).collect(Collectors.toList());
     }
 
     @Override
@@ -50,7 +50,7 @@ public class OwnerServiceImpl implements OwnerService {
         Pageable topEight = PageRequest.of(0, 8); // Get top 8 owners
         return ownerRepository.findAllOrderByProductCountDesc(topEight)
                 .stream()
-                .map(productMapper::maOwnerToOwnerDTO)
+                .map(productMapper::mapOwnerToOwnerDTO)
                 .collect(Collectors.toList());
     }
 }

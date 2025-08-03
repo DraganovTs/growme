@@ -1,6 +1,5 @@
 package com.home.growme.produt.service.mapper;
 
-import com.home.growme.common.module.dto.ProductInfo;
 import com.home.growme.common.module.events.UserCreatedEvent;
 import com.home.growme.produt.service.model.dto.OwnerDTO;
 import com.home.growme.produt.service.model.dto.ProductRequestDTO;
@@ -12,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.Optional;
 import java.util.UUID;
 
 
@@ -74,7 +72,7 @@ public class ProductMapper {
     }
 
 
-    public OwnerDTO maOwnerToOwnerDTO(Owner owner) {
+    public OwnerDTO mapOwnerToOwnerDTO(Owner owner) {
         return OwnerDTO.builder()
                 .ownerId(owner.getOwnerId())
                 .ownerName(owner.getOwnerName())
