@@ -1,0 +1,16 @@
+spring:
+  cloud:
+    config:
+      enabled: false
+  kafka:
+    listener:
+      auto-startup: false
+
+pagination:
+  page:
+    size:
+      default: 5
+
+app:
+  upload:
+    dir: target/test-uploads

@@ -1,4 +1,4 @@
-package com.home.growme.produt.service.service;
+package com.home.growme.produt.service.service.impl;
 
 
 import com.home.growme.produt.service.mapper.CategoryMapper;
@@ -7,7 +7,6 @@ import com.home.growme.produt.service.model.entity.Category;
 import com.home.growme.produt.service.model.entity.Owner;
 import com.home.growme.produt.service.model.entity.Product;
 import com.home.growme.produt.service.repository.CategoryRepository;
-import com.home.growme.produt.service.service.impl.CategoryServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

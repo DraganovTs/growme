@@ -1,4 +1,4 @@
-package com.home.growme.produt.service.service;
+package com.home.growme.produt.service.service.impl;
 
 import com.home.growme.common.module.events.UserCreatedEvent;
 import com.home.growme.produt.service.exception.OwnerAlreadyExistsException;
@@ -6,7 +6,6 @@ import com.home.growme.produt.service.mapper.ProductMapper;
 import com.home.growme.produt.service.model.dto.OwnerDTO;
 import com.home.growme.produt.service.model.entity.Owner;
 import com.home.growme.produt.service.repository.OwnerRepository;
-import com.home.growme.produt.service.service.impl.OwnerServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
