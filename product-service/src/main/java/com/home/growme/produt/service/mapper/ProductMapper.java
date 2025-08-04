@@ -19,7 +19,7 @@ import java.util.UUID;
 public class ProductMapper {
 
 
-    public static Owner mapUserCreatedEventToOwner(UserCreatedEvent event) {
+    public  Owner mapUserCreatedEventToOwner(UserCreatedEvent event) {
         return Owner.builder()
                 .ownerId(UUID.fromString(event.getUserId()))
                 .ownerName(event.getUserName())

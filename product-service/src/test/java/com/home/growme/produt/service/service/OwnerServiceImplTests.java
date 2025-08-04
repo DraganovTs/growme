@@ -27,7 +27,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class OwnerServiceImplTest {
+class OwnerServiceImplTests {
 
     private static final int MAX_OWNERS_LIMIT = 8;
 
@@ -72,10 +72,11 @@ class OwnerServiceImplTest {
 
 
         userCreatedEvent = new UserCreatedEvent(
-                userId1.toString(),
+                UUID.randomUUID().toString(),
                 "John Doe",
                 "john@example.com"
         );
+
     }
 
     @Test
@@ -102,8 +103,12 @@ class OwnerServiceImplTest {
         // Arrange
         List<Owner> owners = createMultipleOwners(10);
         when(ownerRepository.findAll()).thenReturn(owners);
-        owners.forEach(owner ->
-                when(productMapper.mapOwnerToOwnerDTO(owner)).thenReturn(new OwnerDTO()));
+
+        owners.stream()
+                .limit(MAX_OWNERS_LIMIT)
+                .forEach(owner ->
+                        when(productMapper.mapOwnerToOwnerDTO(owner))
+                                .thenReturn(new OwnerDTO()));
 
         // Act
         List<OwnerDTO> result = ownerService.getAllOwners();
@@ -131,18 +136,22 @@ class OwnerServiceImplTest {
 
     @Test
     void createOwner_shouldThrowOwnerAlreadyExistsException_whenOwnerExists() {
+
         // Arrange
         UUID userId = UUID.fromString(userCreatedEvent.getUserId());
         when(ownerRepository.existsById(userId)).thenReturn(true);
 
         // Act & Assert
-        assertThrows(OwnerAlreadyExistsException.class, () -> {
+        OwnerAlreadyExistsException exception = assertThrows(OwnerAlreadyExistsException.class, () -> {
             ownerService.createOwner(userCreatedEvent);
         });
 
+        // Verify
         verify(ownerRepository).existsById(userId);
-        verify(productMapper, never()).mapUserCreatedEventToOwner(any());
-        verify(ownerRepository, never()).save(any());
+        verify(productMapper, never()).mapUserCreatedEventToOwner(any(UserCreatedEvent.class));
+        verify(ownerRepository, never()).save(any(Owner.class));
+
+        assertNotNull(exception);
     }
 
     @Test

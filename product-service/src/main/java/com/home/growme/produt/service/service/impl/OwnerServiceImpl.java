@@ -41,7 +41,7 @@ public class OwnerServiceImpl implements OwnerService {
         if (ownerRepository.existsById(UUID.fromString(event.getUserId()))) {
             throw new OwnerAlreadyExistsException(event.getUserId());
         }
-        Owner owner = ProductMapper.mapUserCreatedEventToOwner(event);
+        Owner owner = productMapper.mapUserCreatedEventToOwner(event);
         ownerRepository.save(owner);
     }
 
