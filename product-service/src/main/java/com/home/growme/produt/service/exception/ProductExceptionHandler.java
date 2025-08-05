@@ -44,5 +44,10 @@ public class ProductExceptionHandler extends BaseExceptionHandler {
         return buildErrorResponse(ex, request, HttpStatus.CONFLICT, "OWNER_EXISTS");
     }
 
+    @ExceptionHandler(CategoryAlreadyExistException.class)
+    public ResponseEntity<ErrorResponseDTO> handleCategoryExist(CategoryAlreadyExistException ex, WebRequest request) {
+        return buildErrorResponse(ex, request, HttpStatus.CONFLICT, "CATEGORY_EXIST");
+    }
+
 
 }

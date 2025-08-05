@@ -1,5 +1,6 @@
 package com.home.growme.produt.service.service.impl;
 
+import com.home.growme.produt.service.exception.CategoryAlreadyExistException;
 import com.home.growme.produt.service.mapper.CategoryMapper;
 import com.home.growme.produt.service.model.dto.CategoryDTO;
 import com.home.growme.produt.service.model.dto.CategoryWithProductsDTO;
@@ -24,6 +25,9 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryDTO createCategory(CategoryDTO categoryDto) {
+        if (categoryRepository.existsCategoryByCategoryName(categoryDto.getCategoryName())) {
+            throw new CategoryAlreadyExistException("Category already exist whit name " + categoryDto.getCategoryName());
+        }
         return categoryMapper.mapCategoryToCategoryDTO(categoryRepository.save(categoryMapper.mapCategoryDTOToCategory(categoryDto)));
     }
 
