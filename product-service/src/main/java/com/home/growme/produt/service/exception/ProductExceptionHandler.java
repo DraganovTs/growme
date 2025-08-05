@@ -49,5 +49,10 @@ public class ProductExceptionHandler extends BaseExceptionHandler {
         return buildErrorResponse(ex, request, HttpStatus.CONFLICT, "CATEGORY_EXIST");
     }
 
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ErrorResponseDTO> handleRuntimeExceptions(RuntimeException ex, WebRequest request) {
+        return buildErrorResponse(ex, request, HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR");
+    }
+
 
 }
