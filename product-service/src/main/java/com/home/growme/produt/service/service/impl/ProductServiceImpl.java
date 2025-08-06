@@ -10,6 +10,7 @@ import com.home.growme.produt.service.exception.OwnerNotFoundException;
 import com.home.growme.produt.service.exception.ProductNotFoundException;
 import com.home.growme.produt.service.exception.StockInsufficientException;
 import com.home.growme.produt.service.mapper.ProductMapper;
+import com.home.growme.produt.service.model.dto.CategoryWithProductsDTO;
 import com.home.growme.produt.service.model.dto.ProductRequestDTO;
 import com.home.growme.produt.service.model.dto.ProductResponseDTO;
 import com.home.growme.produt.service.model.dto.ProductResponseListDTO;
@@ -156,9 +157,34 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<ProductResponseDTO> getProductsByCategory(UUID categoryId) {
-        return List.of();
+    public CategoryWithProductsDTO getProductsByCategory(ProductSpecParams specParams) {
+        if (specParams.getCategoryId() == null) {
+            throw new IllegalArgumentException("Category ID cannot be null");
+        }
+
+        int pageIndex = Optional.ofNullable(specParams.getPageIndex()).orElse(1);
+        int pageSize = Optional.ofNullable(specParams.getPageSize())
+                .map(size -> Math.min(size, specParams.getMaxPageSize()))
+                .orElse(defaultPageSize);
+
+        try {
+            UUID categoryId = UUID.fromString(specParams.getCategoryId());
+            Pageable paging = PageRequest.of(pageIndex - 1, pageSize);
+
+            Page<Product> productPage = productRepository.findAllByCategory_CategoryId(categoryId, paging);
+            Category category = categoryRepository.findCategoryByCategoryId(categoryId)
+                    .orElseThrow(() -> new CategoryNotFoundException("Category not found with ID: " + categoryId));
+
+            return CategoryWithProductsDTO.builder()
+                    .categoryId(categoryId)
+                    .categoryName(category.getCategoryName())
+                    .productResponseDTOList(buildProductResponseListDTO(productPage, pageIndex, pageSize))
+                    .build();
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid category ID format: " + specParams.getCategoryId());
+        }
     }
+
 
     @Override
     public ProductResponseListDTO getProductsByOwner(ProductSpecParams specParams) {

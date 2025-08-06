@@ -4,6 +4,7 @@ import com.home.growme.common.module.dto.BasketItemDTO;
 import com.home.growme.common.module.dto.ProductInfo;
 import com.home.growme.common.module.dto.ProductValidationResult;
 import com.home.growme.common.module.events.OrderCompletedEvent;
+import com.home.growme.produt.service.model.dto.CategoryWithProductsDTO;
 import com.home.growme.produt.service.model.dto.ProductRequestDTO;
 import com.home.growme.produt.service.model.dto.ProductResponseDTO;
 import com.home.growme.produt.service.model.dto.ProductResponseListDTO;
@@ -24,7 +25,7 @@ public interface ProductService {
     ProductResponseDTO createProduct(ProductRequestDTO productRequestDTO);
     ProductResponseDTO updateProduct(String productId, ProductRequestDTO productRequestDTO);
     void deleteProduct(String productId, String ownerId);
-    List<ProductResponseDTO> getProductsByCategory(UUID categoryId);
+    CategoryWithProductsDTO getProductsByCategory(ProductSpecParams specParams);
     ProductResponseListDTO getProductsByOwner(ProductSpecParams specParams);
 
     List<ProductValidationResult> validateProducts(List<BasketItemDTO> basketItems);

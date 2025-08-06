@@ -108,6 +108,14 @@ public class ProductController {
         return ResponseEntity.ok(productResponseDTOList);
     }
 
+
+    @GetMapping("/category/{categoryId}")
+    public ResponseEntity<CategoryWithProductsDTO> getProductsByCategory(@ModelAttribute ProductSpecParams specParams) {
+
+        CategoryWithProductsDTO categoryWithProductsDTO = productService.getProductsByCategory(specParams);
+        return ResponseEntity.ok(categoryWithProductsDTO);
+    }
+
     @Operation(
             summary = "Create a new product",
             description = """
@@ -182,7 +190,7 @@ public class ProductController {
     public ResponseEntity<List<ProductValidationResult>> validateProducts(@RequestHeader("grow-me-correlation-id")
                                                                           String correlationId,
                                                                           @Valid @RequestBody List<BasketItemDTO> basketItems) {
-        log.debug("grow-me-correlation-id found: {}",correlationId);
+        log.debug("grow-me-correlation-id found: {}", correlationId);
         List<ProductValidationResult> results = productService.validateProducts(basketItems);
         return ResponseEntity.ok(results);
     }
@@ -199,7 +207,7 @@ public class ProductController {
     public ResponseEntity<ProductInfo> getProductInfo(@RequestHeader("grow-me-correlation-id")
                                                       String correlationId,
                                                       @PathVariable String productId) {
-        log.debug("grow-me-correlation-id found: {}",correlationId);
+        log.debug("grow-me-correlation-id found: {}", correlationId);
         ProductInfo productInfo = productService.getProductInfo(productId);
         return ResponseEntity.ok(productInfo);
     }
