@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * REST controller for managing product categories in the GrowMe platform.
@@ -24,15 +25,15 @@ import java.util.List;
 @Tag(
         name = "Category Management API",
         description = """
-        Set of REST APIs for managing product categories in the GrowMe platform.
-        Allows operations such as:
-        - Listing all categories
-        - Viewing categories with their associated products
-        - Creating new categories
-        """
+                Set of REST APIs for managing product categories in the GrowMe platform.
+                Allows operations such as:
+                - Listing all categories
+                - Viewing categories with their associated products
+                - Creating new categories
+                """
 )
 @RestController
-@RequestMapping(value = "/api/categories",produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/categories", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CategoryController {
 
     private final CategoryService categoryService;
@@ -90,6 +91,40 @@ public class CategoryController {
     public ResponseEntity<CategoryDTO> createCategory(@Valid @RequestBody CategoryDTO categoryDTO) {
         CategoryDTO createdCategoryDTO = categoryService.createCategory(categoryDTO);
         return ResponseEntity.ok(createdCategoryDTO);
+    }
+
+    @Operation(
+            summary = "Update an existing category",
+            description = "Updates the details of a product category by its ID.",
+            operationId = "updateCategory"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Category updated successfully",
+                    content = @Content(schema = @Schema(implementation = CategoryDTO.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid request body",
+                    content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class))),
+            @ApiResponse(responseCode = "404", description = "Category not found",
+                    content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class)))
+    })
+    @PutMapping("/update/{categoryId}")
+    public ResponseEntity<CategoryDTO> updateCategory(@PathVariable UUID categoryId, @Valid CategoryDTO categoryDTO) {
+        CategoryDTO updatedCategory = categoryService.updateCategory(categoryId, categoryDTO);
+        return ResponseEntity.ok(updatedCategory);
+    }
+    @Operation(
+            summary = "Delete a category",
+            description = "Deletes a product category by its ID.",
+            operationId = "deleteCategory"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Category deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "Category not found",
+                    content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class)))
+    })
+    @DeleteMapping("/{categoryId}")
+    public ResponseEntity<Void> deleteCategory(@PathVariable UUID categoryId) {
+        categoryService.deleteCategory(categoryId);
+        return ResponseEntity.ok().build();
     }
 
 }

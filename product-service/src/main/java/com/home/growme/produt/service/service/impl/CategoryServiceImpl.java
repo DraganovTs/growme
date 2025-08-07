@@ -1,5 +1,6 @@
 package com.home.growme.produt.service.service.impl;
 
+import com.home.growme.common.module.exceptions.CategoryNotFoundException;
 import com.home.growme.produt.service.exception.CategoryAlreadyExistException;
 import com.home.growme.produt.service.mapper.CategoryMapper;
 import com.home.growme.produt.service.model.dto.CategoryDTO;
@@ -8,6 +9,7 @@ import com.home.growme.produt.service.model.entity.Category;
 import com.home.growme.produt.service.repository.CategoryRepository;
 import com.home.growme.produt.service.service.CategoryService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -32,14 +34,26 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Category updateCategory(UUID categoryId, CategoryDTO categoryDto) {
-        //TODO
-        return null;
+    @Transactional
+    public CategoryDTO updateCategory(UUID categoryId, CategoryDTO categoryDto) {
+        Category existingCategory = categoryRepository.findCategoryByCategoryId(categoryId)
+                .orElseThrow(() -> new CategoryNotFoundException("Category not found with ID: " + categoryId));
+
+        Category updatedCategory = categoryMapper.mapCategoryDTOToCategory(categoryDto);
+        updatedCategory.setCategoryId(existingCategory.getCategoryId());
+
+
+        return categoryMapper.mapCategoryToCategoryDTO(categoryRepository.save(updatedCategory));
     }
 
     @Override
+    @Transactional
     public void deleteCategory(UUID categoryId) {
-        //TODO
+        if (!categoryRepository.existsById(categoryId)) {
+            throw new CategoryNotFoundException("Category not found with ID: " + categoryId);
+        }
+
+        categoryRepository.deleteById(categoryId);
     }
 
     @Override
