@@ -185,6 +185,13 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
+    @Override
+    public List<CategoryWithProductsDTO> getCategoriesWithProducts() {
+        List<Category> categories = categoryRepository.findAll();
+        //TODO
+        return List.of();
+    }
+
 
     @Override
     public ProductResponseListDTO getProductsByOwner(ProductSpecParams specParams) {
@@ -260,6 +267,8 @@ public class ProductServiceImpl implements ProductService {
         });
         log.info("Completed order processing for order ID: {}", event.getOrderId());
     }
+
+
 
     private ProductValidationResult validateItem(BasketItemDTO item) {
         Optional<Product> productOptional = productRepository.findById(item.getProductId());

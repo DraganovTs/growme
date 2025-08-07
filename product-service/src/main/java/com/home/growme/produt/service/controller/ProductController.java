@@ -93,6 +93,7 @@ public class ProductController {
         return ResponseEntity.ok(productResponseDTOList);
     }
 
+
     @Operation(
             summary = "Get products by owner",
             description = "Retrieve all products for the currently authenticated owner.",
@@ -114,6 +115,22 @@ public class ProductController {
 
         CategoryWithProductsDTO categoryWithProductsDTO = productService.getProductsByCategory(specParams);
         return ResponseEntity.ok(categoryWithProductsDTO);
+    }
+
+    @Operation(
+            summary = "Get all categories with products",
+            description = "Returns a list of categories along with the products assigned to them.",
+            operationId = "getCategoriesWithProducts"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "List of categories with products retrieved successfully",
+                    content = @Content(schema = @Schema(implementation = CategoryWithProductsDTO.class))),
+            @ApiResponse(responseCode = "500", description = "Server error", content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class)))
+    })
+    @GetMapping("/categories-with-products")
+    public ResponseEntity<List<CategoryWithProductsDTO>> findAllWithProducts() {
+        List<CategoryWithProductsDTO> categoryWithProductsDTOList = productService.getCategoriesWithProducts();
+        return ResponseEntity.ok(categoryWithProductsDTOList);
     }
 
     @Operation(

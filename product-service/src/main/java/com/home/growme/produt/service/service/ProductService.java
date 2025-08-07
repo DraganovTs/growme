@@ -33,4 +33,6 @@ public interface ProductService {
     ProductInfo getProductInfo(String productId);
 
     void completeOrder(OrderCompletedEvent event);
+
+    List<CategoryWithProductsDTO> getCategoriesWithProducts();
 }
