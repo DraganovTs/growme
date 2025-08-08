@@ -1,0 +1,29 @@
+server:
+  port: 8086
+
+spring:
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: true
+        generate_statistics: true
+  sql:
+    init:
+      mode: never
+  config:
+    activate:
+      on-profile: dev
+    import: configserver:http://localhost:8888
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://localhost:8070/eureka/
