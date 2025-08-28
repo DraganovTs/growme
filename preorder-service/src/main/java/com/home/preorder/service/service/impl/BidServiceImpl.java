@@ -21,7 +21,7 @@ public class BidServiceImpl implements BidService {
         this.bidRepository = bidRepository;
     }
 
-    @Scheduled(cron = "0 0 0 ? * MON")
+    @Scheduled(cron = "0 0 0 ? * TUE")
     @Override
     @Transactional
     public void cleanupExpiredBids() {

@@ -25,5 +25,6 @@ public  class EmailRequestEvent extends Event{
         this.email = email;
         this.type = type;
 
+
     }
 }
