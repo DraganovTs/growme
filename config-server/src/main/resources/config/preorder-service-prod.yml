@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: preorder-service
+  datasource:
+    url: jdbc:mysql://localhost:3306/growmepreorders?useSSL=false&allowPublicKeyRetrieval=true
+    username: ${SQL_DB_USERNAME}
+    password: ${SQL_DB_PASSWORD}
+  kafka:
+    consumer:
+      group-id: preorder-service-group
+pagination:
+  page:
+    size:
+      default: 12
+  config:
+    import: configserver:http://config-server:8888/kafka-config-prod.yml
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://localhost:8070/eureka/

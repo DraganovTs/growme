@@ -1,38 +1,67 @@
-server:
-  port: 8086
-
 spring:
   application:
     name: preorder-service
-  datasource:
-    url: jdbc:mysql://localhost:3306/growmepreorders?useSSL=false&allowPublicKeyRetrieval=true
-    username: ${SQL_DB_USERNAME}
-    password: ${SQL_DB_PASSWORD}
-  jpa:
-    show-sql: true
-    hibernate:
-      ddl-auto: update
-    properties:
-      hibernate:
-        hibernate.dialect: org.hibernate.dialect.MySQLDialect
-        format_sql: true
-        generate_statistics: true
-  sql:
-    init:
-      mode: never
-  kafka:
-    bootstrap-servers: localhost:9091,localhost:9092,localhost:9093
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-      properties:
-        delivery.timeout.ms: 100000
-        request.timeout.ms: 30000
-        max.block.ms: 60000
-    consumer:
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-      properties:
-        spring.json.trusted.packages: "*"
-      group-id: preorder-service-group
+  profiles:
+    active: dev
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  health:
+    readiness-state:
+      enabled: true
+    liveness-state:
+      enabled: true
+  info:
+    env:
+      enabled: true
+
+
+#server:
+#  port: 8086
+#
+#spring:
+#  application:
+#    name: preorder-service
+#  datasource:
+#    url: jdbc:mysql://localhost:3306/growmepreorders?useSSL=false&allowPublicKeyRetrieval=true
+#    username: ${SQL_DB_USERNAME}
+#    password: ${SQL_DB_PASSWORD}
+#  jpa:
+#    show-sql: true
+#    hibernate:
+#      ddl-auto: update
+#    properties:
+#      hibernate:
+#        hibernate.dialect: org.hibernate.dialect.MySQLDialect
+#        format_sql: true
+#        generate_statistics: true
+#  sql:
+#    init:
+#      mode: never
+#  kafka:
+#    bootstrap-servers: localhost:9091,localhost:9092,localhost:9093
+#    producer:
+#      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+#      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+#      properties:
+#        delivery.timeout.ms: 100000
+#        request.timeout.ms: 30000
+#        max.block.ms: 60000
+#    consumer:
+#      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+#      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+#      properties:
+#        spring.json.trusted.packages: "*"
+#      group-id: preorder-service-group
+info:
+  app:
+    name: "preorder-service"
+    description: "Grow-me-preorder-service-application"
+    version: "1.0.0"
