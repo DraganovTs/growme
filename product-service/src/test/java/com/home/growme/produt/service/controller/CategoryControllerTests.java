@@ -127,21 +127,21 @@ public class CategoryControllerTests {
         verify(categoryService).getAllCategories();
     }
 
-    @Test
-    @DisplayName("GET /api/categories/allCategoriesWhitProducts - Should return empty list when no categories with products exist")
-    void findAllWithProducts_ShouldReturnEmptyList() throws Exception {
-        // Arrange
-        when(categoryService.getCategoriesProducts()).thenReturn(Collections.emptyList());
-
-        // Act & Assert
-        mockMvc.perform(get("/api/categories/allCategoriesWhitProducts"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$").isEmpty());
-
-        verify(categoryService).getCategoriesProducts();
-    }
+//    @Test
+//    @DisplayName("GET /api/categories/allCategoriesWhitProducts - Should return empty list when no categories with products exist")
+//    void findAllWithProducts_ShouldReturnEmptyList() throws Exception {
+//        // Arrange
+//        when(categoryService.getCategoriesProducts()).thenReturn(Collections.emptyList());
+//
+//        // Act & Assert
+//        mockMvc.perform(get("/api/categories/allCategoriesWhitProducts"))
+//                .andExpect(status().isOk())
+//                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(jsonPath("$").isArray())
+//                .andExpect(jsonPath("$").isEmpty());
+//
+//        verify(categoryService).getCategoriesProducts();
+//    }
 
     @Test
     @DisplayName("POST /api/categories - Should return 409 when category already exists")

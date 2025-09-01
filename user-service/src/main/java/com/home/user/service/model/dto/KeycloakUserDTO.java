@@ -58,6 +58,5 @@ public class KeycloakUserDTO {
             example = "ACTIVE",
             defaultValue = "PENDING"
     )
-    @NotNull(message = "Account status is required")
     private AccountStatus accountStatus;
 }

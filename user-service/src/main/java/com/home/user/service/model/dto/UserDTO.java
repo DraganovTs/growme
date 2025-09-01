@@ -90,6 +90,5 @@ public class UserDTO {
             implementation = AccountStatus.class,
             defaultValue = "ACTIVE"
     )
-    @NotNull(message = "Account status is required")
     private AccountStatus accountStatus;
 }

@@ -32,7 +32,7 @@ public class KeycloakRoleServiceImpl implements KeycloakRoleService {
             RolesResource rolesResource = getRolesResource();
 
 
-            RoleRepresentation role = rolesResource.get(roleName).toRepresentation();
+            RoleRepresentation role = rolesResource.get(roleName.toUpperCase()).toRepresentation();
             if (role == null) {
                 throw new IllegalArgumentException("Role " + roleName + " does not exist!");
             }

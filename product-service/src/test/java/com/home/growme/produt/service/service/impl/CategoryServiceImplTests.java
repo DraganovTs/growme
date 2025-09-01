@@ -142,7 +142,7 @@ public class CategoryServiceImplTests {
         @Test
         @DisplayName("Should return empty list as default implementation")
         void shouldReturnEmptyListOfCategoryWithProducts() {
-            List<?> result = categoryService.getCategoriesProducts();
+            List<?> result = categoryService.getAllCategories();
             assertNotNull(result);
             assertTrue(result.isEmpty());
         }

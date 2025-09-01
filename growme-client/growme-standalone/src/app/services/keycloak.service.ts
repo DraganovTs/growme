@@ -177,7 +177,10 @@ export class KeycloakService {
       userId: this.keycloak.tokenParsed.sub,
       username: this.keycloak.tokenParsed['preferred_username'],
       email: this.keycloak.tokenParsed['email'],
+      accountStatus: "PENDING"
     };
+
+    console.log('Sync payload:', userData);
 
     return this.http.post(`${environment.userApi}/sync`, userData, {
       observe: 'response'
