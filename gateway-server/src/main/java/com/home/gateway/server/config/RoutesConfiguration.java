@@ -26,7 +26,7 @@ public class RoutesConfiguration {
         return routeLocatorBuilder.routes()
                 // USER-SERVICE
                 .route("user-service", r -> r.path("/growme/users/**")
-                        .filters(f -> f.rewritePath("/growme/users/(?<segment>.*)", "/${segment}")
+                        .filters(f -> f.rewritePath("/growme/users/(?<segment>.*)", "/api/users/${segment}")
                                 .circuitBreaker(config -> config.setName("userServiceCircuitBreaker")
                                         .setFallbackUri("forward:/contactSupport"))
                                 .retry(retryConfig -> retryConfig.setRetries(3)
