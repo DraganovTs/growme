@@ -18,28 +18,38 @@ import java.util.Map;
 @Component
 public class UserInfoForwardingFilter extends AbstractGatewayFilterFactory<UserInfoForwardingFilter.Config> {
 
+    public UserInfoForwardingFilter() {
+        super(Config.class);
+    }
 
     @Override
     public GatewayFilter apply(Config config) {
         return (exchange, chain) -> ReactiveSecurityContextHolder.getContext()
+                .filter(context -> context.getAuthentication() != null)
                 .map(SecurityContext::getAuthentication)
+                .filter(authentication -> authentication.getPrincipal() instanceof Jwt)
                 .map(Authentication::getPrincipal)
                 .cast(Jwt.class)
-                .map(jwt -> addUserHeaders(exchange, jwt))
+                .map(jwt -> addUserHeaders(exchange, jwt, config))
                 .defaultIfEmpty(exchange)
                 .flatMap(chain::filter);
     }
 
-    private ServerWebExchange addUserHeaders(ServerWebExchange exchange, Jwt jwt) {
-        ServerHttpRequest request = exchange.getRequest().mutate()
-                .header("Authorization", "Bearer " + jwt.getTokenValue())
-                .header("X-User-ID", jwt.getSubject())
-                .header("X-User-Name", getClaim(jwt, "preferred_username"))
-                .header("X-User-Email", getClaim(jwt, "email"))
-                .header("X-User-Roles", String.join(",", getRoles(jwt)))
-                .build();
+    private ServerWebExchange addUserHeaders(ServerWebExchange exchange, Jwt jwt, Config config) {
 
+        ServerHttpRequest.Builder requestBuilder = exchange.getRequest().mutate();
+
+        requestBuilder.header("Authorization", "Bearer " + jwt.getTokenValue());
+
+
+        requestBuilder.header("X-User-ID", getClaim(jwt, "sub"));
+        requestBuilder.header("X-User-Name", getClaim(jwt, "preferred_username"));
+        requestBuilder.header("X-User-Email", getClaim(jwt, "email"));
+        requestBuilder.header("X-User-Roles", String.join(",", getRoles(jwt)));
+
+        ServerHttpRequest request = requestBuilder.build();
         return exchange.mutate().request(request).build();
+
     }
 
     private String getClaim(Jwt jwt, String claimName) {
@@ -59,7 +69,7 @@ public class UserInfoForwardingFilter extends AbstractGatewayFilterFactory<UserI
     }
 
 
-    public static class Config{
+    public static class Config {
 
     }
 }

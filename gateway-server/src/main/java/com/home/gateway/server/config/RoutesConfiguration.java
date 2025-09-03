@@ -1,5 +1,6 @@
 package com.home.gateway.server.config;
 
+import com.home.gateway.server.filters.UserInfoForwardingFilter;
 import org.springframework.cloud.gateway.filter.ratelimit.KeyResolver;
 import org.springframework.cloud.gateway.filter.ratelimit.RedisRateLimiter;
 import org.springframework.cloud.gateway.route.RouteLocator;
@@ -19,6 +20,11 @@ public class RoutesConfiguration {
 
     private static final String USER_HEADER = "user";
     private static final String ANONYMOUS_USER = "anonymous";
+    private final UserInfoForwardingFilter userInfoForwardingFilter;
+
+    public RoutesConfiguration(UserInfoForwardingFilter userInfoForwardingFilter) {
+        this.userInfoForwardingFilter = userInfoForwardingFilter;
+    }
 
     @Bean
     public RouteLocator growMeRouteConfig(RouteLocatorBuilder routeLocatorBuilder) {
@@ -26,6 +32,7 @@ public class RoutesConfiguration {
                 // USER-SERVICE
                 .route("user-service", r -> r.path("/growme/users/**")
                         .filters(f -> f.rewritePath("/growme/users/(?<segment>.*)", "/api/users/${segment}")
+                                .filter(userInfoForwardingFilter.apply(new UserInfoForwardingFilter.Config()))
                                 .circuitBreaker(config -> config.setName("userServiceCircuitBreaker")
                                         .setFallbackUri("forward:/contactSupport"))
                                 .retry(retryConfig -> retryConfig.setRetries(3)
