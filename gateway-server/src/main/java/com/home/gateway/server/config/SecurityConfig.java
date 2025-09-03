@@ -20,7 +20,6 @@ public class SecurityConfig {
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
         http
                 .authorizeExchange(exchanges -> exchanges
-
                         .pathMatchers("/actuator/**", "/contactSupport").permitAll()
                         .pathMatchers("/growme/auth/**").permitAll()
                         .anyExchange().authenticated())
