@@ -1,9 +1,11 @@
 package com.home.gateway.server.config;
 
 import org.springframework.cloud.gateway.filter.ratelimit.KeyResolver;
+import org.springframework.context.annotation.Configuration;
 import reactor.core.publisher.Mono;
 
 
+@Configuration
 public class UserKeyResolverConfiguration {
 
     private static final String USER_HEADER = "user";
