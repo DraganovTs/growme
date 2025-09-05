@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 
 
-    @Configuration
+//    @Configuration
 //    @EnableWebFluxSecurity
     public class SecurityConfig {
 

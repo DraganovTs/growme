@@ -16,15 +16,21 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:7080/realms/grow-me
-          jwk-set-uri: http://localhost:7080/realms/grow-me/protocol/openid-connect/certs
+          issuer-uri: # http://localhost:7080/realms/grow-me
+          jwk-set-uri: # http://localhost:7080/realms/grow-me/protocol/openid-connect/certs
 
   config:
     import: optional:configserver:http://localhost:8888
   cloud:
     gateway:
       globalcors:
-        add-to-simple-url-handler-mapping: false
+        cors-configurations:
+          '[/**]':
+            allowed-origin-patterns: "http://localhost:4200/**"
+            allowed-methods: GET,POST,PUT,DELETE,OPTIONS,PATCH
+            allowed-headers: Authorization,Content-Type,Accept,X-Requested-With,Access-Control-Request-Method,Access-Control-Request-Headers
+            allow-credentials: true
+            exposed-headers: Authorization,Content-Disposition
       discovery:
         locator:
           enabled: false

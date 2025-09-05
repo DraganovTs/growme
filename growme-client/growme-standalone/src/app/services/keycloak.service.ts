@@ -212,23 +212,24 @@ async getToken(): Promise<string | null> {
 
     console.log('Sync payload:', userData);
 
-    return this.http.post(`${environment.userApi}/sync`, userData, {
-      observe: 'response'
-    }).pipe(
-      map(response => {
-        if (response.status === 202) {
-          console.log('User sync successful');
-          return;
-        }
-        throw new Error('Unexpected sync response');
-      }),
-      catchError(error => {
-        console.error('User sync failed', error);
-        this.router.navigate(['/register']);
-        return throwError(() => new Error('Sync failed'));
-      })
-    );
-  }
+  return this.http.post(`${environment.userApi}/sync`, userData, {
+    observe: 'response'
+  }).pipe(
+    tap(response => {
+      console.log('Sync response status:', response.status);
+      // 202 ACCEPTED is a SUCCESS status!
+      if (response.status === 202 || response.status === 200 || response.status === 201) {
+        console.log('User synchronized successfully');
+      }
+    }),
+    map(() => undefined), // Convert to Observable<void>
+    catchError(error => {
+      console.error('User synchronization failed:', error);
+      // Don't throw error, just continue
+      return of(undefined);
+    })
+  );
+}
 
   private checkProfileCompletion(): Observable<boolean> {
     const userId = this.getUserId();
