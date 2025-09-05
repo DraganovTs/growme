@@ -23,6 +23,8 @@ spring:
     import: optional:configserver:http://localhost:8888
   cloud:
     gateway:
+      globalcors:
+        add-to-simple-url-handler-mapping: false
       discovery:
         locator:
           enabled: false
