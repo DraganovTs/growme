@@ -21,8 +21,11 @@ public class SecurityConfig {
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
         return http
                 .csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.disable())
-                .authorizeExchange(exchanges -> exchanges.anyExchange().permitAll())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .authorizeExchange(exchanges -> exchanges
+                        .pathMatchers(HttpMethod.OPTIONS).permitAll()
+                        .pathMatchers("/actuator/**","/growme/auth/**").permitAll()
+                        .anyExchange().authenticated())
                 .build();
     }
 
@@ -34,7 +37,10 @@ public class SecurityConfig {
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
         configuration.setExposedHeaders(Arrays.asList("Authorization", "Content-Disposition"));
-        configuration.setMaxAge(3600L); // 1 hour
+        configuration.setMaxAge(3600L);
+
+        System.out.println("CORS Configuration: " + configuration.getAllowedOrigins());
+
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
