@@ -1,5 +1,5 @@
 import { Injectable, Inject, PLATFORM_ID, NgZone } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, from, of, throwError } from 'rxjs';
 import { catchError, map, switchMap, tap, filter, take } from 'rxjs/operators';
@@ -198,37 +198,36 @@ async getToken(): Promise<string | null> {
     return userRoles.some(role => requiredRoles.includes(role.toUpperCase()));
   }
 
-  private syncUserWithBackend(): Observable<void> {
+private syncUserWithBackend(): Observable<void> {
     if (!this.keycloak?.tokenParsed) {
-      console.warn("No Keycloak token parsed, skipping sync.");
-      return of(undefined);
+        console.warn("No Keycloak token parsed, skipping sync.");
+        return of(undefined);
     }
 
     const userData = {
-      userId: this.keycloak.tokenParsed.sub,
-      username: this.keycloak.tokenParsed['preferred_username'],
-      email: this.keycloak.tokenParsed['email'],
+        userId: this.keycloak.tokenParsed.sub,
+        username: this.keycloak.tokenParsed['preferred_username'],
+        email: this.keycloak.tokenParsed['email'],
     };
 
     console.log('Sync payload:', userData);
 
-  return this.http.post(`${environment.userApi}/sync`, userData, {
-    observe: 'response'
-  }).pipe(
-    tap(response => {
-      console.log('Sync response status:', response.status);
-      // 202 ACCEPTED is a SUCCESS status!
-      if (response.status === 202 || response.status === 200 || response.status === 201) {
-        console.log('User synchronized successfully');
-      }
-    }),
-    map(() => undefined), // Convert to Observable<void>
-    catchError(error => {
-      console.error('User synchronization failed:', error);
-      // Don't throw error, just continue
-      return of(undefined);
-    })
-  );
+    // Let the interceptor handle the Authorization header
+    return this.http.post(`${environment.userApi}/sync`, userData, {
+        observe: 'response'
+    }).pipe(
+        tap(response => {
+            console.log('Sync response status:', response.status);
+            if (response.status === 202 || response.status === 200 || response.status === 201) {
+                console.log('User synchronized successfully');
+            }
+        }),
+        map(() => undefined),
+        catchError(error => {
+            console.error('User synchronization failed:', error);
+            return of(undefined);
+        })
+    );
 }
 
   private checkProfileCompletion(): Observable<boolean> {

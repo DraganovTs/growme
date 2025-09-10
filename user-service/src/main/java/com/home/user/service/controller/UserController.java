@@ -38,7 +38,6 @@ import java.util.UUID;
                 
                 """
 )
-@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping(value = "/api/users", produces = MediaType.APPLICATION_JSON_VALUE)
 public class UserController {

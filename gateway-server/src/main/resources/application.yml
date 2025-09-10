@@ -10,34 +10,30 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: http://localhost:7080/realms/grow-me
-
+  config:
+    import: optional:configserver:http://localhost:8888
   cloud:
     gateway:
-      default-filters:
-        - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials RETAIN_FIRST
-      globalcors:
-        cors-configurations:
-          '[/**]':
-            allowed-origin-patterns:
-              - "http://localhost:4200"
-            allowed-methods:
-              - GET
-              - POST
-              - PUT
-              - DELETE
-              - OPTIONS
-              - PATCH
-            allowed-headers:
-              - Authorization
-              - Content-Type
-              - Accept
-              - X-Requested-With
-              - Access-Control-Request-Method
-              - Access-Control-Request-Headers
-            allow-credentials: true
-            exposed-headers:
-              - Authorization
-              - Content-Disposition
+#      globalcors:
+#        cors-configurations:
+#          '[/**]':
+#            allowed-origins:
+#              - "http://localhost:4200"
+#            allowed-methods:
+#              - GET
+#              - POST
+#              - PUT
+#              - DELETE
+#              - OPTIONS
+#              - PATCH
+#              - HEAD
+#            allowed-headers:
+#              - "*"
+#            allow-credentials: true
+#            max-age: 3600
+#            exposed-headers:
+#              - Authorization
+#              - Content-Disposition
       routes:
         - id: user-service
           uri: http://localhost:8081
