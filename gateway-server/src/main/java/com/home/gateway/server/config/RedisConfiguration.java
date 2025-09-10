@@ -9,6 +9,6 @@ public class RedisConfiguration {
 
 
     public RedisRateLimiter redisRateLimiter() {
-        return new RedisRateLimiter(1, 1, 1);
+        return new RedisRateLimiter(10, 20, 1);
     }
 }

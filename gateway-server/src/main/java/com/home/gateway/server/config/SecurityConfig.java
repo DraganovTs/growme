@@ -25,7 +25,9 @@ public class SecurityConfig {
                 .authorizeExchange(exchanges -> exchanges
                         .pathMatchers(HttpMethod.OPTIONS).permitAll()
                         .pathMatchers("/actuator/**","/growme/auth/**").permitAll()
+                        .pathMatchers("/growme/users/**").permitAll()
                         .anyExchange().authenticated())
+                .oauth2ResourceServer(oauth2 -> oauth2.jwt())
                 .build();
     }
 

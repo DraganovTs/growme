@@ -142,21 +142,47 @@ export class KeycloakService {
   }
 
 async getToken(): Promise<string | null> {
-    // Check if Keycloak instance exists and is authenticated
-    if (!this.keycloak || !this.keycloak.authenticated) {
+    if (!this.keycloak) {
+        console.warn('Keycloak instance not available');
+        return null;
+    }
+    
+    if (!this.keycloak.authenticated) {
+        console.warn('Keycloak not authenticated');
         return null;
     }
     
     try {
-        // Refresh token if needed (within 30 seconds of expiration)
-        await this.keycloak.updateToken(30); 
+        console.log('Before token refresh - token exists:', !!this.keycloak.token);
+        const refreshed = await this.keycloak.updateToken(30);
+        console.log('Token refreshed:', refreshed);
+        console.log('After token refresh - token exists:', !!this.keycloak.token);
         
-        // Return token or null if undefined
+        if (this.keycloak.token) {
+            console.log('Token length:', this.keycloak.token.length);
+            // Decode token to check expiration
+            this.decodeToken(this.keycloak.token);
+        }
+        
         return this.keycloak.token ?? null;
     } catch (error) {
         console.error('Token refresh failed:', error);
         await this.logout();
         return null;
+    }
+}
+
+decodeToken(token: string): void {
+    try {
+        const payload = token.split('.')[1];
+        const decoded = atob(payload.replace(/-/g, '+').replace(/_/g, '/'));
+        const tokenData = JSON.parse(decoded);
+        
+        console.log('Token expiration:', new Date(tokenData.exp * 1000));
+        console.log('Token issued at:', new Date(tokenData.iat * 1000));
+        console.log('Token claims:', Object.keys(tokenData));
+    } catch (error) {
+        console.error('Failed to decode token:', error);
     }
 }
 
@@ -178,16 +204,34 @@ async getToken(): Promise<string | null> {
   }
 
   getUsername(): string | null {
-    return this.keycloak?.tokenParsed?.['preferred_username'] || null;
-  }
+    if (!this.keycloak?.tokenParsed) {
+        console.warn('No token parsed available');
+        return null;
+    }
+    const username = this.keycloak.tokenParsed['preferred_username'];
+    console.log('Retrieved username:', username);
+    return username || null;
+}
 
   getUserId(): string | null {
-    return this.keycloak?.tokenParsed?.sub || localStorage.getItem('userId');
-  }
+    if (!this.keycloak?.tokenParsed) {
+        console.warn('No token parsed available');
+        return localStorage.getItem('userId');
+    }
+    const userId = this.keycloak.tokenParsed.sub;
+    console.log('Retrieved userId:', userId);
+    return userId || localStorage.getItem('userId');
+}
 
   getEmail(): string {
-    return this.keycloak?.tokenParsed?.['email'] ?? '';
-  }
+    if (!this.keycloak?.tokenParsed) {
+        console.warn('No token parsed available');
+        return '';
+    }
+    const email = this.keycloak.tokenParsed['email'];
+    console.log('Retrieved email:', email);
+    return email || '';
+}
 
   hasRole(role: string): boolean {
     return this.keycloak?.tokenParsed?.realm_access?.roles?.includes(role) ?? false;
