@@ -21,23 +21,40 @@ spring:
     import: optional:configserver:http://localhost:8888
   cloud:
     gateway:
-#      globalcors:
-#        cors-configurations:
-#          '[/**]':
-#            allowed-origins:
-#              - "http://localhost:4200"
-#            allowed-methods:
-#              - GET
-#              - POST
-#              - PUT
-#              - DELETE
-#              - OPTIONS
-#              - PATCH
-#              - HEAD
-#            allowed-headers:
-#              - "*"
-#            allow-credentials: true
-#            max-age: 3600
-#            exposed-headers:
-#              - Authorization
-#              - Content-Disposition
+      discovery:
+        locator:
+          enabled: false
+          lower-case-service-id: true
+      httpclient:
+        connect-timeout: 1000
+        response-timeout: 5s
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    gateway:
+      access: unrestricted
+  info:
+    env:
+      enabled: true
+info:
+  app:
+    name: "gateway-server"
+    description: "Grow-me-product-gateway-server"
+    version: "1.0.0"
+logging:
+  level:
+    com:
+      home:
+        gateway:
+          server: DEBUG
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        sliding-window-size: 10
+        permitted-number-of-calls-in-half-open-state: 2
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 10000
