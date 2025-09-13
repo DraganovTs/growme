@@ -46,10 +46,9 @@ info:
     version: "1.0.0"
 logging:
   level:
-    com:
-      home:
-        gateway:
-          server: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.web.server: DEBUG
+    com.home.gateway.server: DEBUG
 resilience4j:
   circuitbreaker:
     configs:
