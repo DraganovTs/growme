@@ -5,20 +5,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
 import org.springframework.security.authentication.event.AbstractAuthenticationFailureEvent;
 import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
-import org.springframework.security.oauth2.core.OAuth2TokenValidator;
-import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
-import org.springframework.security.oauth2.core.OAuth2TokenValidatorResult;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.jwt.JwtValidators;
-import org.springframework.security.oauth2.jwt.NimbusReactiveJwtDecoder;
-import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Component;
-import org.springframework.web.server.WebFilter;
-import org.springframework.web.server.WebFilterChain;
-import org.springframework.http.HttpHeaders;
-import reactor.core.publisher.Mono;
-import java.util.Base64;
 
 @Component
 public class JwtEventListener {
