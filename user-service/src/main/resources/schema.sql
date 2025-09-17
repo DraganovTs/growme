@@ -1,7 +1,7 @@
 -- Users Table
-DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS growmeusers;
 
-CREATE TABLE IF NOT EXISTS users
+CREATE TABLE IF NOT EXISTS growmeusers
 (
     user_id        BINARY(16) PRIMARY KEY,
     username       VARCHAR(20)  NOT NULL UNIQUE,
@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS user_owned_products
     user_id    BINARY(16) NOT NULL,
     product_id BINARY(16) NOT NULL,
     PRIMARY KEY (user_id, product_id),
-    CONSTRAINT fk_user_products_user FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE
+    CONSTRAINT fk_user_products_user FOREIGN KEY (user_id) REFERENCES growmeusers (user_id) ON DELETE CASCADE
 );
 
 -- User Orders Join Table
@@ -54,5 +54,5 @@ CREATE TABLE IF NOT EXISTS user_purchased_orders
     user_id  BINARY(16) NOT NULL,
     order_id BINARY(16) NOT NULL,
     PRIMARY KEY (user_id, order_id),
-    CONSTRAINT fk_user_orders_user FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE
+    CONSTRAINT fk_user_orders_user FOREIGN KEY (user_id) REFERENCES growmeusers (user_id) ON DELETE CASCADE
 );
