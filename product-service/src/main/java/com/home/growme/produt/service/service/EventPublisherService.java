@@ -8,4 +8,5 @@ public interface EventPublisherService {
 
     void publishProductAssignment(String userId, String productId);
     void publishProductDeletion(String productId, String ownerId);
+    void publishCategoryCreation(String categoryId, String categoryName);
 }

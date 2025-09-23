@@ -8,7 +8,6 @@ public class KafkaTopics {
     public static final String PAYMENT_FAILURES_TOPIC = "payment.failures";
 
 
-
     //USER REGISTRATION
     public static final String ROLE_ASSIGNMENT_TOPIC = "user.role.assignments";
     public static final String USER_ROLE_ASSIGNMENT_RESULT_TOPIC = "user.role.assignments.result";
@@ -18,6 +17,7 @@ public class KafkaTopics {
     //PRODUCT
     public static final String PRODUCT_ASSIGNMENT_TOPIC = "product.user.assignment";
     public static final String PRODUCT_DELETION_TOPIC = "product.user.deletion";
+    public static final String CATEGORY_CREATION_TOPIC = "product.category.creation";
 
 
     //MAIL

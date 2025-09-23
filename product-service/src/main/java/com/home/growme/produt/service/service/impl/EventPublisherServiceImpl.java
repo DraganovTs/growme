@@ -1,5 +1,6 @@
 package com.home.growme.produt.service.service.impl;
 
+import com.home.growme.common.module.events.CategoryCreationEvent;
 import com.home.growme.common.module.events.ProductAssignedToUserEvent;
 import com.home.growme.common.module.events.ProductDeletionToUserEvent;
 import com.home.growme.produt.service.service.EventPublisherService;
@@ -7,8 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
-import static com.home.growme.common.module.config.kafka.topic.KafkaTopics.PRODUCT_ASSIGNMENT_TOPIC;
-import static com.home.growme.common.module.config.kafka.topic.KafkaTopics.PRODUCT_DELETION_TOPIC;
+import static com.home.growme.common.module.config.kafka.topic.KafkaTopics.*;
 
 @Slf4j
 @Service
@@ -53,6 +53,27 @@ public class EventPublisherServiceImpl implements EventPublisherService {
                         // TODO: Add success metrics
                     })
                     .exceptionally(ex-> {
+                        log.error("Publish failed for event: {}", event, ex);
+                        // TODO: Add error metrics
+                        return null;
+                    });
+        }catch (Exception e){
+            log.error("Publish failed for event: {}", event, e);
+            // TODO: Add dead letter queue handling
+        }
+    }
+
+    @Override
+    public void publishCategoryCreation(String categoryId, String categoryName) {
+        CategoryCreationEvent event =  new CategoryCreationEvent(categoryId,categoryName);
+
+        try {
+            kafkaTemplate.send(CATEGORY_CREATION_TOPIC,event)
+                    .thenAccept(result -> {
+                        log.debug("Published category creation whit categoryId: {} and categoryName {}",categoryId, categoryName);
+                        // TODO: Add success metrics
+                    })
+                    .exceptionally(ex->{
                         log.error("Publish failed for event: {}", event, ex);
                         // TODO: Add error metrics
                         return null;

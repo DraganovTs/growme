@@ -8,6 +8,7 @@ import com.home.growme.produt.service.model.dto.CategoryWithProductsDTO;
 import com.home.growme.produt.service.model.entity.Category;
 import com.home.growme.produt.service.repository.CategoryRepository;
 import com.home.growme.produt.service.service.CategoryService;
+import com.home.growme.produt.service.service.EventPublisherService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,10 +20,12 @@ public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
+    private final EventPublisherService eventPublisherService;
 
-    public CategoryServiceImpl(CategoryRepository categoryRepository, CategoryMapper categoryMapper) {
+    public CategoryServiceImpl(CategoryRepository categoryRepository, CategoryMapper categoryMapper, EventPublisherService eventPublisherService) {
         this.categoryRepository = categoryRepository;
         this.categoryMapper = categoryMapper;
+        this.eventPublisherService = eventPublisherService;
     }
 
     @Override
@@ -30,7 +33,9 @@ public class CategoryServiceImpl implements CategoryService {
         if (categoryRepository.existsCategoryByCategoryName(categoryDto.getCategoryName())) {
             throw new CategoryAlreadyExistException("Category already exist whit name " + categoryDto.getCategoryName());
         }
-        return categoryMapper.mapCategoryToCategoryDTO(categoryRepository.save(categoryMapper.mapCategoryDTOToCategory(categoryDto)));
+        Category savedCategory = categoryRepository.save(categoryMapper.mapCategoryDTOToCategory(categoryDto));
+        eventPublisherService.publishCategoryCreation(savedCategory.getCategoryId().toString(), savedCategory.getCategoryName());
+        return categoryMapper.mapCategoryToCategoryDTO(savedCategory);
     }
 
     @Override
