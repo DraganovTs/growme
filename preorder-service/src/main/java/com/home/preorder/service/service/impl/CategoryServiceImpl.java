@@ -6,6 +6,8 @@ import com.home.preorder.service.repository.CategoryRepository;
 import com.home.preorder.service.service.CategoryService;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 public class CategoryServiceImpl implements CategoryService {
 
@@ -19,5 +21,10 @@ public class CategoryServiceImpl implements CategoryService {
     public Category getCategoryByName(String name) {
         return categoryRepository.findCategoryByCategoryName(name)
                 .orElseThrow(() -> new CategoryNotFoundException("Category not found whit name: " + name));
+    }
+
+    @Override
+    public void createCategory(String categoryId, String categoryName) {
+        categoryRepository.save(new Category(UUID.fromString(categoryId), categoryName));
     }
 }
