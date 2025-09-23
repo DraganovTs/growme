@@ -53,4 +53,9 @@ public class OwnerServiceImpl implements OwnerService {
                 .map(productMapper::mapOwnerToOwnerDTO)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public boolean existsByUserId(String userId) {
+        return ownerRepository.existsById(UUID.fromString(userId));
+    }
 }

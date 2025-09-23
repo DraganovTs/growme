@@ -13,8 +13,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -40,10 +38,10 @@ import java.util.UUID;
 )
 @RestController
 @RequestMapping(value = "/api/users", produces = MediaType.APPLICATION_JSON_VALUE)
+@Slf4j
 public class UserController {
 
     private final UserService userService;
-    private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
     public UserController(UserService userService) {
         this.userService = userService;
@@ -122,8 +120,8 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class)))
     })
     @GetMapping("/userinfo/{userId}")
-    public ResponseEntity<UserInfo> getUserName(@PathVariable String userId) {
-        UserInfo userInfo = userService.getUserInformation(userId);
+    public ResponseEntity<UserInfo> getUserName(@PathVariable UUID userId) {
+        UserInfo userInfo = userService.getUserInformation(userId.toString());
         return ResponseEntity.ok(userInfo);
     }
 

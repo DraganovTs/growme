@@ -32,7 +32,7 @@ public class EventHandlerServiceImpl implements EventHandlerService {
 
 
     @Override
-    @KafkaListener(topics = USER_CREATE_TOPIC)
+    @KafkaListener(topics = USER_CREATE_TOPIC, groupId = "product-service")
     @Transactional
     public void handleUserCreatedEvent(UserCreatedEvent event) {
 
@@ -40,10 +40,15 @@ public class EventHandlerServiceImpl implements EventHandlerService {
             eventValidator.validateUserCreatedEvent(event);
             log.info("Processing user creation event for user: {}", event.getUserId());
 
+            if (ownerService.existsByUserId(event.getUserId())) {
+                log.warn("Skipping owner creation, already exists for userId={}", event.getUserId());
+                return;
+            }
+
             ownerService.createOwner(event);
             log.info("Successfully created owner for user: {}", event.getUserId());
-        } catch (OwnerAlreadyExistsException e) {
-            log.warn("Owner already exists for user: {}", event.getUserId());
+        } catch (IllegalArgumentException  e) {
+            log.error("Invalid UserCreatedEvent received for userId={}: {}", event.getUserId(), e.getMessage());
         }catch (Exception e){
             log.error("Failed to process user creation event for user: {}", event.getUserId(), e);
             throw e;

@@ -45,13 +45,16 @@ public void publishRoleAssignment(String userId, String role) {
     public void publishUserCreated(UserCreatedEvent event) {
         try {
             kafkaTemplate.send(USER_CREATE_TOPIC, event.getUserId(), event)
-                    .thenAccept(result -> {
-                        log.info("Role assignment result: {}", result);
-                    })
-                    .exceptionally(ex -> {
-                        log.error("Publish failed for event: {}", event, ex);
-                        throw new EventPublishingException("Critical publishing failure");
+                    .whenComplete((result,ex) -> {
+                        if (ex != null) {
+                            log.error("Failed to publish UserCreatedEvent for userId={} to topic={}. Event: {}",
+                                    event.getUserId(), USER_CREATE_TOPIC, event, ex);
+                            //TODO simply retry mechanic
 
+                        } else {
+                            log.info("Published UserCreatedEvent for userId={} to topic={} at offset={}",
+                                    event.getUserId(), USER_CREATE_TOPIC, result.getRecordMetadata().offset());
+                        }
                     });
         }catch (Exception e) {
             log.error("Critical publish failure for user {}: {}", event.getUserId(), e.getMessage());
