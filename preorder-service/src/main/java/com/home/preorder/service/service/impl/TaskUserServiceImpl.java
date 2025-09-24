@@ -43,4 +43,9 @@ public class TaskUserServiceImpl implements TaskUserService {
         TaskUser taskUser = findUserById(taskUserId);
         return taskUser.getTaskUserEmail();
     }
+
+    @Override
+    public boolean existByUserId(String userId) {
+        return taskUserRepository.existsById(UUID.fromString(userId));
+    }
 }

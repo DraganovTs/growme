@@ -27,4 +27,9 @@ public class CategoryServiceImpl implements CategoryService {
     public void createCategory(String categoryId, String categoryName) {
         categoryRepository.save(new Category(UUID.fromString(categoryId), categoryName));
     }
+
+    @Override
+    public boolean existCategoryByName(String categoryName) {
+        return categoryRepository.existsCategoryByCategoryName(categoryName);
+    }
 }

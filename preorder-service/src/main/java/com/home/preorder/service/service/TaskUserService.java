@@ -12,4 +12,6 @@ public interface TaskUserService {
     void createUser(UserCreatedEvent event);
 
     String findUserEmailByUserId(UUID taskUserId);
+
+    boolean existByUserId(String userId);
 }

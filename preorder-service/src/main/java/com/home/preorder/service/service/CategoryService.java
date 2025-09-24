@@ -7,4 +7,6 @@ public interface CategoryService {
     Category getCategoryByName(String name);
 
     void createCategory(String categoryId, String categoryName);
+
+    boolean existCategoryByName(String categoryName);
 }

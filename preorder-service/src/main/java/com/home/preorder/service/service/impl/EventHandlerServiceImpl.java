@@ -2,6 +2,7 @@ package com.home.preorder.service.service.impl;
 
 import com.home.growme.common.module.events.CategoryCreationEvent;
 import com.home.growme.common.module.events.UserCreatedEvent;
+import com.home.preorder.service.config.EventMetrics;
 import com.home.preorder.service.exception.TaskCategoryAlreadyExistException;
 import com.home.preorder.service.exception.TaskUserAlreadyExistException;
 import com.home.preorder.service.service.CategoryService;
@@ -24,15 +25,18 @@ public class EventHandlerServiceImpl implements EventHandlerService {
     private final EventValidator eventValidator;
     private final CategoryService categoryService;
 
-    public EventHandlerServiceImpl(TaskUserService taskUserService, EventValidator eventValidator, CategoryService categoryService) {
+    private final EventMetrics metricsService;
+
+    public EventHandlerServiceImpl(TaskUserService taskUserService, EventValidator eventValidator, CategoryService categoryService, EventMetrics metricsService) {
         this.taskUserService = taskUserService;
         this.eventValidator = eventValidator;
         this.categoryService = categoryService;
+        this.metricsService = metricsService;
     }
 
 
     @Override
-    @KafkaListener(topics = USER_CREATE_TOPIC)
+    @KafkaListener(topics = USER_CREATE_TOPIC, groupId = "preorder-service")
     @Transactional
     public void handleUserCreatedEvent(UserCreatedEvent event) {
 
@@ -40,13 +44,25 @@ public class EventHandlerServiceImpl implements EventHandlerService {
             eventValidator.validateUserCreatedEvent(event);
             log.info("Processing user creation event for user: {}", event.getUserId());
 
-            taskUserService.createUser(event);
-            log.info("Successfully created owner for user: {}", event.getUserId());
+            if (taskUserService.existByUserId(event.getUserId())) {
+                log.warn("Skipping taskUser creation, already exists for userId={}", event.getUserId());
+                metricsService.recordDuplicate();
+                return;
+            }
 
-        } catch (TaskUserAlreadyExistException e){
-            log.warn("Task user already exists for user: {}", event.getUserId());
-        }catch (Exception e){
+            taskUserService.createUser(event);
+            log.info("Successfully created taskUser for user: {}", event.getUserId());
+            metricsService.recordSuccess();
+
+        } catch (IllegalArgumentException e) {
+            log.error("Invalid UserCreatedEvent received for userId={}: {}", event.getUserId(), e.getMessage());
+            metricsService.recordFailure();
+        } catch (TaskUserAlreadyExistException e) {
+            log.warn("taskUser already exists for user: {}", event.getUserId());
+            metricsService.recordFailure();
+        } catch (Exception e) {
             log.error("Failed to process user creation event for user: {}", event.getUserId(), e);
+            metricsService.recordFailure();
             throw e;
         }
     }
@@ -59,13 +75,25 @@ public class EventHandlerServiceImpl implements EventHandlerService {
             eventValidator.validateCategoryCreatedEvent(event);
             log.info("Processing category creation event for category: {}", event.getCategoryName());
 
-            categoryService.createCategory(event.getCategoryId(),event.getCategoryName());
-            log.info("Successfully created category whit name: {}", event.getCategoryName());
+            if (categoryService.existCategoryByName(event.getCategoryName())) {
+                log.warn("Skipping category creation, already exists for category name ={}", event.getCategoryName());
+                metricsService.recordDuplicate();
+                return;
+            }
 
-        }catch (TaskCategoryAlreadyExistException e ){
+            categoryService.createCategory(event.getCategoryId(), event.getCategoryName());
+            log.info("Successfully created category whit name: {}", event.getCategoryName());
+            metricsService.recordSuccess();
+
+        } catch (IllegalArgumentException e) {
+            log.error("Invalid CategoryCreatedEvent received for category name ={}: {}", event.getCategoryName(), e.getMessage());
+            metricsService.recordFailure();
+        } catch (TaskCategoryAlreadyExistException e) {
             log.warn("Task category already exists for category: {}", event.getCategoryName());
-        }catch (Exception e){
+            metricsService.recordFailure();
+        } catch (Exception e) {
             log.error("Failed to process category creation event for category: {}", event.getCategoryName(), e);
+            metricsService.recordFailure();
             throw e;
         }
     }
