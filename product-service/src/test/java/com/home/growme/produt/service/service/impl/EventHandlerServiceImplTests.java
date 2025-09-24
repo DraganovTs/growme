@@ -6,6 +6,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.home.growme.common.module.dto.OrderItemDTO;
 import com.home.growme.common.module.events.OrderCompletedEvent;
 import com.home.growme.common.module.events.UserCreatedEvent;
+import com.home.growme.produt.service.config.EventMetrics;
 import com.home.growme.produt.service.exception.OwnerAlreadyExistsException;
 import com.home.growme.produt.service.service.OwnerService;
 import com.home.growme.produt.service.service.ProductService;
@@ -31,6 +32,7 @@ public class EventHandlerServiceImplTests {
     private ProductService productService;
     private EventHandlerServiceImpl eventHandlerService;
     private ObjectMapper objectMapper;
+    private EventMetrics metricsService;
 
     @BeforeEach
     void setUp() {
@@ -39,7 +41,8 @@ public class EventHandlerServiceImplTests {
         productService = mock(ProductService.class);
         objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
-        eventHandlerService = new EventHandlerServiceImpl(ownerService, eventValidator, productService);
+        metricsService = mock(EventMetrics.class);
+        eventHandlerService = new EventHandlerServiceImpl(ownerService, eventValidator, productService,metricsService);
 
     }
 
@@ -48,29 +51,54 @@ public class EventHandlerServiceImplTests {
     void shouldHandleUserCreatedEventSuccessfully() {
         UserCreatedEvent event = new UserCreatedEvent("user123", "Alice", "alice@example.com");
 
+        when(ownerService.existsByUserId(event.getUserId())).thenReturn(false);
+
         assertDoesNotThrow(() -> eventHandlerService.handleUserCreatedEvent(event));
 
         verify(eventValidator).validateUserCreatedEvent(event);
+        verify(ownerService).existsByUserId(event.getUserId());
         verify(ownerService).createOwner(event);
+        verify(metricsService).recordSuccess();
     }
 
     @Test
     @DisplayName("Should handle OwnerAlreadyExistsException gracefully")
     void shouldHandleOwnerAlreadyExistsGracefully() {
         UserCreatedEvent event = new UserCreatedEvent("user123", "Bob", "bob@example.com");
+
+        when(ownerService.existsByUserId(event.getUserId())).thenReturn(false);
         doThrow(new OwnerAlreadyExistsException("exists"))
                 .when(ownerService).createOwner(event);
 
         assertDoesNotThrow(() -> eventHandlerService.handleUserCreatedEvent(event));
 
         verify(eventValidator).validateUserCreatedEvent(event);
+        verify(ownerService).existsByUserId(event.getUserId());
         verify(ownerService).createOwner(event);
+        verify(metricsService).recordDuplicate();
+    }
+
+    @Test
+    @DisplayName("Should skip owner creation if owner already exists")
+    void shouldSkipOwnerCreationIfOwnerExists() {
+        UserCreatedEvent event = new UserCreatedEvent("user123", "Alice", "alice@example.com");
+
+        when(ownerService.existsByUserId(event.getUserId())).thenReturn(true);
+
+        assertDoesNotThrow(() -> eventHandlerService.handleUserCreatedEvent(event));
+
+        verify(eventValidator).validateUserCreatedEvent(event);
+        verify(ownerService).existsByUserId(event.getUserId());
+        verify(ownerService, never()).createOwner(event);
+        verify(metricsService).recordDuplicate(); // Should record duplicate
     }
 
     @Test
     @DisplayName("Should throw on unexpected error in UserCreatedEvent")
     void shouldThrowOnUnexpectedErrorInUserCreatedEvent() {
         UserCreatedEvent event = new UserCreatedEvent("user123", "Carol", "carol@example.com");
+
+        when(ownerService.existsByUserId(event.getUserId())).thenReturn(false);
         doThrow(new RuntimeException("unexpected")).when(ownerService).createOwner(event);
 
         RuntimeException thrown = assertThrows(RuntimeException.class,
@@ -78,16 +106,18 @@ public class EventHandlerServiceImplTests {
 
         assertEquals("unexpected", thrown.getMessage());
         verify(eventValidator).validateUserCreatedEvent(event);
+        verify(ownerService).existsByUserId(event.getUserId());
         verify(ownerService).createOwner(event);
+        verify(metricsService).recordFailure();
     }
 
     @Test
     @DisplayName("Should handle OrderCompletedEvent successfully")
     void shouldHandleOrderCompletedEventSuccessfully() throws JsonProcessingException {
         OrderCompletedEvent event = new OrderCompletedEvent(
-                UUID.randomUUID().toString()
-                , UUID.randomUUID().toString()
-                , "random@gmail.com",
+                UUID.randomUUID().toString(),
+                UUID.randomUUID().toString(),
+                "random@gmail.com",
                 List.of(new OrderItemDTO(
                                 UUID.randomUUID().toString(),
                                 2,
@@ -98,14 +128,12 @@ public class EventHandlerServiceImplTests {
                                 BigDecimal.valueOf(25.00))),
                 BigDecimal.valueOf(35.11),
                 Instant.now());
-        String json = objectMapper.writeValueAsString(event);
-        Object value = objectMapper.readValue(json, Object.class);
-        ConsumerRecord<String, Object> record = new ConsumerRecord<>("topic", 0, 0L, "key", value);
 
         assertDoesNotThrow(() -> eventHandlerService.OrderCompletedEvent(event));
 
         verify(eventValidator).validateOrderCompletedEvent(event);
         verify(productService).completeOrder(event);
+        verify(metricsService).recordSuccess();
     }
 
     @Test
@@ -142,21 +170,20 @@ public class EventHandlerServiceImplTests {
         doThrow(new IllegalArgumentException("validation failed"))
                 .when(eventValidator).validateUserCreatedEvent(event);
 
-        IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class,
-                () -> eventHandlerService.handleUserCreatedEvent(event));
+        assertDoesNotThrow(() -> eventHandlerService.handleUserCreatedEvent(event));
 
-        assertEquals("validation failed", thrown.getMessage());
         verify(eventValidator).validateUserCreatedEvent(event);
         verifyNoInteractions(ownerService);
+        verify(metricsService).recordFailure();
     }
 
     @Test
     @DisplayName("Should validate OrderCompletedEvent before processing")
     void shouldValidateOrderCompletedEventBeforeProcessing() {
         OrderCompletedEvent event = new OrderCompletedEvent(
-                UUID.randomUUID().toString()
-                , UUID.randomUUID().toString()
-                , "random@gmail.com",
+                UUID.randomUUID().toString(),
+                UUID.randomUUID().toString(),
+                "random@gmail.com",
                 List.of(new OrderItemDTO(
                                 UUID.randomUUID().toString(),
                                 2,
@@ -170,11 +197,47 @@ public class EventHandlerServiceImplTests {
         doThrow(new IllegalArgumentException("order validation failed"))
                 .when(eventValidator).validateOrderCompletedEvent(event);
 
-        IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class,
-                () -> eventHandlerService.OrderCompletedEvent(event));
+        // Service catches IllegalArgumentException, so no exception should be thrown
+        assertDoesNotThrow(() -> eventHandlerService.OrderCompletedEvent(event));
 
-        assertEquals("order validation failed", thrown.getMessage());
         verify(eventValidator).validateOrderCompletedEvent(event);
         verifyNoInteractions(productService);
+        verify(metricsService).recordFailure(); // Should record failure metric
+    }
+
+    @Test
+    @DisplayName("Should record appropriate metrics for different scenarios")
+    void shouldRecordAppropriateMetrics() {
+        UserCreatedEvent event = new UserCreatedEvent("user123", "Test", "test@example.com");
+
+        when(ownerService.existsByUserId(event.getUserId())).thenReturn(false);
+        eventHandlerService.handleUserCreatedEvent(event);
+        verify(metricsService).recordSuccess();
+
+        reset(metricsService, ownerService);
+
+        when(ownerService.existsByUserId(event.getUserId())).thenReturn(true);
+        eventHandlerService.handleUserCreatedEvent(event);
+        verify(metricsService).recordDuplicate();
+
+        reset(metricsService, ownerService);
+
+        when(ownerService.existsByUserId(event.getUserId())).thenReturn(false);
+        doThrow(new RuntimeException("error")).when(ownerService).createOwner(event);
+
+        assertThrows(RuntimeException.class,
+                () -> eventHandlerService.handleUserCreatedEvent(event));
+        verify(metricsService).recordFailure();
+    }
+
+    @Test
+    @DisplayName("Should handle null event gracefully")
+    void shouldHandleNullEventGracefully() {
+
+
+        NullPointerException thrown = assertThrows(NullPointerException.class,
+                () -> eventHandlerService.handleUserCreatedEvent(null));
+
+        assertTrue(thrown.getMessage().contains("event"));
     }
 }

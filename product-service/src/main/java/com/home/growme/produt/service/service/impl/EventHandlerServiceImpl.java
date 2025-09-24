@@ -2,6 +2,7 @@ package com.home.growme.produt.service.service.impl;
 
 import com.home.growme.common.module.events.OrderCompletedEvent;
 import com.home.growme.common.module.events.UserCreatedEvent;
+import com.home.growme.produt.service.config.EventMetrics;
 import com.home.growme.produt.service.exception.OwnerAlreadyExistsException;
 import com.home.growme.produt.service.service.EventHandlerService;
 import com.home.growme.produt.service.service.OwnerService;
@@ -24,10 +25,13 @@ public class EventHandlerServiceImpl implements EventHandlerService {
     private final EventValidator eventValidator;
     private final ProductService productService;
 
-    public EventHandlerServiceImpl(OwnerService ownerService, EventValidator eventValidator, ProductService productService) {
+    private final EventMetrics metricsService;
+
+    public EventHandlerServiceImpl(OwnerService ownerService, EventValidator eventValidator, ProductService productService, EventMetrics metricsService) {
         this.ownerService = ownerService;
         this.eventValidator = eventValidator;
         this.productService = productService;
+        this.metricsService = metricsService;
     }
 
 
@@ -36,21 +40,30 @@ public class EventHandlerServiceImpl implements EventHandlerService {
     @Transactional
     public void handleUserCreatedEvent(UserCreatedEvent event) {
 
+
         try {
             eventValidator.validateUserCreatedEvent(event);
             log.info("Processing user creation event for user: {}", event.getUserId());
 
             if (ownerService.existsByUserId(event.getUserId())) {
                 log.warn("Skipping owner creation, already exists for userId={}", event.getUserId());
+                metricsService.recordDuplicate();
                 return;
             }
 
             ownerService.createOwner(event);
             log.info("Successfully created owner for user: {}", event.getUserId());
-        } catch (IllegalArgumentException  e) {
+            metricsService.recordSuccess();
+        } catch (IllegalArgumentException e) {
             log.error("Invalid UserCreatedEvent received for userId={}: {}", event.getUserId(), e.getMessage());
-        }catch (Exception e){
+            metricsService.recordFailure();
+        } catch (OwnerAlreadyExistsException e){
+            log.warn("Owner already exists for user: {}", event.getUserId());
+            metricsService.recordDuplicate();
+
+        }catch (Exception e) {
             log.error("Failed to process user creation event for user: {}", event.getUserId(), e);
+            metricsService.recordFailure();
             throw e;
         }
 
@@ -67,11 +80,16 @@ public class EventHandlerServiceImpl implements EventHandlerService {
 
             productService.completeOrder(event);
             log.info("Successfully processed order: {}", event.getOrderId());
+            metricsService.recordSuccess();
 
+        } catch (IllegalArgumentException e) {
+            log.error("Invalid OrderCompletedEvent received for orderId={}: {}", event.getOrderId(), e.getMessage());
+            metricsService.recordFailure();
         } catch (Exception e) {
             log.error("Failed to process order completion event for order: {}", event.getOrderId(), e);
+            metricsService.recordFailure();
             throw e;
-        }
 
+        }
     }
 }
