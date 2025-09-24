@@ -47,23 +47,23 @@ public class EventHandlerServiceImpl implements EventHandlerService {
 
             if (ownerService.existsByUserId(event.getUserId())) {
                 log.warn("Skipping owner creation, already exists for userId={}", event.getUserId());
-                metricsService.recordDuplicate();
+                metricsService.recordUserDuplicate();
                 return;
             }
 
             ownerService.createOwner(event);
             log.info("Successfully created owner for user: {}", event.getUserId());
-            metricsService.recordSuccess();
+            metricsService.recordUserSuccess();
         } catch (IllegalArgumentException e) {
             log.error("Invalid UserCreatedEvent received for userId={}: {}", event.getUserId(), e.getMessage());
-            metricsService.recordFailure();
+            metricsService.recordOrderFailure();
         } catch (OwnerAlreadyExistsException e){
             log.warn("Owner already exists for user: {}", event.getUserId());
-            metricsService.recordDuplicate();
+            metricsService.recordUserDuplicate();
 
         }catch (Exception e) {
             log.error("Failed to process user creation event for user: {}", event.getUserId(), e);
-            metricsService.recordFailure();
+            metricsService.recordOrderFailure();
             throw e;
         }
 
@@ -80,14 +80,14 @@ public class EventHandlerServiceImpl implements EventHandlerService {
 
             productService.completeOrder(event);
             log.info("Successfully processed order: {}", event.getOrderId());
-            metricsService.recordSuccess();
+            metricsService.recordOrderSuccess();
 
         } catch (IllegalArgumentException e) {
             log.error("Invalid OrderCompletedEvent received for orderId={}: {}", event.getOrderId(), e.getMessage());
-            metricsService.recordFailure();
+            metricsService.recordOrderFailure();
         } catch (Exception e) {
             log.error("Failed to process order completion event for order: {}", event.getOrderId(), e);
-            metricsService.recordFailure();
+            metricsService.recordOrderFailure();
             throw e;
 
         }

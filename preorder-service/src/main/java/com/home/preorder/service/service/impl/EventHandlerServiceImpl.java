@@ -46,23 +46,23 @@ public class EventHandlerServiceImpl implements EventHandlerService {
 
             if (taskUserService.existByUserId(event.getUserId())) {
                 log.warn("Skipping taskUser creation, already exists for userId={}", event.getUserId());
-                metricsService.recordDuplicate();
+                metricsService.recordUserDuplicate();
                 return;
             }
 
             taskUserService.createUser(event);
             log.info("Successfully created taskUser for user: {}", event.getUserId());
-            metricsService.recordSuccess();
+            metricsService.recordUserSuccess();
 
         } catch (IllegalArgumentException e) {
             log.error("Invalid UserCreatedEvent received for userId={}: {}", event.getUserId(), e.getMessage());
-            metricsService.recordFailure();
+            metricsService.recordUserFailure();
         } catch (TaskUserAlreadyExistException e) {
             log.warn("taskUser already exists for user: {}", event.getUserId());
-            metricsService.recordFailure();
+            metricsService.recordUserDuplicate();
         } catch (Exception e) {
             log.error("Failed to process user creation event for user: {}", event.getUserId(), e);
-            metricsService.recordFailure();
+            metricsService.recordUserFailure();
             throw e;
         }
     }
@@ -77,23 +77,23 @@ public class EventHandlerServiceImpl implements EventHandlerService {
 
             if (categoryService.existCategoryByName(event.getCategoryName())) {
                 log.warn("Skipping category creation, already exists for category name ={}", event.getCategoryName());
-                metricsService.recordDuplicate();
+                metricsService.recordCategoryDuplicate();
                 return;
             }
 
             categoryService.createCategory(event.getCategoryId(), event.getCategoryName());
             log.info("Successfully created category whit name: {}", event.getCategoryName());
-            metricsService.recordSuccess();
+            metricsService.recordCategorySuccess();
 
         } catch (IllegalArgumentException e) {
             log.error("Invalid CategoryCreatedEvent received for category name ={}: {}", event.getCategoryName(), e.getMessage());
-            metricsService.recordFailure();
+            metricsService.recordCategoryFailure();
         } catch (TaskCategoryAlreadyExistException e) {
             log.warn("Task category already exists for category: {}", event.getCategoryName());
-            metricsService.recordFailure();
+            metricsService.recordCategoryDuplicate();
         } catch (Exception e) {
             log.error("Failed to process category creation event for category: {}", event.getCategoryName(), e);
-            metricsService.recordFailure();
+            metricsService.recordCategoryFailure();
             throw e;
         }
     }

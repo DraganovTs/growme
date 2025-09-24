@@ -11,11 +11,9 @@ import com.home.growme.produt.service.exception.OwnerAlreadyExistsException;
 import com.home.growme.produt.service.service.OwnerService;
 import com.home.growme.produt.service.service.ProductService;
 import com.home.growme.produt.service.util.EventValidator;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -58,7 +56,7 @@ public class EventHandlerServiceImplTests {
         verify(eventValidator).validateUserCreatedEvent(event);
         verify(ownerService).existsByUserId(event.getUserId());
         verify(ownerService).createOwner(event);
-        verify(metricsService).recordSuccess();
+        verify(metricsService).recordUserDuplicate();
     }
 
     @Test
@@ -75,7 +73,7 @@ public class EventHandlerServiceImplTests {
         verify(eventValidator).validateUserCreatedEvent(event);
         verify(ownerService).existsByUserId(event.getUserId());
         verify(ownerService).createOwner(event);
-        verify(metricsService).recordDuplicate();
+        verify(metricsService).recordUserDuplicate();
     }
 
     @Test
@@ -90,7 +88,7 @@ public class EventHandlerServiceImplTests {
         verify(eventValidator).validateUserCreatedEvent(event);
         verify(ownerService).existsByUserId(event.getUserId());
         verify(ownerService, never()).createOwner(event);
-        verify(metricsService).recordDuplicate(); // Should record duplicate
+        verify(metricsService).recordUserDuplicate(); // Should record duplicate
     }
 
     @Test
@@ -108,12 +106,12 @@ public class EventHandlerServiceImplTests {
         verify(eventValidator).validateUserCreatedEvent(event);
         verify(ownerService).existsByUserId(event.getUserId());
         verify(ownerService).createOwner(event);
-        verify(metricsService).recordFailure();
+        verify(metricsService).recordUserFailure();
     }
 
     @Test
     @DisplayName("Should handle OrderCompletedEvent successfully")
-    void shouldHandleOrderCompletedEventSuccessfully() throws JsonProcessingException {
+    void shouldHandleOrderCompletedEventSuccessfully()  {
         OrderCompletedEvent event = new OrderCompletedEvent(
                 UUID.randomUUID().toString(),
                 UUID.randomUUID().toString(),
@@ -133,7 +131,7 @@ public class EventHandlerServiceImplTests {
 
         verify(eventValidator).validateOrderCompletedEvent(event);
         verify(productService).completeOrder(event);
-        verify(metricsService).recordSuccess();
+        verify(metricsService).recordOrderSuccess();
     }
 
     @Test
@@ -174,7 +172,7 @@ public class EventHandlerServiceImplTests {
 
         verify(eventValidator).validateUserCreatedEvent(event);
         verifyNoInteractions(ownerService);
-        verify(metricsService).recordFailure();
+        verify(metricsService).recordUserFailure();
     }
 
     @Test
@@ -197,12 +195,12 @@ public class EventHandlerServiceImplTests {
         doThrow(new IllegalArgumentException("order validation failed"))
                 .when(eventValidator).validateOrderCompletedEvent(event);
 
-        // Service catches IllegalArgumentException, so no exception should be thrown
+
         assertDoesNotThrow(() -> eventHandlerService.OrderCompletedEvent(event));
 
         verify(eventValidator).validateOrderCompletedEvent(event);
         verifyNoInteractions(productService);
-        verify(metricsService).recordFailure(); // Should record failure metric
+        verify(metricsService).recordOrderFailure();
     }
 
     @Test
@@ -212,13 +210,13 @@ public class EventHandlerServiceImplTests {
 
         when(ownerService.existsByUserId(event.getUserId())).thenReturn(false);
         eventHandlerService.handleUserCreatedEvent(event);
-        verify(metricsService).recordSuccess();
+        verify(metricsService).recordUserSuccess();
 
         reset(metricsService, ownerService);
 
         when(ownerService.existsByUserId(event.getUserId())).thenReturn(true);
         eventHandlerService.handleUserCreatedEvent(event);
-        verify(metricsService).recordDuplicate();
+        verify(metricsService).recordUserDuplicate();
 
         reset(metricsService, ownerService);
 
@@ -227,7 +225,7 @@ public class EventHandlerServiceImplTests {
 
         assertThrows(RuntimeException.class,
                 () -> eventHandlerService.handleUserCreatedEvent(event));
-        verify(metricsService).recordFailure();
+        verify(metricsService).recordOrderFailure();
     }
 
     @Test
