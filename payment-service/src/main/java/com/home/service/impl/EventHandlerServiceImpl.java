@@ -30,7 +30,7 @@ public class EventHandlerServiceImpl implements EventHandlerService {
     }
 
     @Override
-    @KafkaListener(topics = PAYMENT_INTENT_REQUESTS_TOPIC)
+    @KafkaListener(topics = PAYMENT_INTENT_REQUESTS_TOPIC,groupId = "payment-service")
     public void handlePaymentRequest(ConsumerRecord<String, String> record) {
         try {
             PaymentIntentRequestEvent request = objectMapper.readValue(
