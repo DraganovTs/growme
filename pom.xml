@@ -49,6 +49,7 @@
         <spring-boot-starter-data-redis-reactive.version>3.2.2</spring-boot-starter-data-redis-reactive.version>
         <junit.version>5.10.1</junit.version>
         <mockito-junit-jupiter.version>5.11.0</mockito-junit-jupiter.version>
+        <micrometer.registry.prometheus.version>1.16.0-M3</micrometer.registry.prometheus.version>
     </properties>
 
     <dependencyManagement>
@@ -139,6 +140,12 @@
             </dependency>
 
             <dependency>
+                <groupId>io.micrometer</groupId>
+                <artifactId>micrometer-registry-prometheus</artifactId>
+                <version>${micrometer.registry.prometheus.version}</version>
+            </dependency>
+
+            <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-thymeleaf</artifactId>
                 <version>${spring.boot.version}</version>
@@ -217,6 +224,7 @@
                 <artifactId>spring-boot-starter-data-redis-reactive</artifactId>
                 <version>${spring-boot-starter-data-redis-reactive.version}</version>
             </dependency>
+
 
 
             <dependency>
