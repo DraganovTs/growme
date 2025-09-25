@@ -11,13 +11,15 @@ import { UserProfile } from '../shared/model/UserProfile';
 
 @Injectable({ providedIn: 'root' })
 export class KeycloakService {
-  private keycloak: Keycloak | null = null;
-  private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
- private userProfileSubject = new BehaviorSubject<UserProfile | null>(null);
+ private keycloak: Keycloak | null = null;
+    private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
+    private userProfileSubject = new BehaviorSubject<UserProfile | null>(null);
+    private initializedSubject = new BehaviorSubject<boolean>(false); 
 
-  public isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
-  public userProfile$ = this.userProfileSubject.asObservable();
-  private isBrowser: boolean;
+    public isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
+    public userProfile$ = this.userProfileSubject.asObservable();
+    public initialized$ = this.initializedSubject.asObservable();
+    private isBrowser: boolean;
 
   constructor(
     private http: HttpClient,
@@ -40,48 +42,53 @@ export class KeycloakService {
     }
   }
 
-  async init(): Promise<void> {
-    if (!this.isBrowser) return;
+ async init(): Promise<void> {
+        if (!this.isBrowser) {
+            this.initializedSubject.next(true); // Add this line
+            return;
+        }
 
-    this.keycloak = new Keycloak({
-      url: environment.keycloakUrl,
-      realm: environment.keycloakRealm,
-      clientId: environment.keycloakClientId,
-    });
-
-    try {
-      const authenticated = await this.keycloak.init({
-        onLoad: 'login-required',
-        checkLoginIframe: false,
-      });
-
-      this.setAuthenticationState(authenticated);
-
-      if (authenticated && this.keycloak.tokenParsed) {
-        const userRoles = this.keycloak.tokenParsed.realm_access?.roles || [];
-        const userId = this.keycloak.tokenParsed.sub || '';
-        localStorage.setItem('userId', userId);
-
-        this.syncUserWithBackend().pipe(
-          switchMap(() => this.checkProfileCompletion()),
-          take(1)
-        ).subscribe((profileComplete) => {
-          this.ngZone.run(() => {
-            if (profileComplete && this.hasRequiredRole(userRoles)) {
-              this.router.navigate(['/']); 
-            } else {
-              this.router.navigate(['/complete-profile']);
-            }
-          });
+        this.keycloak = new Keycloak({
+            url: environment.keycloakUrl,
+            realm: environment.keycloakRealm,
+            clientId: environment.keycloakClientId,
         });
 
-        this.startTokenRefresh();
-      }
-    } catch (error) {
-      console.error('Keycloak initialization failed:', error);
-      this.setAuthenticationState(false);
+        try {
+            const authenticated = await this.keycloak.init({
+                onLoad: 'login-required',
+                checkLoginIframe: false,
+            });
+
+            this.setAuthenticationState(authenticated);
+            this.initializedSubject.next(true); // Add this line - MARK AS INITIALIZED
+
+            if (authenticated && this.keycloak.tokenParsed) {
+                const userRoles = this.keycloak.tokenParsed.realm_access?.roles || [];
+                const userId = this.keycloak.tokenParsed.sub || '';
+                localStorage.setItem('userId', userId);
+
+                this.syncUserWithBackend().pipe(
+                    switchMap(() => this.checkProfileCompletion()),
+                    take(1)
+                ).subscribe((profileComplete) => {
+                    this.ngZone.run(() => {
+                        if (profileComplete && this.hasRequiredRole(userRoles)) {
+                            this.router.navigate(['/']); 
+                        } else {
+                            this.router.navigate(['/complete-profile']);
+                        }
+                    });
+                });
+
+                this.startTokenRefresh();
+            }
+        } catch (error) {
+            console.error('Keycloak initialization failed:', error);
+            this.setAuthenticationState(false);
+            this.initializedSubject.next(true); // Add this line - MARK AS INITIALIZED EVEN ON ERROR
+        }
     }
-  }
 
   login(): Observable<void> {
     return from(this.keycloak?.login() || Promise.resolve());
@@ -173,11 +180,12 @@ async getToken(): Promise<string | null> {
 }
 
 decodeToken(token: string): void {
+  
     try {
         const payload = token.split('.')[1];
         const decoded = atob(payload.replace(/-/g, '+').replace(/_/g, '/'));
         const tokenData = JSON.parse(decoded);
-        
+        console.log('audience:', tokenData.aud);
         console.log('Token expiration:', new Date(tokenData.exp * 1000));
         console.log('Token issued at:', new Date(tokenData.iat * 1000));
         console.log('Token claims:', Object.keys(tokenData));
@@ -287,4 +295,6 @@ private syncUserWithBackend(): Observable<void> {
       })
     );
   }
+
+
 }
