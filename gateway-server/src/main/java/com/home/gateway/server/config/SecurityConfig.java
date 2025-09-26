@@ -38,9 +38,16 @@ public class SecurityConfig {
     };
 
     private static final String[] PUBLIC_API_PATHS = {
-            "/growme/users/sync", "/growme/users/update/**", "/growme/users/profile-complete/**",
-            "/growme/categories/**", "/growme/owners/**", "/growme/products/**",
-            "/growme/bids/**", "/growme/tasks/**", "/growme/basket/**", "/growme/deliverymethods/**"
+            "/growme/users/sync",
+            "/growme/users/update/**",
+            "/growme/users/profile-complete/**",
+            "/growme/categories/**",
+            "/growme/owners/**",
+            "/growme/products/**",
+            "/growme/bids/**",
+            "/growme/tasks/**",
+            "/growme/basket/**",
+            "/growme/deliverymethods/**"
     };
 
     @Bean
