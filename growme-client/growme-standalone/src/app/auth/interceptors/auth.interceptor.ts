@@ -11,22 +11,39 @@ export class AuthInterceptor implements HttpInterceptor {
     constructor(private keycloakService: KeycloakService) {}
 
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-           console.log('🎯 INTERCEPTOR IS WORKING! URL:', req.url);
-    
-    // Test: Add a custom header to see if interceptor is modifying requests
-    const testReq = req.clone({
-        setHeaders: { 'X-Interceptor-Test': 'working' }
-    });
-    
-    return next.handle(testReq);
+        console.log(' Interceptor - URL:', req.url);
+        console.log(' Interceptor - Method:', req.method);
+        
+        if (this.shouldSkipAuth(req.url)) {
+            console.log('⏭️ Skipping auth for public endpoint');
+            return next.handle(req);
+        }
+
+        console.log('Interceptor processing authenticated request to:', req.url);
+
+        return this.keycloakService.initialized$.pipe(
+            filter(initialized => initialized),
+            take(1),
+            switchMap(() => this.keycloakService.isAuthenticated$),
+            take(1),
+            switchMap(authenticated => {
+                console.log(' Authentication status:', authenticated);
+                if (!authenticated) {
+                    console.warn('User not authenticated for request:', req.url);
+                    return this.handleUnauthenticated(req, next);
+                }
+                return this.addTokenToRequest(req, next);
+            }),
+            catchError(error => this.handleError(error))
+        );
     }
 
     private addTokenToRequest(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         return from(this.keycloakService.getToken()).pipe(
             switchMap(token => {
                 if (token) {
-                    console.log('✅ Token attached to request:', req.url);
-                    console.log('📎 Token preview:', token.substring(0, 50) + '...');
+                    console.log('Token attached to request:', req.url);
+                    console.log('Token preview:', token.substring(0, 50) + '...');
                     const authReq = req.clone({
                         setHeaders: { 
                             Authorization: `Bearer ${token}` 
@@ -34,13 +51,13 @@ export class AuthInterceptor implements HttpInterceptor {
                     });
                     return next.handle(authReq);
                 }
-                console.warn('❌ No token available for request:', req.url);
+                console.warn('No token available for request:', req.url);
                 return this.handleUnauthenticated(req, next);
             }),
             catchError(error => {
                 if (error.status === 401 && !this.authChecked) {
                     this.authChecked = true;
-                    console.log('🔄 Retrying request with fresh token:', req.url);
+                    console.log('Retrying request with fresh token:', req.url);
                     return this.addTokenToRequest(req, next);
                 }
                 return throwError(() => error);
@@ -54,9 +71,9 @@ export class AuthInterceptor implements HttpInterceptor {
     }
 
     private handleError(error: any): Observable<HttpEvent<any>> {
-        console.error('💥 Interceptor error:', error);
+        console.error(' Interceptor error:', error);
         if (error.status === 401 || error.status === 403) {
-            console.log('🔒 Authentication error, logging out...');
+            console.log('Authentication error, logging out...');
             this.keycloakService.logout();
         }
         return throwError(() => error);

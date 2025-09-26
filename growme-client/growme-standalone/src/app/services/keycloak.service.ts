@@ -44,7 +44,7 @@ export class KeycloakService {
 
  async init(): Promise<void> {
         if (!this.isBrowser) {
-            this.initializedSubject.next(true); // Add this line
+            this.initializedSubject.next(true);
             return;
         }
 
@@ -61,7 +61,7 @@ export class KeycloakService {
             });
 
             this.setAuthenticationState(authenticated);
-            this.initializedSubject.next(true); // Add this line - MARK AS INITIALIZED
+            this.initializedSubject.next(true); 
 
             if (authenticated && this.keycloak.tokenParsed) {
                 const userRoles = this.keycloak.tokenParsed.realm_access?.roles || [];
@@ -86,7 +86,7 @@ export class KeycloakService {
         } catch (error) {
             console.error('Keycloak initialization failed:', error);
             this.setAuthenticationState(false);
-            this.initializedSubject.next(true); // Add this line - MARK AS INITIALIZED EVEN ON ERROR
+            this.initializedSubject.next(true); 
         }
     }
 
@@ -167,7 +167,7 @@ async getToken(): Promise<string | null> {
         
         if (this.keycloak.token) {
             console.log('Token length:', this.keycloak.token.length);
-            // Decode token to check expiration
+          
             this.decodeToken(this.keycloak.token);
         }
         
