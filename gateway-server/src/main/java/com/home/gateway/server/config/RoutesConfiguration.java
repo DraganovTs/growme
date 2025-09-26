@@ -32,47 +32,55 @@ public class RoutesConfiguration {
     @Bean
     public RouteLocator growMeRouteConfig(RouteLocatorBuilder routeLocatorBuilder) {
         return routeLocatorBuilder.routes()
-                // USER-SERVICE
+                // USER-SERVICE - FIXED
                 .route("user-service", r -> r.path("/growme/users/**")
                         .filters(f -> applyCommonFilters(f, "userServiceCircuitBreaker")
                                 .rewritePath("/growme/users/(?<segment>.*)", "/api/users/${segment}"))
                         .uri("lb://USER-SERVICE"))
-                // PRODUCT-SERVICE
+
+                // PRODUCT-SERVICE - FIXED
                 .route("product-service-categories", p -> p.path("/growme/categories/**")
                         .filters(f -> applyCommonFilters(f, "productServiceCircuitBreaker")
                                 .rewritePath("/growme/categories/(?<segment>.*)", "/api/categories/${segment}"))
                         .uri("lb://PRODUCT-SERVICE"))
+
                 .route("product-service-owners", p -> p.path("/growme/owners/**")
                         .filters(f -> applyCommonFilters(f, "productServiceCircuitBreaker")
-                                .rewritePath("/growme/owners/(?<segment>.*)", "/${segment}"))
+                                .rewritePath("/growme/owners/(?<segment>.*)", "/api/owners/${segment}")) // FIXED: added /api/
                         .uri("lb://PRODUCT-SERVICE"))
+
                 .route("product-service-products", p -> p.path("/growme/products/**")
                         .filters(f -> applyCommonFilters(f, "productServiceCircuitBreaker")
                                 .rewritePath("/growme/products/(?<segment>.*)", "/api/products/${segment}"))
                         .uri("lb://PRODUCT-SERVICE"))
-                // ORDER-SERVICE
+
+                // ORDER-SERVICE - FIXED
                 .route("order-service-basket", p -> p.path("/growme/basket/**")
                         .filters(f -> applyCommonFilters(f, "orderServiceCircuitBreaker")
-                                .rewritePath("/growme/basket(?<segment>/?.*)", "/api/basket${segment}"))
+                                .rewritePath("/growme/basket/(?<segment>.*)", "/api/basket/${segment}")) // FIXED: proper path
                         .uri("lb://ORDER-SERVICE"))
+
                 .route("order-service-deliverymethods", p -> p.path("/growme/deliverymethods/**")
                         .filters(f -> applyCommonFilters(f, "orderServiceCircuitBreaker")
-                                .rewritePath("/growme/deliverymethods/?(?<segment>/?.*)", "/api/deliverymethods${segment}"))
+                                .rewritePath("/growme/deliverymethods/(?<segment>.*)", "/api/deliverymethods/${segment}")) // FIXED
                         .uri("lb://ORDER-SERVICE"))
+
                 .route("order-service-orders", p -> p.path("/growme/orders/**")
                         .filters(f -> applyCommonFilters(f, "orderServiceCircuitBreaker")
-                                .rewritePath("/growme/orders(?<segment>/?.*)", "/api/orders${segment}")
-                                .addResponseHeader("X-Response-Time", new Date().toString()))
+                                .rewritePath("/growme/orders/(?<segment>.*)", "/api/orders/${segment}")) // FIXED
                         .uri("lb://ORDER-SERVICE"))
-                //KEYCLOAK-ROLE-SERVICE
+
+                // KEYCLOAK-ROLE-SERVICE
                 .route("keycloak-service-roles", p -> p.path("/growme/roles/**")
                         .filters(f -> applyCommonFilters(f, "keycloakRoleServiceCircuitBreaker")
                                 .rewritePath("/growme/roles/(?<segment>.*)", "/api/roles/${segment}"))
                         .uri("lb://KEYCLOAK-ROLE-SERVICE"))
+
                 .route("keycloak-service-users", p -> p.path("/growme/usersk/**")
                         .filters(f -> applyCommonFilters(f, "keycloakRoleServiceCircuitBreaker")
                                 .rewritePath("/growme/usersk/(?<segment>.*)", "/api/usersk/${segment}"))
                         .uri("lb://KEYCLOAK-ROLE-SERVICE"))
+
                 .build();
     }
 
