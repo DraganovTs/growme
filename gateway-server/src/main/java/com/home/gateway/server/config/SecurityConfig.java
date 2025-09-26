@@ -33,6 +33,16 @@ public class SecurityConfig {
     private static final Logger log = LoggerFactory.getLogger(SecurityConfig.class);
 
 
+    private static final String[] PUBLIC_ACTUATOR_PATHS = {
+            "/actuator/**", "/growme/auth/**", "/contactSupport", "/debug/**"
+    };
+
+    private static final String[] PUBLIC_API_PATHS = {
+            "/growme/users/sync", "/growme/users/update/**", "/growme/users/profile-complete/**",
+            "/growme/categories/**", "/growme/owners/**", "/growme/products/**",
+            "/growme/bids/**", "/growme/tasks/**", "/growme/basket/**", "/growme/deliverymethods/**"
+    };
+
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
         return http
@@ -40,8 +50,8 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeExchange(exchanges -> exchanges
                         .pathMatchers(HttpMethod.OPTIONS).permitAll()
-                        .pathMatchers("/actuator/**","/growme/auth/**","/contactSupport","/debug/**").permitAll()
-                        .pathMatchers("/growme/users/**").permitAll()
+                        .pathMatchers(PUBLIC_ACTUATOR_PATHS).permitAll()
+                        .pathMatchers(PUBLIC_API_PATHS).permitAll()
                         .anyExchange().authenticated())
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(
@@ -49,6 +59,7 @@ public class SecurityConfig {
                         )))
                 .build();
     }
+
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {

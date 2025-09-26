@@ -1,13 +1,13 @@
 export const environment = {
     production: false,
-    apiUrl: 'http://localhost:8080/api/',
+    apiUrl: 'http://localhost:8080/growme/', 
     keycloakUrl: 'http://localhost:7080',
     keycloakRealm: 'grow-me',
     keycloakClientId: 'grow-me-client',
     userApi: 'http://localhost:8080/growme/users',
-    productApi: 'http://localhost:8080/api/products',
-    basketApi: 'http://localhost:8080/api/basket',
-    orderApi: 'http://localhost:8080/api/',
-    taskApi: 'http://localhost:8080/api/',
-    pageSize:   6
+    productApi: 'http://localhost:8080/growme/products',
+    basketApi: 'http://localhost:8080/growme/basket',
+    orderApi: 'http://localhost:8080/growme/',
+    taskApi: 'http://localhost:8080/growme/',
+    pageSize: 6
 }
