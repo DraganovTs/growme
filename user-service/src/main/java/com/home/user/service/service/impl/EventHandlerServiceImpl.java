@@ -1,6 +1,7 @@
 package com.home.user.service.service.impl;
 
 import com.home.growme.common.module.events.*;
+import com.home.user.service.config.EventMetrics;
 import com.home.user.service.exception.UserAlreadyExistException;
 import com.home.user.service.exception.UserNotFoundException;
 import com.home.user.service.model.entity.User;
@@ -28,14 +29,16 @@ public class EventHandlerServiceImpl implements EventHandlerService {
     private final EventPublisherService eventPublisherService;
     private final EventValidator eventValidator;
     private final UserCommandService userCommandService;
+    private final EventMetrics metricsService;
 
-    public EventHandlerServiceImpl( UserRepository userRepository,
+    public EventHandlerServiceImpl(UserRepository userRepository,
                                    EventPublisherService eventPublisherService, EventValidator eventValidator,
-                                   UserCommandService userCommandService) {
+                                   UserCommandService userCommandService, EventMetrics metricsService) {
         this.userRepository = userRepository;
         this.eventPublisherService = eventPublisherService;
         this.eventValidator = eventValidator;
         this.userCommandService = userCommandService;
+        this.metricsService = metricsService;
     }
 
 
@@ -55,12 +58,13 @@ public class EventHandlerServiceImpl implements EventHandlerService {
                             user.getEmail());
 
                     eventPublisherService.publishUserCreated(event);
-            } else throw new UserAlreadyExistException("User exist whit that Id: " + result.getUserId());
+                    metricsService.recordRoleAssignmentSuccess();
+            } else {
+                    throw new UserAlreadyExistException("User exist whit that Id: " + result.getUserId());
+                }
 
-        } catch (UserNotFoundException e) {
-            log.error("User not found for role assignment: {}", result.getUserId(), e);
-            throw e;
         } catch (Exception e) {
+            metricsService.recordRoleAssignmentFailure();
             log.error("Failed to process role assignment result", e);
             throw e;
         }
@@ -75,9 +79,11 @@ public class EventHandlerServiceImpl implements EventHandlerService {
 
             userCommandService.addOwnedProduct(event.getUserId(), event.getProductId());
             log.info("Successfully processed product assignment for user {}", event.getUserId());
+            metricsService.recordProductAssignmentSuccess();
 
         } catch (Exception e) {
             log.error("Failed to process product assignment", e);
+            metricsService.recordProductAssignmentFailure();
             throw e;
         }
     }
@@ -92,9 +98,11 @@ public class EventHandlerServiceImpl implements EventHandlerService {
 
             userCommandService.deleteOwnedProduct(event.getUserId(),event.getProductId());
             log.info("Successfully processed product deletion for user {}", event.getUserId());
+            metricsService.recordProductDeletionSuccess();
 
         }catch (Exception e){
             log.error("Failed to process product deletion", e);
+            metricsService.recordProductDeletionFailure();
             throw e;
         }
     }
@@ -109,9 +117,10 @@ public class EventHandlerServiceImpl implements EventHandlerService {
 
             userCommandService.addOwnerOrder(event.getOrderUserId(),event.getOrderId());
             log.info("Successfully added order: {} for user {}",event.getOrderId(), event.getOrderUserId());
-
+            metricsService.recordOrderCompletedSuccess();
         }catch (Exception e){
             log.error("Failed to process add order", e);
+            metricsService.recordOrderCompletedFailure();
             throw e;
         }
     }
