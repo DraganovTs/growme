@@ -21,8 +21,12 @@ import static com.home.growme.common.module.config.kafka.topic.KafkaTopics.*;
 @Service
 public class EventPublisherServiceImpl implements EventPublisherService {
 
-    private final KafkaTemplate<String, Object> kafkaTemplate;
+    private static final int MAX_RETRY_ATTEMPTS = 3;
+    private static final int RETRY_DELAY_MS = 500;
+    private static final int RETRY_MULTIPLIER = 2;
 
+
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
 
     public EventPublisherServiceImpl(KafkaTemplate<String, Object> kafkaTemplate) {
@@ -31,33 +35,33 @@ public class EventPublisherServiceImpl implements EventPublisherService {
 
     @Retryable(
             retryFor = {EventPublishingException.class, ExecutionException.class},
-            maxAttempts = 3,
-            backoff = @Backoff(delay = 500,multiplier = 2)
+            maxAttempts = MAX_RETRY_ATTEMPTS,
+            backoff = @Backoff(delay = RETRY_DELAY_MS, multiplier = RETRY_MULTIPLIER)
     )
-@Override
-public void publishRoleAssignment(String userId, String role) {
-    RoleAssignmentEvent event = new RoleAssignmentEvent(userId, role);
-    try {
-        CompletableFuture<SendResult<String, Object>> future = 
-            kafkaTemplate.send(ROLE_ASSIGNMENT_TOPIC, userId, event);
-            
-        future.get();
-    } catch (Exception e) {
-        log.error("Failed to publish role assignment event for user {}: {}", userId, e.getMessage());
-        throw new EventPublishingException("Failed to publish role assignment event", e);
+    @Override
+    public void publishRoleAssignment(String userId, String role) {
+        RoleAssignmentEvent event = new RoleAssignmentEvent(userId, role);
+        try {
+            CompletableFuture<SendResult<String, Object>> future =
+                    kafkaTemplate.send(ROLE_ASSIGNMENT_TOPIC, userId, event);
+
+            future.get();
+        } catch (Exception e) {
+            log.error("Failed to publish role assignment event for user {}: {}", userId, e.getMessage());
+            throw new EventPublishingException("Failed to publish role assignment event", e);
+        }
     }
-}
 
     @Retryable(
             retryFor = {EventPublishingException.class, ExecutionException.class},
-            maxAttempts = 3,
-            backoff = @Backoff(delay = 500,multiplier = 2)
+            maxAttempts = MAX_RETRY_ATTEMPTS,
+            backoff = @Backoff(delay = RETRY_DELAY_MS, multiplier = RETRY_MULTIPLIER)
     )
     @Override
     public void publishUserCreated(UserCreatedEvent event) {
         try {
             kafkaTemplate.send(USER_CREATE_TOPIC, event.getUserId(), event)
-                    .whenComplete((result,ex) -> {
+                    .whenComplete((result, ex) -> {
                         if (ex != null) {
                             log.error("Failed to publish UserCreatedEvent for userId={} to topic={}. Event: {}",
                                     event.getUserId(), USER_CREATE_TOPIC, event, ex);
@@ -68,27 +72,28 @@ public void publishRoleAssignment(String userId, String role) {
                                     event.getUserId(), USER_CREATE_TOPIC, result.getRecordMetadata().offset());
                         }
                     });
-        }catch (Exception e) {
+        } catch (Exception e) {
             log.error("Critical publish failure for user {}: {}", event.getUserId(), e.getMessage());
         }
     }
+
     @Retryable(
             retryFor = {EventPublishingException.class, ExecutionException.class},
-            maxAttempts = 3,
-            backoff = @Backoff(delay = 500,multiplier = 2)
+            maxAttempts = MAX_RETRY_ATTEMPTS,
+            backoff = @Backoff(delay = RETRY_DELAY_MS, multiplier = RETRY_MULTIPLIER)
     )
     @Override
     public void publishEmailRequest(EmailRequestEvent event) {
         try {
             kafkaTemplate.send(EMAIL_SEND_TOPIC, event)
                     .thenAccept(result -> {
-                        log.info("Mail send result: {}" , result);
+                        log.info("Mail send result: {}", result);
                     })
                     .exceptionally(ex -> {
-                        log.error("Published failed for event: {}", event ,ex);
-                        throw  new EventPublishingException("Critical publishing failure");
+                        log.error("Published failed for event: {}", event, ex);
+                        throw new EventPublishingException("Critical publishing failure");
                     });
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error("Critical publish failure for email {}: {}", event.getEmail(), e.getMessage());
         }
     }

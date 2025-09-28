@@ -3,10 +3,15 @@ package com.home.growme.produt.service.service.impl;
 import com.home.growme.common.module.events.CategoryCreationEvent;
 import com.home.growme.common.module.events.ProductAssignedToUserEvent;
 import com.home.growme.common.module.events.ProductDeletionToUserEvent;
+import com.home.growme.common.module.exceptions.eventPublishing.EventPublishingException;
 import com.home.growme.produt.service.service.EventPublisherService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
+
+import java.util.concurrent.ExecutionException;
 
 import static com.home.growme.common.module.config.kafka.topic.KafkaTopics.*;
 
@@ -14,13 +19,21 @@ import static com.home.growme.common.module.config.kafka.topic.KafkaTopics.*;
 @Service
 public class EventPublisherServiceImpl implements EventPublisherService {
 
+    private static final int MAX_RETRY_ATTEMPTS = 3;
+    private static final int RETRY_DELAY_MS = 500;
+    private static final int RETRY_MULTIPLIER = 2;
+
     private final KafkaTemplate<String,Object> kafkaTemplate;
 
     public EventPublisherServiceImpl(KafkaTemplate<String, Object> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-
+    @Retryable(
+            retryFor = {EventPublishingException.class, ExecutionException.class},
+            maxAttempts = MAX_RETRY_ATTEMPTS,
+            backoff = @Backoff(delay = RETRY_DELAY_MS, multiplier = RETRY_MULTIPLIER)
+    )
     @Override
     public void publishProductAssignment(String userId, String productId) {
         ProductAssignedToUserEvent event = new ProductAssignedToUserEvent(userId, productId);
@@ -41,7 +54,11 @@ public class EventPublisherServiceImpl implements EventPublisherService {
             // TODO: Add dead letter queue handling
         }
     }
-
+    @Retryable(
+            retryFor = {EventPublishingException.class, ExecutionException.class},
+            maxAttempts = MAX_RETRY_ATTEMPTS,
+            backoff = @Backoff(delay = RETRY_DELAY_MS, multiplier = RETRY_MULTIPLIER)
+    )
     @Override
     public void publishProductDeletion(String productId, String ownerId) {
         ProductDeletionToUserEvent event = new ProductDeletionToUserEvent(ownerId,productId);
@@ -62,7 +79,11 @@ public class EventPublisherServiceImpl implements EventPublisherService {
             // TODO: Add dead letter queue handling
         }
     }
-
+    @Retryable(
+            retryFor = {EventPublishingException.class, ExecutionException.class},
+            maxAttempts = MAX_RETRY_ATTEMPTS,
+            backoff = @Backoff(delay = RETRY_DELAY_MS, multiplier = RETRY_MULTIPLIER)
+    )
     @Override
     public void publishCategoryCreation(String categoryId, String categoryName) {
         CategoryCreationEvent event =  new CategoryCreationEvent(categoryId,categoryName);
