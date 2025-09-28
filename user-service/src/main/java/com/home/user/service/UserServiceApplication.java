@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.info.License;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.retry.annotation.EnableRetry;
 
 /**
  * Main entry point for the User Service application.
@@ -25,6 +26,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @see <a href="https://docs.growme.com/user-service">User Service Documentation</a>
  */
 @SpringBootApplication
+@EnableRetry
 @OpenAPIDefinition(
         info = @Info(
                 title = "User Service API",

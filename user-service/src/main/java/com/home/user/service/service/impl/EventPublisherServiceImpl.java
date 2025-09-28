@@ -8,9 +8,12 @@ import com.home.user.service.service.EventPublisherService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import static com.home.growme.common.module.config.kafka.topic.KafkaTopics.*;
 
@@ -26,6 +29,11 @@ public class EventPublisherServiceImpl implements EventPublisherService {
         this.kafkaTemplate = kafkaTemplate;
     }
 
+    @Retryable(
+            retryFor = {EventPublishingException.class, ExecutionException.class},
+            maxAttempts = 3,
+            backoff = @Backoff(delay = 500,multiplier = 2)
+    )
 @Override
 public void publishRoleAssignment(String userId, String role) {
     RoleAssignmentEvent event = new RoleAssignmentEvent(userId, role);
@@ -40,7 +48,11 @@ public void publishRoleAssignment(String userId, String role) {
     }
 }
 
-
+    @Retryable(
+            retryFor = {EventPublishingException.class, ExecutionException.class},
+            maxAttempts = 3,
+            backoff = @Backoff(delay = 500,multiplier = 2)
+    )
     @Override
     public void publishUserCreated(UserCreatedEvent event) {
         try {
@@ -60,7 +72,11 @@ public void publishRoleAssignment(String userId, String role) {
             log.error("Critical publish failure for user {}: {}", event.getUserId(), e.getMessage());
         }
     }
-
+    @Retryable(
+            retryFor = {EventPublishingException.class, ExecutionException.class},
+            maxAttempts = 3,
+            backoff = @Backoff(delay = 500,multiplier = 2)
+    )
     @Override
     public void publishEmailRequest(EmailRequestEvent event) {
         try {
