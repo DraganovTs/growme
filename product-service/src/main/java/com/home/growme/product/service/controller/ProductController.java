@@ -5,7 +5,6 @@ import com.home.growme.common.module.dto.ProductInfo;
 import com.home.growme.common.module.dto.ProductValidationResult;
 import com.home.growme.common.module.exceptions.ErrorResponseDTO;
 import com.home.growme.product.service.model.dto.*;
-import com.home.growme.produt.service.model.dto.*;
 import com.home.growme.product.service.service.ImageService;
 import com.home.growme.product.service.service.ProductService;
 import com.home.growme.product.service.specification.ProductSpecParams;
