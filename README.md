@@ -1,42 +1,89 @@
 # 🌱 GrowMe - Microservices E-commerce Platform
 
-GrowMe is a modern microservices-based e-commerce system designed to connect buyers with local sellers of fresh produce, homemade products, and natural beverages. Built using Spring Boot, Spring Cloud, Kafka, Redis, and Keycloak for secure and scalable distributed architecture.
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.4.1-brightgreen.svg)](https://spring.io/projects/spring-boot)
+[![Java](https://img.shields.io/badge/Java-21-orange.svg)](https://openjdk.java.net/projects/jdk/21/)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
----
+GrowMe is a modern, cloud-native microservices e-commerce platform designed to connect buyers with local sellers of fresh produce, homemade products, and natural beverages. Built with Spring Boot ecosystem and enterprise-grade technologies for scalability, security, and maintainability.
 
-## 🚀 Features
+## 🎯 Overview
 
-- 🛒 **Product Service** – Manages products, categories, and images.
-- 👥 **User Service** – Manages user profiles and roles via Keycloak.
-- 📦 **Order Service** – Handles order creation and tracking.
-- 💳 **Payment Service** – Integrates Stripe for secure payments.
-- 📧 **Email Service** – Sends email notifications (SendGrid).
-- 🔑 **Keycloak API** – Syncs and manages Keycloak users and roles.
-- 🌐 **Gateway Server** – API Gateway using Spring Cloud Gateway.
-- 🧭 **Eureka Server** – Service discovery and registry.
-- ⚙️ **Config Server** – Centralized configuration for all services.
-- 📡 **Kafka Integration** – Asynchronous communication between services.
-- 📊 **Redis Integration** – Caching and token/session management.
+This platform demonstrates a complete microservices architecture with:
+- **Event-driven communication** using Apache Kafka
+- **Centralized authentication** with Keycloak
+- **API Gateway** for unified access
+- **Service discovery** with Eureka
+- **Distributed caching** with Redis
+- **Secure payments** via Stripe integration
+- **Containerized deployment** with Docker
 
----
+## ✨ Key Features
 
-## 🧱 Tech Stack
+### 🛍️ Core Business Services
+- **Product Catalog** - Comprehensive product, category, and inventory management
+- **Order Management** - Complete order lifecycle from creation to fulfillment
+- **User Profiles** - Customer and seller account management
+- **Payment Processing** - Secure payment handling with Stripe integration
+- **Email Notifications** - Automated email communications via SendGrid
 
-| Layer             | Technology                                                                 |
-|------------------|------------------------------------------------------------------------------|
-| Core Framework    | Spring Boot 3.4.1                                                            |
-| Microservices     | Spring Cloud, Eureka, Gateway, Config Server                                |
-| Messaging         | Apache Kafka (Spring Kafka 3.3.4)                                           |
-| Security          | Keycloak, OAuth2, JWT                                                       |
-| Database          | MySQL (Connector 8.0.33), Spring Data JPA                                   |
-| Caching           | Redis (Spring Data Redis, Jedis)                                            |
-| Payment           | Stripe Java SDK                                                             |
-| Email             | SendGrid Java SDK                                                           |
-| Documentation     | SpringDoc OpenAPI (Swagger UI)                                              |
-| Dockerization     | Jib Maven Plugin                                                            |
-| Communication     | Feign Clients, Kafka, REST APIs                                             |
+### 🏗️ Infrastructure Services
+- **API Gateway** - Single entry point with routing and load balancing
+- **Service Registry** - Dynamic service discovery and health monitoring
+- **Configuration Server** - Centralized configuration management
+- **Authentication Service** - OAuth2/JWT-based security with Keycloak
 
----
+### 🔧 Cross-cutting Concerns
+- **Distributed Messaging** - Asynchronous communication with Kafka
+- **Caching Layer** - Performance optimization with Redis
+- **Monitoring & Logging** - Comprehensive observability
+- **Documentation** - Interactive API docs with Swagger UI
+
+## 🏛️ Architecture
+
+### Microservices Overview
+
+### Technology Stack
+
+| Component | Technology | Version |
+|-----------|------------|---------|
+| **Framework** | Spring Boot | 3.4.1 |
+| **Microservices** | Spring Cloud | 2024.0.x |
+| **Message Broker** | Apache Kafka | 3.3.4 |
+| **Security** | Keycloak, OAuth2, JWT | 26.x |
+| **Database** | MySQL | 8.0.33 |
+| **Caching** | Redis | Latest |
+| **API Gateway** | Spring Cloud Gateway | Latest |
+| **Service Discovery** | Netflix Eureka | Latest |
+| **Payment** | Stripe Java SDK | Latest |
+| **Email** | SendGrid | Latest |
+| **Documentation** | SpringDoc OpenAPI | Latest |
+| **Containerization** | Docker, Jib | Latest |
+
+## 📁 Project Structure
+
+growme/ ├── 🏗️ Infrastructure Services │ 
+        ├── config-server/ # Centralized configuration │ 
+        ├── eureka-server/ # Service discovery 
+        │── gateway-server/ # API Gateway
+        ├── 🛒 Business Services │ 
+        ├── product-service/ # Product & inventory management │ 
+        ├── order-service/ # Order processing │ 
+        ├── preorder-service/ # Pre-order handling │ 
+        ├── user-service/ # User profile management │ 
+        ├── payment-service/ # Payment processing 
+        │── email-service/ # Email notifications 
+        ├── 🔐 Security & Integration │
+        ├── keycloak-api/ # Keycloak integration 
+        │── common-module/ # Shared utilities & models
+        ├── 🖥️ Frontend │
+            └── growme-client/ # Angular frontend application 
+        ├── 🐳 Deployment │ 
+        ├── docker/ # Docker configurations │ 
+        ├── docker-compose/ # Compose files & configs │
+            └── uploads/ # File storage
+            └── 📊 Data 
+            └── kafka-volumes/ # Kafka persistent storage
+
 
 ## 🧩 Modules
 growme/
@@ -53,27 +100,144 @@ growme/
 ├── common-module # Shared models & utilities
 └── pom.xml # Parent POM
 
-## ⚙️ How to Run
 
-> 💡 Prerequisites:
-> - Java 21
-> - Docker & Docker Compose
-> - Maven 3.8+
-> - Keycloak 26.x (can be containerized)
+## 🚀 Quick Start
 
-1. **Clone the repository:**
+### Prerequisites
+
+Ensure you have the following installed:
+- ☕ **Java 21** - [Download](https://openjdk.java.net/projects/jdk/21/)
+- 🏗️ **Maven 3.8+** - [Download](https://maven.apache.org/download.cgi)
+- 🐳 **Docker & Docker Compose** - [Download](https://www.docker.com/get-started)
+- 🎯 **Git** - [Download](https://git-scm.com/downloads)
+
+### Installation & Setup
+
+1. **Clone the repository**
    ```bash
    git clone https://github.com/draganovTs/growme.git
    cd growme
+   ```
 
-2. **Start infrastructure (Kafka, MySQL, Redis, Keycloak)**
-docker-compose up -d
+2. **Start Infrastructure Services**
+   ```bash
+   # Start all infrastructure components (MySQL, Redis, Kafka, Keycloak)
+   cd docker-compose
+   docker-compose -f docker-compose-infrastructure.yml up -d
+   
+   # Wait for services to be ready (approximately 2-3 minutes)
+   docker-compose logs -f
+   ```
 
-3. **Start Config, Eureka, and Gateway servers::**
-cd config-server && mvn spring-boot:run
-cd ../eureka-server && mvn spring-boot:run
-cd ../gateway-server && mvn spring-boot:run
+3. **Start Core Services** (in separate terminals)
+   ```bash
+   # Terminal 1: Configuration Server
+   cd config-server
+   mvn spring-boot:run
+   
+   # Terminal 2: Service Discovery
+   cd eureka-server  
+   mvn spring-boot:run
+   
+   # Terminal 3: API Gateway
+   cd gateway-server
+   mvn spring-boot:run
+   ```
 
+4. **Start Business Services**
+   ```bash
+   # Terminal 4: Product Service
+   cd product-service
+   mvn spring-boot:run
+   
+   # Terminal 5: User Service  
+   cd user-service
+   mvn spring-boot:run
+   
+   # Terminal 6: Order Service
+   cd order-service
+   mvn spring-boot:run
+   
+   # Continue with other services as needed...
+   ```
 
-3. **Start Config, Eureka, and Gateway servers::**
+5. **Start Frontend** (optional)
+   ```bash
+   cd growme-client
+   npm install
+   ng serve
+   ```
 
+## 🌐 Service URLs
+
+| Service | URL | Description |
+|---------|-----|-------------|
+| **API Gateway** | http://localhost:8080 | Main application entry point |
+| **Eureka Dashboard** | http://localhost:8761 | Service registry console |
+| **Keycloak Admin** | http://localhost:8181 | Identity management |
+| **Product Service** | http://localhost:8081/api/products | Product management |
+| **Order Service** | http://localhost:8082/api/orders | Order processing |
+| **User Service** | http://localhost:8083/api/users | User management |
+| **Frontend App** | http://localhost:4200 | Angular client |
+
+## 📚 API Documentation
+
+Interactive API documentation is available through Swagger UI:
+- **Gateway Swagger**: http://localhost:8080/swagger-ui.html
+- **Product API**: http://localhost:8081/swagger-ui.html
+- **Order API**: http://localhost:8082/swagger-ui.html
+- **User API**: http://localhost:8083/swagger-ui.html
+
+## 🔧 Development
+
+### Running Tests
+```bash
+# Run all tests
+mvn clean test
+
+# Run tests for specific service
+cd product-service
+mvn test
+```
+# Build all services
+mvn clean compile jib:dockerBuild
+
+# Build specific service
+cd product-service
+mvn compile jib:dockerBuild
+
+# Check service status via Eureka
+curl http://localhost:8761/eureka/apps
+
+# Health check via Gateway
+curl http://localhost:8080/actuator/health
+
+## 📊 Monitoring & Observability
+- **Service Health**: Available via Spring Boot Actuator endpoints
+- **Service Discovery**: Monitor via Eureka Dashboard
+- **Message Queues**: Kafka topics and consumer groups
+- **Database**: MySQL performance and connection pooling
+- **Cache Performance**: Redis monitoring and statistics
+
+## 🤝 Contributing
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+## 🙋‍♂️ Support
+For questions and support:
+- 📧 Email: [your-email@domain.com]()
+- 🐛 Issues: [GitHub Issues](https://github.com/draganovTs/growme/issues)
+- 📖 Documentation: [Wiki](https://github.com/draganovTs/growme/wiki)
+
+## 🚦 Status
+- ✅ **Core Services**: Fully functional
+- ✅ **Authentication**: Keycloak integration complete
+- ✅ **Payment**: Stripe integration active
+- ✅ **Messaging**: Kafka event streaming operational
+- 🔄 **Frontend**: Under active development
+- 📋 **Documentation**: Continuously updated
