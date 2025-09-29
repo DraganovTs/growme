@@ -2,6 +2,8 @@ package com.home.keycloak.api.kafka.handler;
 
 import com.home.growme.common.module.events.RoleAssignmentEvent;
 import com.home.growme.common.module.events.RoleAssignmentResult;
+import com.home.keycloak.api.config.EventMetrics;
+import com.home.keycloak.api.model.enums.EventType;
 import com.home.keycloak.api.service.KeycloakRoleService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -17,13 +19,15 @@ public class RoleAssignmentConsumer {
 
     private final KeycloakRoleService keycloakRoleService;
     private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final EventMetrics eventMetrics;
 
 
 
 
-    public RoleAssignmentConsumer(KeycloakRoleService keycloakRoleService, KafkaTemplate<String, Object> kafkaTemplate) {
+    public RoleAssignmentConsumer(KeycloakRoleService keycloakRoleService, KafkaTemplate<String, Object> kafkaTemplate, EventMetrics eventMetrics) {
         this.keycloakRoleService = keycloakRoleService;
         this.kafkaTemplate = kafkaTemplate;
+        this.eventMetrics = eventMetrics;
     }
 
 
@@ -40,19 +44,23 @@ public class RoleAssignmentConsumer {
                     event.getUserId(),
                    true);
             kafkaTemplate.send(USER_ROLE_ASSIGNMENT_RESULT_TOPIC,event.getUserId(),assignmentResult)
-                    .thenAccept(result-> {
-                        log.debug("Role assignment: {}", result);
-                        // TODO: Add success metrics
-                    })
-                    .exceptionally(ex -> {
-                        log.error("Publish failed for event: {}", event, ex);
-                        // TODO: Add error metrics
-                        return null;
+                    .whenComplete((result, ex) -> {
+                        if (ex != null) {
+                            log.error("Failed to publish RoleAssignmentResult for userId={} to topic={}. Event: {}",
+                                    event.getUserId(), USER_ROLE_ASSIGNMENT_RESULT_TOPIC, assignmentResult, ex);
+                            eventMetrics.recordFailure(EventType.ROLE_ASSIGNMENT);
+                            // TODO: Add dead letter queue handling
+                        } else {
+                            log.debug("Published RoleAssignmentResult for userId={} at offset={}",
+                                    event.getUserId(), result.getRecordMetadata().offset());
+                           eventMetrics.recordSuccess(EventType.ROLE_ASSIGNMENT);
+                        }
                     });
 
         } catch (Exception e) {
             log.error("Critical publish failure for user {}: {}", event.getUserId(), e.getMessage());
             // TODO: Add dead letter queue handling
+            eventMetrics.recordFailure(EventType.ROLE_ASSIGNMENT);
         }
     }
 }

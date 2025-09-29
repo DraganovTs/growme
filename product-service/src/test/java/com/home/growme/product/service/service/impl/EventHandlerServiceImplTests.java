@@ -7,6 +7,7 @@ import com.home.growme.common.module.events.OrderCompletedEvent;
 import com.home.growme.common.module.events.UserCreatedEvent;
 import com.home.growme.product.service.config.EventMetrics;
 import com.home.growme.product.service.exception.OwnerAlreadyExistsException;
+import com.home.growme.product.service.model.enums.EventType;
 import com.home.growme.product.service.service.OwnerService;
 import com.home.growme.product.service.service.ProductService;
 import com.home.growme.product.service.util.EventValidator;
@@ -55,7 +56,7 @@ public class EventHandlerServiceImplTests {
         verify(eventValidator).validateUserCreatedEvent(event);
         verify(ownerService).existsByUserId(event.getUserId());
         verify(ownerService).createOwner(event);
-        verify(metricsService).recordUserDuplicate();
+        verify(metricsService).recordFailure(EventType.USER_CREATED);
     }
 
     @Test
@@ -72,7 +73,7 @@ public class EventHandlerServiceImplTests {
         verify(eventValidator).validateUserCreatedEvent(event);
         verify(ownerService).existsByUserId(event.getUserId());
         verify(ownerService).createOwner(event);
-        verify(metricsService).recordUserDuplicate();
+        verify(metricsService).recordFailure(EventType.USER_CREATED);
     }
 
     @Test
@@ -87,7 +88,7 @@ public class EventHandlerServiceImplTests {
         verify(eventValidator).validateUserCreatedEvent(event);
         verify(ownerService).existsByUserId(event.getUserId());
         verify(ownerService, never()).createOwner(event);
-        verify(metricsService).recordUserDuplicate(); // Should record duplicate
+        verify(metricsService).recordFailure(EventType.USER_CREATED);
     }
 
     @Test
@@ -105,7 +106,7 @@ public class EventHandlerServiceImplTests {
         verify(eventValidator).validateUserCreatedEvent(event);
         verify(ownerService).existsByUserId(event.getUserId());
         verify(ownerService).createOwner(event);
-        verify(metricsService).recordUserFailure();
+        verify(metricsService).recordFailure(EventType.USER_CREATED);
     }
 
     @Test
@@ -130,7 +131,7 @@ public class EventHandlerServiceImplTests {
 
         verify(eventValidator).validateOrderCompletedEvent(event);
         verify(productService).completeOrder(event);
-        verify(metricsService).recordOrderSuccess();
+        verify(metricsService).recordSuccess(EventType.ORDER_COMPLETED);
     }
 
     @Test
@@ -171,7 +172,7 @@ public class EventHandlerServiceImplTests {
 
         verify(eventValidator).validateUserCreatedEvent(event);
         verifyNoInteractions(ownerService);
-        verify(metricsService).recordUserFailure();
+        verify(metricsService).recordFailure(EventType.USER_CREATED);
     }
 
     @Test
@@ -199,7 +200,7 @@ public class EventHandlerServiceImplTests {
 
         verify(eventValidator).validateOrderCompletedEvent(event);
         verifyNoInteractions(productService);
-        verify(metricsService).recordOrderFailure();
+        verify(metricsService).recordFailure(EventType.ORDER_COMPLETED);
     }
 
     @Test
@@ -209,13 +210,13 @@ public class EventHandlerServiceImplTests {
 
         when(ownerService.existsByUserId(event.getUserId())).thenReturn(false);
         eventHandlerService.handleUserCreatedEvent(event);
-        verify(metricsService).recordUserSuccess();
+        verify(metricsService).recordSuccess(EventType.USER_CREATED);
 
         reset(metricsService, ownerService);
 
         when(ownerService.existsByUserId(event.getUserId())).thenReturn(true);
         eventHandlerService.handleUserCreatedEvent(event);
-        verify(metricsService).recordUserDuplicate();
+        verify(metricsService).recordFailure(EventType.USER_CREATED);
 
         reset(metricsService, ownerService);
 
@@ -224,7 +225,7 @@ public class EventHandlerServiceImplTests {
 
         assertThrows(RuntimeException.class,
                 () -> eventHandlerService.handleUserCreatedEvent(event));
-        verify(metricsService).recordOrderFailure();
+        verify(metricsService).recordFailure(EventType.ORDER_COMPLETED);
     }
 
     @Test
