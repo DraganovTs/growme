@@ -11,6 +11,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.kafka.annotation.EnableKafka;
+import org.springframework.retry.annotation.EnableRetry;
 
 @OpenAPIDefinition(
         info = @Info(
@@ -48,6 +49,7 @@ import org.springframework.kafka.annotation.EnableKafka;
 @EnableFeignClients(basePackages = "com.home.order.service.feign")
 @SpringBootApplication
 @EnableKafka
+@EnableRetry
 @ConfigurationPropertiesScan
 public class OrderServiceApplication {
 

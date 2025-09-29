@@ -8,6 +8,7 @@ import com.home.growme.common.module.events.OrderConfirmationEmailEvent;
 import com.home.growme.common.module.events.PaymentIntentRequestEvent;
 import com.home.growme.common.module.events.PaymentIntentResponseEvent;
 import com.home.growme.common.module.exceptions.eventPublishing.EventPublishingException;
+import com.home.order.service.config.EventMetrics;
 import com.home.order.service.config.PaymentProperties;
 import com.home.order.service.feign.UserServiceClient;
 import com.home.order.service.service.CorrelationService;
@@ -46,6 +47,9 @@ public class EventPublisherServiceImplTests {
     @Mock
     private ObjectMapper objectMapper;
 
+    @Mock
+    private EventMetrics eventMetrics;
+
     @InjectMocks
     private EventPublisherServiceImpl eventPublisherService;
 
@@ -61,7 +65,8 @@ public class EventPublisherServiceImplTests {
                 correlationService,
                 paymentProperties,
                 objectMapper,
-                userServiceClient
+                userServiceClient,
+                eventMetrics
         );
     }
 
@@ -119,7 +124,7 @@ public class EventPublisherServiceImplTests {
 
         ObjectMapper brokenMapper = mock(ObjectMapper.class);
         EventPublisherServiceImpl brokenService = new EventPublisherServiceImpl(
-                kafkaTemplate, correlationService, paymentProperties, brokenMapper, userServiceClient
+                kafkaTemplate, correlationService, paymentProperties, brokenMapper, userServiceClient,eventMetrics
         );
 
         when(brokenMapper.writeValueAsString(any(PaymentIntentRequestEvent.class)))

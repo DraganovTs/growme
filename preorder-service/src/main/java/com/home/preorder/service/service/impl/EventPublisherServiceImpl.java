@@ -7,13 +7,21 @@ import com.home.preorder.service.model.enums.EventType;
 import com.home.preorder.service.service.EventPublisherService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
+
+import java.util.concurrent.ExecutionException;
 
 import static com.home.growme.common.module.config.kafka.topic.KafkaTopics.EMAIL_SEND_TOPIC;
 
 @Slf4j
 @Service
 public class EventPublisherServiceImpl implements EventPublisherService {
+
+    private static final int MAX_RETRY_ATTEMPTS = 3;
+    private static final int RETRY_DELAY_MS = 500;
+    private static final int RETRY_MULTIPLIER = 2;
 
     private final KafkaTemplate<String,Object> kafkaTemplate;
     private final EventMetrics eventMetrics;
@@ -23,6 +31,11 @@ public class EventPublisherServiceImpl implements EventPublisherService {
         this.eventMetrics = eventMetrics;
     }
 
+    @Retryable(
+            retryFor = {EventPublishingException.class, ExecutionException.class},
+            maxAttempts = MAX_RETRY_ATTEMPTS,
+            backoff = @Backoff(delay = RETRY_DELAY_MS, multiplier = RETRY_MULTIPLIER)
+    )
     @Override
     public void publishEmailRequest(EmailRequestEvent event) {
         System.out.println("Working well");

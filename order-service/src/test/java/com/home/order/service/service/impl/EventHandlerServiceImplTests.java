@@ -6,11 +6,13 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.home.growme.common.module.events.PaymentFailureEvent;
 import com.home.growme.common.module.events.PaymentIntentResponseEvent;
 import com.home.growme.common.module.events.UserCreatedEvent;
+import com.home.order.service.config.EventMetrics;
 import com.home.order.service.exception.PaymentFailedException;
 import com.home.order.service.model.enums.OrderStatus;
 import com.home.order.service.service.CorrelationService;
 import com.home.order.service.service.OrderService;
 import com.home.order.service.service.OwnerService;
+import com.home.order.service.util.EventValidator;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -27,6 +29,8 @@ public class EventHandlerServiceImplTests {
     private OwnerService ownerService;
     private OrderService orderService;
     private EventHandlerServiceImpl eventHandlerService;
+    private EventMetrics eventMetrics;
+    private EventValidator eventValidator;
 
     @BeforeEach
     void setUp() {
@@ -35,7 +39,10 @@ public class EventHandlerServiceImplTests {
         objectMapper.registerModule(new JavaTimeModule());
         ownerService = mock(OwnerService.class);
         orderService = mock(OrderService.class);
-        eventHandlerService = new EventHandlerServiceImpl(correlationService, objectMapper, ownerService, orderService);
+        eventValidator = mock(EventValidator.class);
+        eventMetrics = mock(EventMetrics.class);
+        eventHandlerService = new EventHandlerServiceImpl(correlationService, objectMapper, ownerService, orderService,
+                eventMetrics, eventValidator);
     }
 
     @Test
@@ -57,7 +64,8 @@ public class EventHandlerServiceImplTests {
 
     @Test
     void shouldNotProcessPaymentIntentResponseWithoutCorrelationId() {
-        PaymentIntentResponseEvent responseEvent =  new PaymentIntentResponseEvent(null, "payment123", "secret-456", "succeeded");;
+        PaymentIntentResponseEvent responseEvent = new PaymentIntentResponseEvent(null, "payment123", "secret-456", "succeeded");
+        ;
         ConsumerRecord<String, Object> record = new ConsumerRecord<>("topic", 1, 1L, "key", responseEvent);
 
         eventHandlerService.handlePaymentResponse(record);

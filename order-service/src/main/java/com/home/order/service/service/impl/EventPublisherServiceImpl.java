@@ -8,8 +8,10 @@ import com.home.growme.common.module.events.OrderConfirmationEmailEvent;
 import com.home.growme.common.module.events.PaymentIntentRequestEvent;
 import com.home.growme.common.module.events.PaymentIntentResponseEvent;
 import com.home.growme.common.module.exceptions.eventPublishing.EventPublishingException;
+import com.home.order.service.config.EventMetrics;
 import com.home.order.service.config.PaymentProperties;
 import com.home.order.service.feign.UserServiceClient;
+import com.home.order.service.model.enums.EventType;
 import com.home.order.service.service.CorrelationService;
 import com.home.order.service.service.EventPublisherService;
 import lombok.extern.slf4j.Slf4j;
@@ -32,15 +34,17 @@ public class EventPublisherServiceImpl implements EventPublisherService {
     private final PaymentProperties paymentProperties;
     private final ObjectMapper objectMapper;
     private final UserServiceClient userServiceClient;
+    private final EventMetrics eventMetrics;
 
     public EventPublisherServiceImpl(KafkaTemplate<String, Object> kafkaTemplate, CorrelationService correlationService,
                                      PaymentProperties paymentProperties, ObjectMapper objectMapper,
-                                     UserServiceClient userServiceClient) {
+                                     UserServiceClient userServiceClient, EventMetrics eventMetrics) {
         this.kafkaTemplate = kafkaTemplate;
         this.correlationService = correlationService;
         this.paymentProperties = paymentProperties;
         this.objectMapper = objectMapper;
         this.userServiceClient = userServiceClient;
+        this.eventMetrics = eventMetrics;
     }
 
     @Override
@@ -56,44 +60,55 @@ public class EventPublisherServiceImpl implements EventPublisherService {
     @Override
     public void publishCompletedOrder(OrderCompletedEvent event) {
 
-
-
         try {
-
             kafkaTemplate.send(ORDER_COMPLETED_TOPIC, event)
-                    .thenAccept(result -> {
-                        log.debug("Published order completed event for order {}", event.getOrderId());
+                    .whenComplete((result, ex) -> {
+                        if (ex != null) {
+                            log.error("Failed to publish OrderCompletedEvent for orderId={} to topic={}",
+                                    event.getOrderId(), ORDER_COMPLETED_TOPIC, ex);
+                            eventMetrics.recordFailure(EventType.ORDER_COMPLETED);
+                            throw new EventPublishingException("Failed to publish order completed event", ex);
+                        }
 
-                        UserInfo userInfo = userServiceClient.getUserInfo(event.getOrderUserId());
+                        log.debug("Published OrderCompletedEvent for orderId={} at offset={}",
+                                event.getOrderId(), result.getRecordMetadata().offset());
+                        eventMetrics.recordSuccess(EventType.ORDER_COMPLETED);
 
-                        OrderConfirmationEmailEvent emailEvent = new OrderConfirmationEmailEvent(
-                                event.getBuyerEmail(),
-                                event.getOrderId(),
-                                userInfo,
-                                event.getTotalAmount(),
-                                event.getItems()
-                        );
+                        // publish confirmation email event
+                        try {
+                            UserInfo userInfo = userServiceClient.getUserInfo(event.getOrderUserId());
 
-                        kafkaTemplate.send(EMAIL_SEND_TOPIC, emailEvent)
-                                .thenAccept(emailResult ->
-                                        log.debug("Published email event for order {}", event.getOrderId()))
-                                .exceptionally(emailEx -> {
-                                    log.error("Email event publish failed for order {}", event.getOrderId(), emailEx);
-                                    // TODO: Add to retry queue
-                                    return null;
-                                });
-                        // TODO: Add success metrics
-                    }).exceptionally(ex -> {
-                        log.error("Publish failed for event: {}", event, ex);
-                        // TODO: Add error metrics
-                        return null;
+                            OrderConfirmationEmailEvent emailEvent = new OrderConfirmationEmailEvent(
+                                    event.getBuyerEmail(),
+                                    event.getOrderId(),
+                                    userInfo,
+                                    event.getTotalAmount(),
+                                    event.getItems()
+                            );
 
+                            kafkaTemplate.send(EMAIL_SEND_TOPIC, emailEvent)
+                                    .whenComplete((emailResult, emailEx) -> {
+                                        if (emailEx != null) {
+                                            log.error("Failed to publish OrderConfirmationEmailEvent for orderId={}",
+                                                    event.getOrderId(), emailEx);
+                                            eventMetrics.recordFailure(EventType.EMAIL_SEND);
+                                            // TODO: DLQ or retry queue
+                                        } else {
+                                            log.debug("Published OrderConfirmationEmailEvent for orderId={} at offset={}",
+                                                    event.getOrderId(), emailResult.getRecordMetadata().offset());
+                                            eventMetrics.recordSuccess(EventType.EMAIL_SEND);
+                                        }
+                                    });
+                        } catch (Exception emailEx) {
+                            log.error("Error preparing OrderConfirmationEmailEvent for orderId={}: {}",
+                                    event.getOrderId(), emailEx.getMessage(), emailEx);
+                            eventMetrics.recordFailure(EventType.EMAIL_SEND);
+                        }
                     });
         } catch (Exception e) {
             log.error("Critical publish failure for order {}: {}", event.getOrderId(), e.getMessage());
-            // TODO: Add dead letter queue handling
-            throw new EventPublishingException("Critical publishing failure");
-
+            eventMetrics.recordFailure(EventType.ORDER_COMPLETED);
+            throw new EventPublishingException("Critical publishing failure", e);
         }
     }
 
@@ -117,13 +132,16 @@ public class EventPublisherServiceImpl implements EventPublisherService {
         try {
             String payload = objectMapper.writeValueAsString(event);
             kafkaTemplate.send(PAYMENT_INTENT_REQUESTS_TOPIC, payload)
-                    .thenAccept(result -> log.debug("Published payment intent for basket {} [Correlation: {}]",
-                            basketId, correlationId))
-                    .exceptionally(ex -> {
-                        log.error("Publish failed for basket {} [Correlation: {}]", basketId, correlationId, ex);
-                        correlationService.completeExceptionally(correlationId,
-                                new EventPublishingException("Failed to publish payment intent event"));
-                        return null;
+                    .whenComplete((result, ex) -> {
+                        if (ex != null) {
+                            log.error("Failed to publish PaymentIntentRequestEvent for basket {} [Correlation: {}]",
+                                    basketId, correlationId, ex);
+                            correlationService.completeExceptionally(correlationId,
+                                    new EventPublishingException("Failed to publish payment intent event", ex));
+                        } else {
+                            log.debug("Published PaymentIntentRequestEvent for basket {} [Correlation: {}] at offset={}",
+                                    basketId, correlationId, result.getRecordMetadata().offset());
+                        }
                     });
         } catch (JsonProcessingException e) {
             log.error("Serialization failed for basket {} [Correlation: {}]", basketId, correlationId, e);
