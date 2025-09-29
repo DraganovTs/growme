@@ -5,6 +5,7 @@ import com.home.user.service.config.EventMetrics;
 import com.home.user.service.exception.UserAlreadyExistException;
 import com.home.user.service.exception.UserNotFoundException;
 import com.home.user.service.model.entity.User;
+import com.home.user.service.model.enums.EventType;
 import com.home.user.service.repository.UserRepository;
 import com.home.user.service.service.EventHandlerService;
 import com.home.user.service.service.EventPublisherService;
@@ -29,16 +30,16 @@ public class EventHandlerServiceImpl implements EventHandlerService {
     private final EventPublisherService eventPublisherService;
     private final EventValidator eventValidator;
     private final UserCommandService userCommandService;
-    private final EventMetrics metricsService;
+    private final EventMetrics eventMetrics;
 
     public EventHandlerServiceImpl(UserRepository userRepository,
                                    EventPublisherService eventPublisherService, EventValidator eventValidator,
-                                   UserCommandService userCommandService, EventMetrics metricsService) {
+                                   UserCommandService userCommandService, EventMetrics eventMetrics) {
         this.userRepository = userRepository;
         this.eventPublisherService = eventPublisherService;
         this.eventValidator = eventValidator;
         this.userCommandService = userCommandService;
-        this.metricsService = metricsService;
+        this.eventMetrics = eventMetrics;
     }
 
 
@@ -58,13 +59,13 @@ public class EventHandlerServiceImpl implements EventHandlerService {
                             user.getEmail());
 
                     eventPublisherService.publishUserCreated(event);
-                    metricsService.recordRoleAssignmentSuccess();
+                    eventMetrics.recordSuccess(EventType.ROLE_ASSIGNMENT);
             } else {
                     throw new UserAlreadyExistException("User exist whit that Id: " + result.getUserId());
                 }
 
         } catch (Exception e) {
-            metricsService.recordRoleAssignmentFailure();
+            eventMetrics.recordFailure(EventType.ROLE_ASSIGNMENT);
             log.error("Failed to process role assignment result", e);
             throw e;
         }
@@ -79,11 +80,11 @@ public class EventHandlerServiceImpl implements EventHandlerService {
 
             userCommandService.addOwnedProduct(event.getUserId(), event.getProductId());
             log.info("Successfully processed product assignment for user {}", event.getUserId());
-            metricsService.recordProductAssignmentSuccess();
+            eventMetrics.recordSuccess(EventType.PRODUCT_ASSIGNMENT);
 
         } catch (Exception e) {
             log.error("Failed to process product assignment", e);
-            metricsService.recordProductAssignmentFailure();
+            eventMetrics.recordFailure(EventType.PRODUCT_ASSIGNMENT);
             throw e;
         }
     }
@@ -98,11 +99,11 @@ public class EventHandlerServiceImpl implements EventHandlerService {
 
             userCommandService.deleteOwnedProduct(event.getUserId(),event.getProductId());
             log.info("Successfully processed product deletion for user {}", event.getUserId());
-            metricsService.recordProductDeletionSuccess();
+            eventMetrics.recordSuccess(EventType.PRODUCT_DELETION);
 
         }catch (Exception e){
             log.error("Failed to process product deletion", e);
-            metricsService.recordProductDeletionFailure();
+            eventMetrics.recordFailure(EventType.PRODUCT_DELETION);
             throw e;
         }
     }
@@ -117,10 +118,10 @@ public class EventHandlerServiceImpl implements EventHandlerService {
 
             userCommandService.addOwnerOrder(event.getOrderUserId(),event.getOrderId());
             log.info("Successfully added order: {} for user {}",event.getOrderId(), event.getOrderUserId());
-            metricsService.recordOrderCompletedSuccess();
+            eventMetrics.recordSuccess(EventType.ORDER_COMPLETED);
         }catch (Exception e){
             log.error("Failed to process add order", e);
-            metricsService.recordOrderCompletedFailure();
+            eventMetrics.recordFailure(EventType.ORDER_COMPLETED);
             throw e;
         }
     }

@@ -25,13 +25,13 @@ public class EventHandlerServiceImpl implements EventHandlerService {
     private final EventValidator eventValidator;
     private final ProductService productService;
 
-    private final EventMetrics metricsService;
+    private final EventMetrics eventMetrics;
 
-    public EventHandlerServiceImpl(OwnerService ownerService, EventValidator eventValidator, ProductService productService, EventMetrics metricsService) {
+    public EventHandlerServiceImpl(OwnerService ownerService, EventValidator eventValidator, ProductService productService, EventMetrics eventMetrics) {
         this.ownerService = ownerService;
         this.eventValidator = eventValidator;
         this.productService = productService;
-        this.metricsService = metricsService;
+        this.eventMetrics = eventMetrics;
     }
 
 
@@ -47,23 +47,23 @@ public class EventHandlerServiceImpl implements EventHandlerService {
 
             if (ownerService.existsByUserId(event.getUserId())) {
                 log.warn("Skipping owner creation, already exists for userId={}", event.getUserId());
-                metricsService.recordUserDuplicate();
+                eventMetrics.recordUserDuplicate();
                 return;
             }
 
             ownerService.createOwner(event);
             log.info("Successfully created owner for user: {}", event.getUserId());
-            metricsService.recordUserSuccess();
+            eventMetrics.recordUserSuccess();
         } catch (IllegalArgumentException e) {
             log.error("Invalid UserCreatedEvent received for userId={}: {}", event.getUserId(), e.getMessage());
-            metricsService.recordOrderFailure();
+            eventMetrics.recordOrderFailure();
         } catch (OwnerAlreadyExistsException e){
             log.warn("Owner already exists for user: {}", event.getUserId());
-            metricsService.recordUserDuplicate();
+            eventMetrics.recordUserDuplicate();
 
         }catch (Exception e) {
             log.error("Failed to process user creation event for user: {}", event.getUserId(), e);
-            metricsService.recordOrderFailure();
+            eventMetrics.recordOrderFailure();
             throw e;
         }
 
@@ -80,14 +80,14 @@ public class EventHandlerServiceImpl implements EventHandlerService {
 
             productService.completeOrder(event);
             log.info("Successfully processed order: {}", event.getOrderId());
-            metricsService.recordOrderSuccess();
+            eventMetrics.recordOrderSuccess();
 
         } catch (IllegalArgumentException e) {
             log.error("Invalid OrderCompletedEvent received for orderId={}: {}", event.getOrderId(), e.getMessage());
-            metricsService.recordOrderFailure();
+            eventMetrics.recordOrderFailure();
         } catch (Exception e) {
             log.error("Failed to process order completion event for order: {}", event.getOrderId(), e);
-            metricsService.recordOrderFailure();
+            eventMetrics.recordOrderFailure();
             throw e;
 
         }
