@@ -25,22 +25,28 @@ public class BasketServiceImpl implements BasketService {
 
     @Override
     public BasketData createOrUpdateBasket(BasketData basketData) {
+        log.info("Creating/updating basket with ID: {}", basketData.getId());
 
-        Optional<Basket> basketOptional = basketRepository.findById(basketData.getId());
-        Basket basket= null;
-        if (basketOptional.isPresent()){
-            System.out.println("basket is present");
-            basket = basketOptional.get();
-        }else {
-            System.out.println("basket is not present");
-            basket = new Basket(basketData.getId());
+        if (basketData.getId() == null || basketData.getId().trim().isEmpty()) {
+            throw new IllegalArgumentException("Basket ID cannot be null or empty");
         }
 
-        basket = basketMapper.mapBasketDataToBasket(basket, basketData);
-        basketRepository.save(basket);
+        Optional<Basket> basketOptional = basketRepository.findById(basketData.getId());
+        Basket basket;
 
+        if (basketOptional.isPresent()) {
+            log.info("Updating existing basket with ID: {}", basketData.getId());
+            basket = basketOptional.get();
+            basket = basketMapper.mapBasketDataToBasket(basket, basketData);
+        } else {
+            log.info("Creating new basket with ID: {}", basketData.getId());
+            basket = basketMapper.mapBasketDataToBasket(new Basket(basketData.getId()), basketData);
+        }
 
-        return basketMapper.mapBasketToBasketData(basketRepository.save(basket));
+        Basket savedBasket = basketRepository.save(basket);
+        log.info("Basket saved successfully with ID: {}", savedBasket.getId());
+
+        return basketMapper.mapBasketToBasketData(savedBasket);
     }
 
     @Override

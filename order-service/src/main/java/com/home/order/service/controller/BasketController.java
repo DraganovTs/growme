@@ -49,6 +49,7 @@ public class BasketController {
     })
     @PostMapping
     public ResponseEntity<BasketData> createOrUpdateBasket(@RequestBody @Valid BasketData basketData){
+        log.info("Received basket: {}", basketData);
         BasketData savedBasked = basketService.createOrUpdateBasket(basketData);
         return ResponseEntity.ok(savedBasked);
     }

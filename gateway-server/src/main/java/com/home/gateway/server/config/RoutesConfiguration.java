@@ -1,6 +1,5 @@
 package com.home.gateway.server.config;
 
-import com.home.gateway.server.filters.UserInfoForwardingFilter;
 import org.springframework.cloud.gateway.filter.ratelimit.KeyResolver;
 import org.springframework.cloud.gateway.filter.ratelimit.RedisRateLimiter;
 import org.springframework.cloud.gateway.route.RouteLocator;
@@ -12,7 +11,6 @@ import org.springframework.http.HttpMethod;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
-import java.util.Date;
 
 @Configuration
 public class RoutesConfiguration {
@@ -65,11 +63,15 @@ public class RoutesConfiguration {
                         .uri("lb://PRODUCT-SERVICE"))
 
                 // ORDER-SERVICE - FIXED
-                .route("order-service-basket", p -> p.path("/growme/basket/**")
+                .route("order-service-basket-root", p -> p.path("/growme/basket")
+                        .filters(f -> applyCommonFilters(f, "orderServiceCircuitBreaker")
+                                .rewritePath("/growme/basket", "/api/basket"))
+                        .uri("lb://ORDER-SERVICE"))
+
+                .route("order-service-basket-segment", p -> p.path("/growme/basket/**")
                         .filters(f -> applyCommonFilters(f, "orderServiceCircuitBreaker")
                                 .rewritePath("/growme/basket/(?<segment>.*)", "/api/basket/${segment}"))
                         .uri("lb://ORDER-SERVICE"))
-
                 .route("order-service-deliverymethods", p -> p.path("/growme/deliverymethods/**")
                         .filters(f -> applyCommonFilters(f, "orderServiceCircuitBreaker")
                                 .rewritePath("/growme/deliverymethods/(?<segment>.*)", "/api/deliverymethods/${segment}"))
