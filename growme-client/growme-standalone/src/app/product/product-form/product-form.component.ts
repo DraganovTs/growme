@@ -285,7 +285,7 @@ export class ProductFormComponent implements OnInit {
       window.URL.revokeObjectURL(this.selectedImageUrl);
     }
     console.log('Final imageUrl value:', this.productForm.value.imageUrl); // Debug log
-    this.router.navigate(['/products']);
+    this.router.navigate(['seller/products']);
   }
 
   handleImageError(event: Event): void {

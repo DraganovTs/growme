@@ -52,51 +52,51 @@
     </aside>
 
     <!-- Main Content -->
-    <main class="col-md-9 col-lg-10 p-4">
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-          <h2>My Products</h2>
-          <p class="text-muted mb-0" *ngIf="totalCount > 0 && !isLoading">
-            Showing <strong>
-              {{ (currentParams.pageIndex - 1) * currentParams.pageSize + 1 }} -
-              {{ currentParams.pageIndex * currentParams.pageSize > totalCount 
-                ? totalCount 
-                : currentParams.pageIndex * currentParams.pageSize }}
-            </strong> of <strong>{{ totalCount }}</strong> products
-          </p>
-          <p class="text-muted mb-0" *ngIf="isLoading">Loading products...</p>
-        </div>
-        <button (click)="addNewProduct()" class="btn btn-primary">
-          <i class="fas fa-plus me-1"></i> Add Product
-        </button>
-      </div>
+ <main class="col-md-9 col-lg-10 p-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2>My Products</h2>
+      <p class="text-muted mb-0" *ngIf="totalCount > 0 && !isLoading">
+        Showing <strong>
+          {{ (currentParams.pageIndex - 1) * currentParams.pageSize + 1 }} -
+          {{ currentParams.pageIndex * currentParams.pageSize > totalCount 
+            ? totalCount 
+            : currentParams.pageIndex * currentParams.pageSize }}
+        </strong> of <strong>{{ totalCount }}</strong> products
+      </p>
+      <p class="text-muted mb-0" *ngIf="isLoading">Loading products...</p>
+    </div>
+    <a routerLink="/products/add" class="btn btn-primary">
+      <i class="fas fa-plus me-1"></i> Add Product
+    </a>
+  </div>
 
       <!-- Error State -->
-      <div *ngIf="errorMessage && !isLoading" class="alert alert-danger alert-dismissible fade show" role="alert">
-        <strong>Error:</strong> {{ errorMessage }}
-        <button type="button" class="btn-close" (click)="errorMessage = ''" aria-label="Close"></button>
-      </div>
+  <div *ngIf="errorMessage && !isLoading" class="alert alert-danger alert-dismissible fade show" role="alert">
+    <strong>Error:</strong> {{ errorMessage }}
+    <button type="button" class="btn-close" (click)="errorMessage = ''" aria-label="Close"></button>
+  </div>
 
-      <!-- Loading State -->
-      <div *ngIf="isLoading" class="text-center py-5">
-        <div class="spinner-border text-primary mb-3" role="status">
-          <span class="visually-hidden">Loading...</span>
-        </div>
-        <h5>Loading your products...</h5>
-      </div>
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="text-center py-5">
+    <div class="spinner-border text-primary mb-3" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <h5>Loading your products...</h5>
+  </div>
 
-      <!-- Empty State -->
-      <div *ngIf="!isLoading && !errorMessage && products.length === 0" class="text-center py-5">
-        <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
-        <h4>No products found</h4>
-        <p class="text-muted mb-3">Try adjusting your search or filters</p>
-        <button (click)="onReset()" class="btn btn-outline-secondary me-2">
-          <i class="fas fa-sync-alt me-1"></i> Reset Filters
-        </button>
-        <button (click)="addNewProduct()" class="btn btn-primary">
-          <i class="fas fa-plus me-1"></i> Add New Product
-        </button>
-      </div>
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && !errorMessage && products.length === 0" class="text-center py-5">
+    <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+    <h4>No products found</h4>
+    <p class="text-muted mb-3">Try adjusting your search or filters</p>
+    <button (click)="onReset()" class="btn btn-outline-secondary me-2">
+      <i class="fas fa-sync-alt me-1"></i> Reset Filters
+    </button>
+    <a routerLink="/products/add" class="btn btn-primary">
+      <i class="fas fa-plus me-1"></i> Add New Product
+    </a>
+  </div>
 
       <!-- Products Grid -->
       <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" *ngIf="!isLoading && !errorMessage && products.length > 0">

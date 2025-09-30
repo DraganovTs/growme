@@ -1,6 +1,6 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { KeycloakService } from '../../services/keycloak.service';
 import { ICategory, IProduct } from '../../shared/model/product';
 import { ISellerParams } from '../../shared/model/sellerparams';
@@ -19,6 +19,7 @@ import { SellerService } from '../../services/seller-service';
     PaginationModule,
     SellerProductItemComponent,
     FormsModule,
+    RouterModule,
   ],
   templateUrl: './seller-product.component.html',
   styleUrls: ['./seller-product.component.scss']
