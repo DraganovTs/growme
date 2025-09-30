@@ -69,23 +69,30 @@ export class SellerProductComponent implements OnInit {
     this.loadProducts();
   }
 
-  private loadProducts(): void {
-    this.isLoading = true;
-    this.errorMessage = '';
+private loadProducts(): void {
+  this.isLoading = true;
+  this.errorMessage = '';
 
-    this.sellerService.getProducts().subscribe({
-      next: (response) => {
-        this.products = response.dataList || [];
+  this.sellerService.getProducts().subscribe({
+    next: (response) => {
+      if (response && response.dataList) {
+        this.products = response.dataList;
         this.totalCount = response.totalCount || 0;
-        this.isLoading = false;
-      },
-      error: (err) => {
-        console.error('Error loading products:', err);
-        this.errorMessage = 'Failed to load products';
-        this.isLoading = false;
+      } else {
+        this.products = [];
+        this.totalCount = 0;
       }
-    });
-  }
+      this.isLoading = false;
+    },
+    error: (err) => {
+      console.error('Error loading products:', err);
+      this.errorMessage = 'Failed to load products';
+      this.products = []; 
+      this.totalCount = 0;
+      this.isLoading = false;
+    }
+  });
+}
 
   private loadCategories(): void {
     this.categoryService.getCategories().subscribe({
@@ -122,24 +129,26 @@ export class SellerProductComponent implements OnInit {
     }
   }
 
-  onSearch(): void {
-    const params = this.sellerService.getSellerParams();
-    params.search = this.searchQuery.trim();
-    params.pageIndex = 1;
-    this.sellerService.setSellerParams(params);
-    this.loadProducts();
-  }
+onSearch(): void {
+  this.errorMessage = ''; 
+  const params = this.sellerService.getSellerParams();
+  params.search = this.searchQuery.trim();
+  params.pageIndex = 1;
+  this.sellerService.setSellerParams(params);
+  this.loadProducts();
+}
 
-  onReset(): void {
-    this.searchQuery = '';
-    const params = this.sellerService.resetSellerParams();
-    const userId = this.keycloakService.getUserId();
-    if (userId) {
-      params.ownerId = userId;
-    }
-    this.sellerService.setSellerParams(params);
-    this.loadProducts();
+ onReset(): void {
+  this.searchQuery = '';
+  this.errorMessage = ''; 
+  const params = this.sellerService.resetSellerParams();
+  const userId = this.keycloakService.getUserId();
+  if (userId) {
+    params.ownerId = userId;
   }
+  this.sellerService.setSellerParams(params);
+  this.loadProducts();
+}
 
   editProduct(productId: string): void {
     this.router.navigate(['/seller/products/edit', productId]);
