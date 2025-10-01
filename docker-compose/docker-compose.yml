@@ -349,6 +349,20 @@ services:
 #    extends:
 #      file: common_config.yml
 #      service: microservice-db-config
+  preorder-service:
+    image: tzetzaka2/preorder-service:v1
+    container_name: preorder-service
+    ports:
+      - "8086:8086"
+    deploy:
+      resources:
+        limits:
+          memory: 1000M
+    environment:
+      SPRING_APPLICATION_NAME: preorder-service
+    extends:
+      file: common_config.yml
+      service: microservice-db-config
 
   gateway-server:
     image: tzetzaka2/gateway-server:v1
