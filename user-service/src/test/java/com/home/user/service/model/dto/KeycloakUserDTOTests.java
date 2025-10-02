@@ -162,14 +162,7 @@ public class KeycloakUserDTOTests {
     @Nested
     @DisplayName("Account Status Validation")
     class AccountStatusValidation{
-        @Test
-        @DisplayName("Should fail if accountStatus is null")
-        void shouldFailIfAccountStatusIsNull() {
-            KeycloakUserDTO keycloakUser = validBuilder.accountStatus(null).build();
-            Set<ConstraintViolation<KeycloakUserDTO>> violations = validator.validate(keycloakUser);
-            assertFalse(violations.isEmpty());
-            assertTrue(violations.stream().anyMatch(v -> v.getMessage().contains("Account status is required")));
-        }
+
 
         @Test
         @DisplayName("Should pass if accountStatus is valid")

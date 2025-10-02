@@ -2,6 +2,7 @@ package com.home.user.service.service.impl;
 
 import com.home.growme.common.module.dto.OrderItemDTO;
 import com.home.growme.common.module.events.*;
+import com.home.user.service.config.EventMetrics;
 import com.home.user.service.exception.UserAlreadyExistException;
 import com.home.user.service.model.entity.User;
 import com.home.user.service.repository.UserRepository;
@@ -39,6 +40,9 @@ public class EventHandlerServiceImplTests {
 
     @InjectMocks
     private EventHandlerServiceImpl eventHandlerService;
+
+    @Mock
+    private EventMetrics eventMetrics;
 
     private final UUID userId = UUID.randomUUID();
     private final UUID productId = UUID.randomUUID();

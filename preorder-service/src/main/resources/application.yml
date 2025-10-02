@@ -2,7 +2,7 @@ spring:
   application:
     name: preorder-service
   profiles:
-    active: dev
+    active: prod
 
 management:
   endpoints:

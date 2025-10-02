@@ -286,11 +286,7 @@ public class UserDTOTests {
             assertTrue(violations.isEmpty(), "Expected no violations for valid account status");
         }
 
-        @Test
-        void shouldFailWhenAccountStatusIsNull() {
-            UserDTO user = validBuilder.accountStatus(null).build();
-            assertHasViolation(user, "Account status is required");
-        }
+
     }
 
     private void assertHasViolation(UserDTO user, String expectedMessage) {

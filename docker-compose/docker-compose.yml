@@ -259,7 +259,7 @@ services:
       service: microservice-base-config
 
   user-service:
-    image: tzetzaka2/user-service:v1
+    image: tzetzaka2/user-service:v2
     container_name: user-service
     ports:
       - "8081:8081"

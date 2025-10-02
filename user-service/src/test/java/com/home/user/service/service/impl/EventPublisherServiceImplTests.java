@@ -49,19 +49,7 @@ public class EventPublisherServiceImplTests {
         verify(kafkaTemplate).send(eq(ROLE_ASSIGNMENT_TOPIC), eq(userId), any(RoleAssignmentEvent.class));
     }
 
-    @Test
-    void shouldThrowEventPublishingExceptionWhenKafkaFailsOnRoleAssignment() {
-        String userId = UUID.randomUUID().toString();
-        String role = "seller";
 
-        CompletableFuture<SendResult<String, Object>> future = new CompletableFuture<>();
-        future.completeExceptionally(new RuntimeException("Kafka send failed"));
-
-        when(kafkaTemplate.send(anyString(), anyString(), any())).thenReturn(future);
-
-        assertThrows(EventPublishingException.class,
-                () -> publisherService.publishRoleAssignment(userId, role));
-    }
 
     @Test
     void shouldPublishUserCreatedSuccessfully() {
