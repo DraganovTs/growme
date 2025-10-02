@@ -2,7 +2,7 @@ spring:
   application:
     name: keycloak-role-service
   profiles:
-    active: dev
+    active: prod
 
 
 management:
