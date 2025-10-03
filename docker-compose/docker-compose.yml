@@ -220,7 +220,7 @@ services:
       service: network-deploy-service
 
   config-server:
-    image: tzetzaka2/config-server:v1
+    image: tzetzaka2/config-server:v2
     container_name: config-server
     ports:
       - "8888:8888"
@@ -238,7 +238,7 @@ services:
       service: microservice-base-config
 
   eureka-server:
-    image: tzetzaka2/eureka-server:v1
+    image: tzetzaka2/eureka-server:v2
     container_name: eureka-server
     ports:
       - "8070:8070"
@@ -365,7 +365,7 @@ services:
 #      service: microservice-db-config
 
   gateway-server:
-    image: tzetzaka2/gateway-server:v1
+    image: tzetzaka2/gateway-server:v2
     container_name: gateway-server
     ports:
       - "8088:8088"
