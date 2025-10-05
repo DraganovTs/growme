@@ -115,10 +115,17 @@
             <plugin>
                 <groupId>com.google.cloud.tools</groupId>
                 <artifactId>jib-maven-plugin</artifactId>
+                <version>3.4.6</version>
                 <configuration>
+                    <from>
+                        <image>openjdk:17-jdk-slim</image>
+                    </from>
                     <to>
                         <image>tzetzaka2/${project.artifactId}:v2</image>
                     </to>
+                    <container>
+                        <mainClass>com.home.config.server.ConfigServerApplication</mainClass>
+                    </container>
                 </configuration>
             </plugin>
         </plugins>
