@@ -13,6 +13,7 @@ services:
        - ./docker/mysql/schema_product_service.sql:/docker-entrypoint-initdb.d/schema_product_service.sql
        - ./docker/mysql/schema_order_service.sql:/docker-entrypoint-initdb.d/schema_order_service.sql
        - ./docker/mysql/schema_email_service.sql:/docker-entrypoint-initdb.d/schema_email_service.sql
+       - ./docker/mysql/schema_preorder_service.sql:/docker-entrypoint-initdb.d/schema_preorder_service.sql
     healthcheck:
       test: [ "CMD-SHELL", "mysqladmin ping -h localhost -uroot -p$SQL_DB_PASSWORD" ]
       interval: 10s
@@ -121,7 +122,7 @@ services:
 
 
   kafka-1:
-    image: 'bitnami/kafka:latest'
+    image: 'bitnamilegacy/kafka:latest'
     container_name: kafka-1
     environment:
       # KRaft settings
@@ -154,7 +155,7 @@ services:
       service: network-deploy-service
 
   kafka-2:
-    image: 'bitnami/kafka:latest'
+    image: 'bitnamilegacy/kafka:latest'
     container_name: kafka-2
     environment:
       # KRaft settings
@@ -187,7 +188,7 @@ services:
       service: network-deploy-service
 
   kafka-3:
-    image: 'bitnami/kafka:latest'
+    image: 'bitnamilegacy/kafka:latest'
     container_name: kafka-3
     environment:
       # KRaft settings
@@ -274,95 +275,98 @@ services:
       service: microservice-db-config
 
 
-#  product-service:
-#    image: tzetzaka2/product-service:v1
-#    container_name: product-service
-#    ports:
-#      - "8087:8087"
-#    environment:
-#      SPRING_APPLICATION_NAME: product-service
-#      SPRING_PROFILES_ACTIVE: prod
-#    extends:
-#      file: common_config.yml
-#      service: microservice-db-config
-#
-#  payment-service:
-#    image: tzetzaka2/payment-service:v1
-#    container_name: payment-service
-#    ports:
-#      - "8084:8084"
-#    environment:
-#      SPRING_APPLICATION_NAME: payment-service
-#      STRIPE_API_KEY: ${STRIPE_API_KEY}
-#      SPRING_PROFILES_ACTIVE: prod
-#    extends:
-#      file: common_config.yml
-#      service: microservice-eureka-config
-#
-#  order-service:
-#    image: tzetzaka2/order-service:v1
-#    container_name: order-service
-#    ports:
-#      - "8083:8083"
-#    depends_on:
-#      redis-cart:
-#        condition: service_healthy
-#    environment:
-#      SPRING_APPLICATION_NAME: order-service
-#      REDIS_HOST: ${REDIS_HOST}
-#      REDIS_PORT: ${REDIS_PORT}
-#      SPRING_PROFILES_ACTIVE: prod
-#    extends:
-#      file: common_config.yml
-#      service: microservice-db-config
-#
-#  keycloak-service:
-#    image: tzetzaka2/keycloak-api:v1
-#    container_name: keycloak-service
-#    ports:
-#      - "8082:8082"
-#    depends_on:
-#      keycloak:
-#        condition: service_healthy
-#    environment:
-#      SPRING_APPLICATION_NAME: keycloak-service
-#      KEYCLOAK_REALM: ${KEYCLOAK_REALM}
-#      KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
-#      KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
-#      KEYCLOAK_URL: ${KEYCLOAK_URL}
-#      JWT_AUTH_RESOURCE_ID: authenticationClientId
-#      SPRING_PROFILES_ACTIVE: prod
-#    extends:
-#      file: common_config.yml
-#      service: microservice-eureka-config
-#
-#
-#  email-service:
-#    image: tzetzaka2/email-service:v1
-#    container_name: email-service
-#    ports:
-#      - "8085:8085"
-#    environment:
-#      SPRING_APPLICATION_NAME: email-service
-#      SENDGRID_API_KEY: ${SENDGRID_API_KEY}
-#      SPRING_PROFILES_ACTIVE: prod
-#    extends:
-#      file: common_config.yml
-#      service: microservice-db-config
-#  preorder-service:
-#    image: tzetzaka2/preorder-service:v1
-#    container_name: preorder-service
-#    ports:
-#      - "8086:8086"
-#    deploy:
-#      resources:
-#        limits:
-#          memory: 1000M
-#    environment:
-#      SPRING_APPLICATION_NAME: preorder-service
-#    extends:
-#      file: common_config.yml
-#      service: microservice-db-config
+  product-service:
+    image: tzetzaka2/product-service:v1
+    container_name: product-service
+    ports:
+      - "8087:8087"
+    environment:
+      SPRING_APPLICATION_NAME: product-service
+      SPRING_PROFILES_ACTIVE: prod
+    extends:
+      file: common_config.yml
+      service: microservice-db-config
+
+  payment-service:
+    image: tzetzaka2/payment-service:v2
+    container_name: payment-service
+    ports:
+      - "8084:8084"
+    environment:
+      SPRING_APPLICATION_NAME: payment-service
+      STRIPE_API_KEY: ${STRIPE_API_KEY}
+      SPRING_PROFILES_ACTIVE: prod
+    extends:
+      file: common_config.yml
+      service: microservice-eureka-config
+
+  order-service:
+    image: tzetzaka2/order-service:v2
+    container_name: order-service
+    ports:
+      - "8083:8083"
+    depends_on:
+      redis-cart:
+        condition: service_healthy
+    environment:
+      SPRING_APPLICATION_NAME: order-service
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+      SPRING_PROFILES_ACTIVE: prod
+    extends:
+      file: common_config.yml
+      service: microservice-db-config
+
+  keycloak-service:
+    image: tzetzaka2/keycloak-api:v2
+    container_name: keycloak-service
+    ports:
+      - "8082:8082"
+    depends_on:
+      keycloak:
+        condition: service_healthy
+    environment:
+      SPRING_APPLICATION_NAME: keycloak-service
+      KEYCLOAK_REALM: ${KEYCLOAK_REALM}
+      KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
+      KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
+      KEYCLOAK_URL: ${KEYCLOAK_URL}
+      JWT_AUTH_RESOURCE_ID: authenticationClientId
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:8080/realms/grow-me
+    extends:
+      file: common_config.yml
+      service: microservice-eureka-config
+
+
+  email-service:
+    image: tzetzaka2/email-service:v2
+    container_name: email-service
+    ports:
+      - "8085:8085"
+    environment:
+      SPRING_APPLICATION_NAME: email-service
+      SENDGRID_API_KEY: ${SENDGRID_API_KEY}
+      SPRING_PROFILES_ACTIVE: prod
+    extends:
+      file: common_config.yml
+      service: microservice-db-config
+
+
+  preorder-service:
+    image: tzetzaka2/preorder-service:v2
+    container_name: preorder-service
+    ports:
+      - "8086:8086"
+    deploy:
+      resources:
+        limits:
+          memory: 1000M
+    environment:
+      SPRING_APPLICATION_NAME: preorder-service
+    extends:
+      file: common_config.yml
+      service: microservice-db-config
 
   gateway-server:
     image: tzetzaka2/gateway-server:v2

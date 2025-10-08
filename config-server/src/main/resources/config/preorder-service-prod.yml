@@ -32,8 +32,7 @@ pagination:
   page:
     size:
       default: 12
-  config:
-    import: configserver:http://config-server:8888/kafka-config-prod.yml
+
 eureka:
   instance:
     prefer-ip-address: true
