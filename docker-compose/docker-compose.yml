@@ -68,6 +68,8 @@ services:
       KC_HOSTNAME: localhost
       KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN_USER}
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+    volumes:
+      - ./keycloak/realms/grow-me-realm.json:/opt/keycloak/data/import/grow-me-realm.json
     command: start-dev
     healthcheck:
       test: |
@@ -319,18 +321,18 @@ services:
 
   keycloak-service:
     image: tzetzaka2/keycloak-api:v2
-    container_name: keycloak-service
+    container_name: keycloak-role-service
     ports:
       - "8082:8082"
     depends_on:
       keycloak:
         condition: service_healthy
     environment:
-      SPRING_APPLICATION_NAME: keycloak-service
+      SPRING_APPLICATION_NAME: keycloak-role-service
       KEYCLOAK_REALM: ${KEYCLOAK_REALM}
       KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
       KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
-      KEYCLOAK_URL: ${KEYCLOAK_URL}
+      KEYCLOAK_URL: http://keycloak:8080
       JWT_AUTH_RESOURCE_ID: authenticationClientId
       SPRING_PROFILES_ACTIVE: prod
       SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:8080/realms/grow-me

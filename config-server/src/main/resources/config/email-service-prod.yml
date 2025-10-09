@@ -29,8 +29,6 @@ spring:
         auto.offset.reset: earliest
         enable.auto.commit: false
       group-id: email-service-group
-  config:
-    import: configserver:http://config-server:8888/kafka-config-prod.yml
 sendgrid:
   api.key: ${SENDGRID_API_KEY:}
   from.email: ${SENDGRID_API_KEY:no-reply@growme.com}

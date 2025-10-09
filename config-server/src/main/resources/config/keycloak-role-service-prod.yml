@@ -27,9 +27,7 @@ spring:
         spring.json.trusted.packages: "*"
         auto.offset.reset: earliest
         enable.auto.commit: false
-      group-id: keycloak-role-service-group
-  config:
-    import: configserver:http://config-server:8888/kafka-config-prod.yml
+      group-id: keycloak-role-service
 keycloak:
   realm: ${KEYCLOAK_REALM}
   adminClientId: ${KEYCLOAK_CLIENT_ID}

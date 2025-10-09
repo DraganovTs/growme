@@ -15,14 +15,20 @@ spring:
         delivery.timeout.ms: 100000
         request.timeout.ms: 30000
         max.block.ms: 60000
+        retries: 3
+        acks: all
+        enable.idempotence: true
+        linger.ms: 5
+        batch.size: 16384
+        buffer.memory: 33554432
     consumer:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
         spring.json.trusted.packages: "*"
+        auto.offset.reset: earliest
+        enable.auto.commit: false
       group-id: email-service-group
-  config:
-    import: configserver:http://localhost:8888/kafka-config-dev.yml
 sendgrid:
   api.key: ${SENDGRID_API_KEY:}
   from.email: ${SENDGRID_API_KEY:no-reply@growme.com}
