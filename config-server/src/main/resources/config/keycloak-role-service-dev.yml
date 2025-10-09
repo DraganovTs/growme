@@ -5,7 +5,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:7080/realms/grow-me
+          issuer-uri: http://keycloak:7080/realms/grow-me
   kafka:
     bootstrap-servers: localhost:9091,localhost:9092,localhost:9093
     producer:

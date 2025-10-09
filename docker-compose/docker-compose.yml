@@ -65,19 +65,22 @@ services:
       KC_HEALTH_ENABLED: "true"
       KC_HTTP_ENABLED: "true"
       KC_PROXY: edge
-      KC_HOSTNAME: localhost
+      KC_HOSTNAME: keycloak
       KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN_USER}
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      KC_IMPORT: /opt/keycloak/data/import/grow-me-realm.json
     volumes:
-      - ./keycloak/realms/grow-me-realm.json:/opt/keycloak/data/import/grow-me-realm.json
-    command: start-dev
+      - ./grow-me-realm.json:/opt/keycloak/data/import/grow-me-realm.json
+    command:
+      - start-dev
+      - --import-realm
     healthcheck:
       test: |
         CMD-SHELL
-        curl -f http://localhost:8080/health/ready || exit 1
+        curl -f http://localhost:8080/realms/grow-me || exit 1
       interval: 15s
       timeout: 10s
-      retries: 5
+      retries: 10
       start_period: 45s
     depends_on:
       keycloak-mysql:
@@ -319,7 +322,7 @@ services:
       file: common_config.yml
       service: microservice-db-config
 
-  keycloak-service:
+  keycloak-role-service:
     image: tzetzaka2/keycloak-api:v2
     container_name: keycloak-role-service
     ports:
@@ -335,7 +338,6 @@ services:
       KEYCLOAK_URL: http://keycloak:8080
       JWT_AUTH_RESOURCE_ID: authenticationClientId
       SPRING_PROFILES_ACTIVE: prod
-      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:8080/realms/grow-me
     extends:
       file: common_config.yml
       service: microservice-eureka-config

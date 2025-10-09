@@ -3,7 +3,6 @@ spring:
     activate:
       on-profile: prod
     import:
-      - configserver:http://config-server:8888/kafka-config-prod.yml
       - optional:configserver:http://config-server:8888
 server:
   port: 8081
