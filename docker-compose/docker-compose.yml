@@ -65,7 +65,6 @@ services:
       KC_HEALTH_ENABLED: "true"
       KC_HTTP_ENABLED: "true"
       KC_PROXY: edge
-      KC_HOSTNAME: keycloak
       KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN_USER}
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
       KC_IMPORT: /opt/keycloak/data/import/grow-me-realm.json
@@ -74,14 +73,14 @@ services:
     command:
       - start-dev
       - --import-realm
+      - --hostname-strict=false
+      - --http-enabled=true
     healthcheck:
-      test: |
-        CMD-SHELL
-        curl -f http://localhost:8080/realms/grow-me || exit 1
+      test: [ "CMD-SHELL", "curl -f http://localhost:7080/realms/grow-me || exit 1" ]
       interval: 15s
       timeout: 10s
       retries: 10
-      start_period: 45s
+      start_period: 90s
     depends_on:
       keycloak-mysql:
         condition: service_healthy
@@ -376,7 +375,7 @@ services:
     image: tzetzaka2/gateway-server:v2
     container_name: gateway-server
     ports:
-      - "8088:8088"
+      - "8080:8088"
     environment:
       SPRING_APPLICATION_NAME: gateway-server
       SPRING_DATA_REDIS_CONNECT_TIMEOUT: 2s
