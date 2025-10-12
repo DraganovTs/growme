@@ -76,7 +76,7 @@ services:
       - --hostname-strict=false
       - --http-enabled=true
     healthcheck:
-      test: [ "CMD-SHELL", "curl -f http://localhost:7080/realms/grow-me || exit 1" ]
+      test: [ "CMD-SHELL", "curl -f http://localhost:8080/realms/grow-me || exit 1" ]
       interval: 15s
       timeout: 10s
       retries: 10
