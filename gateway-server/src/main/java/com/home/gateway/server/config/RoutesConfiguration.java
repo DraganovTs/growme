@@ -36,6 +36,11 @@ public class RoutesConfiguration {
                                 .rewritePath("/growme/users/(?<segment>.*)", "/api/users/${segment}"))
                         .uri("lb://USER-SERVICE"))
 
+                .route("user-service-test", r-> r.path("/growme/users/test")
+                        .filters(f->applyCommonFilters(f,"userServiceCircuitBreaker")
+                                .rewritePath("/growme/users/(?<segment>.*)", "/api/users/${segment}"))
+                                .uri("lb://USER-SERVICE"))
+
                 // PRODUCT-SERVICE - FIXED
                 .route("product-service-categories-root", p -> p.path("/growme/categories")
                         .filters(f -> applyCommonFilters(f, "productServiceCircuitBreaker")
@@ -62,6 +67,12 @@ public class RoutesConfiguration {
                                 .rewritePath("/growme/products/(?<segment>.*)", "/api/products/${segment}"))
                         .uri("lb://PRODUCT-SERVICE"))
 
+                .route("product-service-test", p -> p.path("/growme/products/test")
+                        .filters(f -> applyCommonFilters(f, "productServiceCircuitBreaker")
+                                .rewritePath("/growme/products/(?<segment>.*)", "/api/products/${segment}"))
+                        .uri("lb://PRODUCT-SERVICE"))
+
+
                 // ORDER-SERVICE - FIXED
                 .route("order-service-basket-root", p -> p.path("/growme/basket")
                         .filters(f -> applyCommonFilters(f, "orderServiceCircuitBreaker")
@@ -81,6 +92,10 @@ public class RoutesConfiguration {
                         .filters(f -> applyCommonFilters(f, "orderServiceCircuitBreaker")
                                 .rewritePath("/growme/orders/(?<segment>.*)", "/api/orders/${segment}"))
                         .uri("lb://ORDER-SERVICE"))
+                .route("order-service-test", p -> p.path("/growme/orders/test")
+                        .filters(f -> applyCommonFilters(f, "orderServiceCircuitBreaker")
+                                .rewritePath("/growme/orders/(?<segment>.*)", "/api/orders/${segment}"))
+                        .uri("lb://ORDER-SERVICE"))
 
                 // KEYCLOAK-ROLE-SERVICE
                 .route("keycloak-service-roles", p -> p.path("/growme/roles/**")
@@ -89,6 +104,11 @@ public class RoutesConfiguration {
                         .uri("lb://KEYCLOAK-ROLE-SERVICE"))
 
                 .route("keycloak-service-users", p -> p.path("/growme/usersk/**")
+                        .filters(f -> applyCommonFilters(f, "keycloakRoleServiceCircuitBreaker")
+                                .rewritePath("/growme/usersk/(?<segment>.*)", "/api/usersk/${segment}"))
+                        .uri("lb://KEYCLOAK-ROLE-SERVICE"))
+
+                .route("keycloak-service-test", p -> p.path("/growme/usersk/test")
                         .filters(f -> applyCommonFilters(f, "keycloakRoleServiceCircuitBreaker")
                                 .rewritePath("/growme/usersk/(?<segment>.*)", "/api/usersk/${segment}"))
                         .uri("lb://KEYCLOAK-ROLE-SERVICE"))
@@ -112,6 +132,23 @@ public class RoutesConfiguration {
                 .route("preorder-service-bids-segment", p -> p.path("/growme/bids/**")
                         .filters(f -> applyCommonFilters(f, "preorderServiceCircuitBreaker")
                                 .rewritePath("/growme/bids/(?<segment>.*)", "/api/bids/${segment}"))
+                        .uri("lb://PREORDER-SERVICE"))
+
+                .route("preorder-service-tasks-test", p -> p.path("/growme/tasks/test")
+                        .filters(f -> applyCommonFilters(f, "preorderServiceCircuitBreaker")
+                                .rewritePath("/growme/tasks/(?<segment>.*)", "/api/tasks/${segment}"))
+                        .uri("lb://PREORDER-SERVICE"))
+
+                // EMAIL-SERVICE
+                .route("email-service-test", p -> p.path("/growme/emails/test")
+                        .filters(f -> applyCommonFilters(f, "preorderServiceCircuitBreaker")
+                                .rewritePath("/growme/emails/(?<segment>.*)", "/api/emails/${segment}"))
+                        .uri("lb://PREORDER-SERVICE"))
+
+                //PAYMENT-SERVICE
+                .route("payment-service-test", p -> p.path("/growme/payments/test")
+                        .filters(f -> applyCommonFilters(f, "preorderServiceCircuitBreaker")
+                                .rewritePath("/growme/payments/(?<segment>.*)", "/api/payments/${segment}"))
                         .uri("lb://PREORDER-SERVICE"))
                 .build();
     }

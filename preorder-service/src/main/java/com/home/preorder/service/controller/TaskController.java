@@ -67,5 +67,10 @@ public class TaskController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/test")
+    public String test() {
+        return "Preorder service works fine";
+    }
+
 
 }

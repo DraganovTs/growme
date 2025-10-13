@@ -296,4 +296,9 @@ public class ProductController {
         return ResponseEntity.ok(imageService.getRecentImagesForDisplay());
     }
 
+    @GetMapping("/test")
+    public String test() {
+        return "Product service works fine";
+    }
+
 }

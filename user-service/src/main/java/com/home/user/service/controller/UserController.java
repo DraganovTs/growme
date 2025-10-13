@@ -139,4 +139,9 @@ public class UserController {
         return ResponseEntity.ok(userService.requestCheckUserProfile(userId));
     }
 
+    @GetMapping("/test")
+    public String test() {
+        return "User service works fine";
+    }
+
 }

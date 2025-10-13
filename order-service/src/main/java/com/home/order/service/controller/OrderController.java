@@ -104,4 +104,9 @@ public class OrderController {
         return ResponseEntity.ok(iOrderDto);
     }
 
+    @GetMapping("/test")
+    public String test() {
+        return "Order service works fine";
+    }
+
 }

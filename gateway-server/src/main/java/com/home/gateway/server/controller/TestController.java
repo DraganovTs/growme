@@ -43,4 +43,9 @@ public class TestController {
 
         return Mono.just(authInfo);
     }
+
+    @GetMapping("/test")
+    public String test() {
+        return "Gateway works fine";
+    }
 }

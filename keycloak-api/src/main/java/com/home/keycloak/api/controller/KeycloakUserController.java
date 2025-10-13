@@ -20,5 +20,10 @@ public class KeycloakUserController {
         return keycloakUserService.createUser(userRegistrationRecord);
     }
 
+    @GetMapping("/test")
+    public String test() {
+        return "Keycloak service works fine";
+    }
+
 
 }
