@@ -36,10 +36,11 @@ services:
     volumes:
       - keycloak-mysql-data:/var/lib/mysql
     healthcheck:
-      test: ["CMD-SHELL", "mysqladmin ping -uroot -p${KEYCLOAK_DB_ROOT_PASSWORD}"]
-      interval: 10s
-      timeout: 5s
+      test: [ "CMD-SHELL", "curl -f http://localhost:8080/health/live || exit 1" ]
+      interval: 15s
+      timeout: 10s
       retries: 10
+      start_period: 60s
     environment:
       MYSQL_ROOT_PASSWORD: ${KEYCLOAK_DB_ROOT_PASSWORD}
       MYSQL_DATABASE: ${KEYCLOAK_DB_NAME}
@@ -65,8 +66,8 @@ services:
       KC_HEALTH_ENABLED: "true"
       KC_HTTP_ENABLED: "true"
       KC_PROXY: edge
-      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN_USER}
-      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN_USER}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
       KC_IMPORT: /opt/keycloak/data/import/grow-me-realm.json
     volumes:
       - ./grow-me-realm.json:/opt/keycloak/data/import/grow-me-realm.json
@@ -76,8 +77,12 @@ services:
       - --hostname-strict=false
       - --http-enabled=true
     healthcheck:
-      test: [ "CMD-SHELL", "curl -f http://localhost:8080/realms/grow-me || exit 1" ]
-      interval: 15s
+      test:
+        [
+          "CMD-SHELL",
+          "[ -f /tmp/HealthCheck.java ] || echo 'public class HealthCheck { public static void main(String[] args) throws java.lang.Throwable { java.net.URI uri = java.net.URI.create(args[0]); System.exit(java.net.HttpURLConnection.HTTP_OK == ((java.net.HttpURLConnection)uri.toURL().openConnection()).getResponseCode() ? 0 : 1); } }' > /tmp/HealthCheck.java && javac /tmp/HealthCheck.java && java -cp /tmp HealthCheck http://localhost:9000/health/live"
+        ]
+      interval: 10s
       timeout: 10s
       retries: 10
       start_period: 90s
@@ -280,7 +285,7 @@ services:
 
 
   product-service:
-    image: tzetzaka2/product-service:v1
+    image: tzetzaka2/product-service:v2
     container_name: product-service
     ports:
       - "8087:8087"
@@ -375,12 +380,12 @@ services:
     image: tzetzaka2/gateway-server:v2
     container_name: gateway-server
     ports:
-      - "8080:8088"
+      - "8080:8080"
     environment:
       SPRING_APPLICATION_NAME: gateway-server
       SPRING_DATA_REDIS_CONNECT_TIMEOUT: 2s
       SPRING_DATA_REDIS_HOST: redis-gateway
-      SPRING_DATA_REDIS_PORT: 6381
+      SPRING_DATA_REDIS_PORT: 6379
       SPRING_DATA_REDIS_TIMEOUT: 1s
       SPRING_PROFILES_ACTIVE: default
     depends_on:

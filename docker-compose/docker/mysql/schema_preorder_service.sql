@@ -2,25 +2,25 @@ USE growmepreorders;
 
 CREATE TABLE IF NOT EXISTS categories
 (
-    category_id BINARY(16) PRIMARY KEY,
+    category_id BINARY(36) PRIMARY KEY,
     category_name VARCHAR(30) NOT NULL UNIQUE
 );
 
 CREATE TABLE IF NOT EXISTS task_users
 (
-    task_user_id BINARY(16) PRIMARY KEY,
+    task_user_id BINARY(36) PRIMARY KEY,
     task_user_name  VARCHAR(30) NOT NULL,
     task_user_email VARCHAR(30) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS tasks
 (
-    task_id BINARY(16) PRIMARY KEY,
+    task_id BINARY(36) PRIMARY KEY,
     title             VARCHAR(100)  NOT NULL,
     description       VARCHAR(1000) NOT NULL,
-    category_id BINARY(16) NOT NULL,
+    category_id BINARY(36) NOT NULL,
     status            VARCHAR(50)   NOT NULL,
-    user_id BINARY(16) NOT NULL,
+    user_id BINARY(36) NOT NULL,
     budget            NUMERIC(12, 2),
     deadline          TIMESTAMP,
     quantity          INTEGER       NOT NULL CHECK (quantity >= 1 AND quantity <= 10000),
@@ -45,13 +45,13 @@ CREATE TABLE IF NOT EXISTS tasks
 
 CREATE TABLE IF NOT EXISTS bids
 (
-    bid_id BINARY(16) PRIMARY KEY,
+    bid_id BINARY(36) PRIMARY KEY,
     price                 NUMERIC(12, 2) NOT NULL CHECK (price > 0),
     message               VARCHAR(500)   NOT NULL,
     status                VARCHAR(20)    NOT NULL,
-    user_id BINARY(16) NOT NULL,
+    user_id BINARY(36) NOT NULL,
     user_name             VARCHAR(255)   NOT NULL,
-    task_id BINARY(16) NOT NULL,
+    task_id BINARY(36) NOT NULL,
     delivery_method       VARCHAR(20),
     proposed_harvest_date DATE,
     delivery_included     BOOLEAN        NOT NULL DEFAULT false,

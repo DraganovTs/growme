@@ -3,7 +3,7 @@ USE growmeemails;
 DROP TABLE IF EXISTS growmeemails;
 
 CREATE TABLE IF NOT EXISTS growmeemails (
-                                             id BINARY(16) PRIMARY KEY,
+                                             id BINARY(36) PRIMARY KEY,
     recipient_email VARCHAR(255) NOT NULL,
     email_type VARCHAR(50) NOT NULL,
     subject VARCHAR(255) NOT NULL,

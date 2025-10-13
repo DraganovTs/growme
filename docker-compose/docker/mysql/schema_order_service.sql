@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS delivery_methods
 
 CREATE TABLE IF NOT EXISTS owners
 (
-    owner_id     BINARY(16) PRIMARY KEY,
+    owner_id     BINARY(36) PRIMARY KEY,
     owner_name   VARCHAR(255) NOT NULL,
     owner_email  VARCHAR(255) NOT NULL UNIQUE,
     date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -25,13 +25,13 @@ CREATE TABLE IF NOT EXISTS owners
 
 CREATE TABLE IF NOT EXISTS orders
 (
-    order_id           BINARY(16) PRIMARY KEY,
+    order_id           BINARY(36) PRIMARY KEY,
     buyer_email        VARCHAR(255)   NOT NULL,
     order_date         TIMESTAMP      NOT NULL,
     status             VARCHAR(20)    NOT NULL,
     sub_total          DECIMAL(19, 2) NOT NULL,
     payment_intent_id  VARCHAR(255),
-    owner_id           BINARY(16),
+    owner_id           BINARY(36),
     delivery_method_id INT            NOT NULL,
 
     -- Address fields
@@ -48,13 +48,13 @@ CREATE TABLE IF NOT EXISTS orders
 
 CREATE TABLE IF NOT EXISTS order_items
 (
-    order_item_id BINARY(16) PRIMARY KEY DEFAULT (UUID_TO_BIN(UUID())),
-    product_id    BINARY(16)    ,
+    order_item_id BINARY(36) PRIMARY KEY DEFAULT (UUID_TO_BIN(UUID())),
+    product_id    BINARY(36)    ,
     product_name  VARCHAR(255)  ,
     image_url     VARCHAR(255),
     quantity      INT            NOT NULL CHECK (quantity > 0),
     price         DECIMAL(19, 2) NOT NULL CHECK (price >= 0),
-    order_id      BINARY(16)     NOT NULL,
+    order_id      BINARY(36)     NOT NULL,
 
     CONSTRAINT fk_order_item_order FOREIGN KEY (order_id) REFERENCES orders (order_id) ON DELETE CASCADE
     );

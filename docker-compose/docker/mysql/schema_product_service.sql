@@ -4,7 +4,7 @@ DROP TABLE IF EXISTS categories;
 
 CREATE TABLE IF NOT EXISTS categories
 (
-    category_id  BINARY(16) PRIMARY KEY,
+    category_id  BINARY(36) PRIMARY KEY,
     category_name VARCHAR(255) NOT NULL UNIQUE
     );
 
@@ -22,7 +22,7 @@ DROP TABLE IF EXISTS products;
 
 CREATE TABLE IF NOT EXISTS products
 (
-    product_id     BINARY(16) PRIMARY KEY,
+    product_id     BINARY(36) PRIMARY KEY,
     name           VARCHAR(255)   NOT NULL,
     brand          VARCHAR(255),
     description    TEXT           NOT NULL,
@@ -31,8 +31,8 @@ CREATE TABLE IF NOT EXISTS products
     image_url      VARCHAR(255),
     date_created   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     last_updated   TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    category_id    BINARY(16)     NOT NULL,
-    owner_id       BINARY(16),
+    category_id    BINARY(36)     NOT NULL,
+    owner_id       BINARY(36),
     CONSTRAINT fk_category FOREIGN KEY (category_id) REFERENCES categories (category_id),
     CONSTRAINT fk_owner FOREIGN KEY (owner_id) REFERENCES owners (owner_id)
     );
