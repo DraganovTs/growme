@@ -43,6 +43,12 @@ export class KeycloakService {
   }
 
  async init(): Promise<void> {
+    console.log('🔧 DOCKER DEBUG - Keycloak initialization started...');
+    console.log('🔧 DOCKER DEBUG - Environment:', {
+        keycloakUrl: environment.keycloakUrl,
+        keycloakRealm: environment.keycloakRealm,
+        keycloakClientId: environment.keycloakClientId
+    });
         if (!this.isBrowser) {
             this.initializedSubject.next(true);
             return;
@@ -54,11 +60,41 @@ export class KeycloakService {
             clientId: environment.keycloakClientId,
         });
 
+        this.keycloak.onAuthSuccess = () => {
+        console.log('🔧 DOCKER DEBUG - Keycloak auth success');
+    };
+    
+    this.keycloak.onAuthError = (error) => {
+        console.error('🔧 DOCKER DEBUG - Keycloak auth error:', error);
+    };
+    
+    this.keycloak.onAuthRefreshSuccess = () => {
+        console.log('🔧 DOCKER DEBUG - Keycloak auth refresh success');
+    };
+    
+    this.keycloak.onAuthRefreshError = () => {
+        console.error('🔧 DOCKER DEBUG - Keycloak auth refresh error');
+    };
+    
+    this.keycloak.onAuthLogout = () => {
+        console.log('🔧 DOCKER DEBUG - Keycloak auth logout');
+    };
+    
+    this.keycloak.onTokenExpired = () => {
+        console.log('🔧 DOCKER DEBUG - Keycloak token expired');
+    };
+
         try {
+                  console.log('🔧 DOCKER DEBUG - Starting Keycloak init with login-required...');
+
             const authenticated = await this.keycloak.init({
                 onLoad: 'login-required',
                 checkLoginIframe: false,
             });
+
+            console.log('🔧 DOCKER DEBUG - Keycloak init completed, authenticated:', authenticated);
+        console.log('🔧 DOCKER DEBUG - Keycloak token:', this.keycloak.token ? 'Present' : 'Missing');
+        console.log('🔧 DOCKER DEBUG - Keycloak tokenParsed:', this.keycloak.tokenParsed);
 
             this.setAuthenticationState(authenticated);
             this.initializedSubject.next(true); 
@@ -68,23 +104,32 @@ export class KeycloakService {
                 const userId = this.keycloak.tokenParsed.sub || '';
                 localStorage.setItem('userId', userId);
 
+                console.log('🔧 DOCKER DEBUG - User roles:', userRoles);
+            console.log('🔧 DOCKER DEBUG - User ID:', userId);
+
                 this.syncUserWithBackend().pipe(
                     switchMap(() => this.checkProfileCompletion()),
                     take(1)
                 ).subscribe((profileComplete) => {
+                                  console.log('🔧 DOCKER DEBUG - Profile complete check result:', profileComplete);
+
                     this.ngZone.run(() => {
                         if (profileComplete && this.hasRequiredRole(userRoles)) {
+                             console.log('🔧 DOCKER DEBUG - Redirecting to home');
                             this.router.navigate(['/']); 
                         } else {
+                            console.log('🔧 DOCKER DEBUG - Redirecting to complete-profile');
                             this.router.navigate(['/complete-profile']);
                         }
                     });
                 });
 
                 this.startTokenRefresh();
-            }
+            } else {
+            console.log('🔧 DOCKER DEBUG - User not authenticated after init');
+        }
         } catch (error) {
-            console.error('Keycloak initialization failed:', error);
+           console.error('🔧 DOCKER DEBUG - Keycloak initialization failed:', error);
             this.setAuthenticationState(false);
             this.initializedSubject.next(true); 
         }
@@ -95,14 +140,25 @@ export class KeycloakService {
   }
 
   register(): Observable<void> {
+        console.log('🔧 DOCKER DEBUG - Starting registration flow...');
+
     if (!this.keycloak) return of(undefined);
+        console.error('🔧 DOCKER DEBUG - Keycloak not available for registration');
 
     return from(this.keycloak.register()).pipe(
-      switchMap(() =>
-        from(this.keycloak!.init({ onLoad: 'check-sso', checkLoginIframe: false }))
-      ),
+      switchMap(() => {
+            console.log('🔧 DOCKER DEBUG - Initializing after registration with check-sso...');
+            return from(this.keycloak!.init({ onLoad: 'check-sso', checkLoginIframe: false }));
+        }),
       switchMap((authenticated) => {
+                                console.log('🔧 DOCKER DEBUG - Post-registration authenticated:', authenticated);
+            console.log('🔧 DOCKER DEBUG - Post-registration token:', this.keycloak?.token ? 'Present' : 'Missing');
+            console.log('🔧 DOCKER DEBUG - Post-registration tokenParsed:', this.keycloak?.tokenParsed);
+
         if (!authenticated || !this.keycloak?.tokenParsed) {
+                          console.error('🔧 DOCKER DEBUG - Authentication failed after registration');
+                console.log('🔧 DOCKER DEBUG - Trying manual login after registration...');
+
           throw new Error('Authentication failed');
         }
 
