@@ -64,6 +64,10 @@ services:
       KC_DB_PASSWORD: password
       KC_HEALTH_ENABLED: "true"
       KC_HTTP_ENABLED: "true"
+      KC_HOSTNAME: keycloak
+      KC_HOSTNAME_URL: http://keycloak:8080
+      KC_HOSTNAME_STRICT: false
+      KC_HOSTNAME_STRICT_HTTPS: false
       KC_PROXY: edge
       KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN_USER}
       KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
@@ -73,8 +77,6 @@ services:
     command:
        - start-dev
        - --import-realm
-       - --hostname-strict=false
-       - --http-enabled=true
     healthcheck:
       test: [
         "CMD-SHELL",
@@ -387,7 +389,8 @@ services:
       SPRING_DATA_REDIS_PORT: 6379
       SPRING_DATA_REDIS_TIMEOUT: 1s
       SPRING_PROFILES_ACTIVE: dev
-      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://host.docker.internal:7080/realms/grow-me
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:8080/realms/grow-me
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://keycloak:8080/realms/grow-me/protocol/openid-connect/certs
     depends_on:
       keycloak:
         condition: service_healthy
