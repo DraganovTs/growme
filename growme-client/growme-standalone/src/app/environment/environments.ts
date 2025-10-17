@@ -1,7 +1,7 @@
 export const environment = {
     production: false,
     apiUrl: 'http://localhost:8080/growme/', 
-    keycloakUrl: 'http://localhost:7080',
+    keycloakUrl: 'http://tzetze:7080',
     keycloakRealm: 'grow-me',
     keycloakClientId: 'grow-me-client',
     userApi: 'http://localhost:8080/growme/users',
