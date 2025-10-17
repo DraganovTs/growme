@@ -47,7 +47,17 @@ public class SecurityConfig {
             "/growme/bids/**",
             "/growme/tasks/**",
             "/growme/basket/**",
-            "/growme/deliverymethods/**"
+            "/growme/deliverymethods/**",
+            "/api/users/sync",
+            "/api/users/update/**",
+            "/api/users/profile-complete/**",
+            "/api/categories/**",
+            "/api/owners/**",
+            "/api/products/**",
+            "/api/bids/**",
+            "/api/tasks/**",
+            "/api/basket/**",
+            "/api/deliverymethods/**"
     };
 
     @Bean

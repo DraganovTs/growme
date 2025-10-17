@@ -341,6 +341,7 @@ services:
       KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
       KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
       KEYCLOAK_URL: http://keycloak:8080
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:8080/realms/grow-me
       JWT_AUTH_RESOURCE_ID: authenticationClientId
       SPRING_PROFILES_ACTIVE: prod
     extends:
