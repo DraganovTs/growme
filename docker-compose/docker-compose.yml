@@ -64,10 +64,9 @@ services:
       KC_DB_PASSWORD: password
       KC_HEALTH_ENABLED: "true"
       KC_HTTP_ENABLED: "true"
-      KC_HOSTNAME: keycloak
-      KC_HOSTNAME_URL: tzetze
-      KC_HOSTNAME_STRICT: true
-      KC_HOSTNAME_STRICT_HTTPS: true
+      KC_HOSTNAME: localhost
+      KC_HOSTNAME_STRICT: false
+      KC_HOSTNAME_STRICT_HTTPS: false
       KC_PROXY: edge
       KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN_USER}
       KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
@@ -320,8 +319,8 @@ services:
         condition: service_healthy
     environment:
       SPRING_APPLICATION_NAME: order-service
-      REDIS_HOST: ${REDIS_HOST}
-      REDIS_PORT: ${REDIS_PORT}
+      REDIS_HOST: redis-cart
+      REDIS_PORT: 6379
       SPRING_PROFILES_ACTIVE: prod
     extends:
       file: common_config.yml
@@ -341,7 +340,7 @@ services:
       KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
       KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
       KEYCLOAK_URL: http://keycloak:8080
-      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://tzetze:7080/realms/grow-me
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:8080/realms/grow-me
       JWT_AUTH_RESOURCE_ID: authenticationClientId
       SPRING_PROFILES_ACTIVE: prod
     extends:
@@ -390,13 +389,19 @@ services:
       SPRING_DATA_REDIS_PORT: 6379
       SPRING_DATA_REDIS_TIMEOUT: 1s
       SPRING_PROFILES_ACTIVE: dev
-      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://tzetze:7080/realms/grow-me
-      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://tzetze:7080/realms/grow-me/protocol/openid-connect/certs
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:8080/realms/grow-me
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://keycloak:8080/realms/grow-me/protocol/openid-connect/certs
     depends_on:
       keycloak:
         condition: service_healthy
       redis-gateway:
         condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
     extends:
       file: common_config.yml
       service: microservice-eureka-config
@@ -407,6 +412,14 @@ services:
     ports:
       - "4200:80"
     restart: always
+    environment:
+      API_BASE_URL: http://localhost:8080
+      KEYCLOAK_URL: http://localhost:7080
+      KEYCLOAK_REALM: grow-me
+      KEYCLOAK_CLIENT_ID: growme-client
+    depends_on:
+      gateway-server:
+        condition: service_started
     extends:
       file: common_config.yml
       service: network-deploy-service
@@ -419,6 +432,7 @@ volumes:
   kafka-1-data:
   kafka-2-data:
   kafka-3-data:
+
 
 
 networks:
