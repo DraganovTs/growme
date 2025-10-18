@@ -401,6 +401,15 @@ services:
       file: common_config.yml
       service: microservice-eureka-config
 
+  growme-client:
+    image: tzetzaka2/growme-client:v1
+    container_name: growme-client
+    ports:
+      - "4200:80"
+    restart: always
+    extends:
+      file: common_config.yml
+      service: network-deploy-service
 
 volumes:
   keycloak-mysql-data:
@@ -410,6 +419,7 @@ volumes:
   kafka-1-data:
   kafka-2-data:
   kafka-3-data:
+
 
 networks:
   grow-me:
