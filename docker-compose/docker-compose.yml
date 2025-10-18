@@ -71,6 +71,7 @@ services:
       KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN_USER}
       KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
       KC_IMPORT: /opt/keycloak/data/import/grow-me-realm.json
+      KC_HTTP_RELATIVE_PATH: /realms/grow-me
     volumes:
        - ./grow-me-realm.json:/opt/keycloak/data/import/grow-me-realm.json
     command:
@@ -339,8 +340,8 @@ services:
       KEYCLOAK_REALM: ${KEYCLOAK_REALM}
       KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
       KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
-      KEYCLOAK_URL: http://keycloak:8080
-      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:8080/realms/grow-me
+      KEYCLOAK_URL: http://localhost:7080
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://localhost:7080/realms/grow-me
       JWT_AUTH_RESOURCE_ID: authenticationClientId
       SPRING_PROFILES_ACTIVE: prod
     extends:
@@ -389,8 +390,8 @@ services:
       SPRING_DATA_REDIS_PORT: 6379
       SPRING_DATA_REDIS_TIMEOUT: 1s
       SPRING_PROFILES_ACTIVE: dev
-      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:8080/realms/grow-me
-      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://keycloak:8080/realms/grow-me/protocol/openid-connect/certs
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://localhost:7080/realms/grow-me
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://localhost:7080/realms/grow-me/protocol/openid-connect/certs
     depends_on:
       keycloak:
         condition: service_healthy
