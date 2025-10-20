@@ -392,7 +392,7 @@ services:
       SPRING_DATA_REDIS_HOST: redis-gateway
       SPRING_DATA_REDIS_PORT: 6379
       SPRING_DATA_REDIS_TIMEOUT: 1s
-      SPRING_PROFILES_ACTIVE: dev
+      SPRING_PROFILES_ACTIVE: prod
       SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:8080/realms/grow-me
       SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://keycloak:8080/realms/grow-me/protocol/openid-connect/certs
     depends_on:
